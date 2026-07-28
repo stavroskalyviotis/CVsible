@@ -52,3 +52,10 @@
   margin: 4px 0;
   padding-left: 20px;
 }
+
+@media (max-width: 640px) {
+  .rich-text-toolbar button {
+    width: 34px;
+    height: 32px;
+  }
+}

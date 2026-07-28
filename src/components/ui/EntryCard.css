@@ -59,3 +59,15 @@
 .entry-card-remove {
   color: var(--danger) !important;
 }
+
+@media (max-width: 640px) {
+  .entry-card {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .entry-card-actions button {
+    width: 34px;
+    height: 34px;
+  }
+}

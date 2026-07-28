@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import type { Dictionary } from "../i18n/translations";
@@ -13,10 +13,7 @@ import "./CvPreview.css";
 export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dictionary }) {
   const { pages, metas, itemRefs, headingSampleRef } = useMainPagination(data, dictionary);
   const [pageIndex, setPageIndex] = useState(0);
-
-  useEffect(() => {
-    setPageIndex((current) => Math.min(current, pages.length - 1));
-  }, [pages.length]);
+  const currentPage = Math.min(pageIndex, Math.max(0, pages.length - 1));
 
   const palette = getSidebarPalette(data.themeColor);
   const themeStyle = {
@@ -33,20 +30,20 @@ export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dict
         <nav className="cv-pagination" aria-label={dictionary.pagination.page}>
           <button
             type="button"
-            disabled={pageIndex === 0}
+            disabled={currentPage === 0}
             title={dictionary.pagination.previousPage}
-            onClick={() => setPageIndex((index) => index - 1)}
+            onClick={() => setPageIndex(currentPage - 1)}
           >
             <Icon name="arrow-left" size={16} />
           </button>
           <strong>
-            {dictionary.pagination.page} {pageIndex + 1} / {pages.length}
+            {dictionary.pagination.page} {currentPage + 1} / {pages.length}
           </strong>
           <button
             type="button"
-            disabled={pageIndex === pages.length - 1}
+            disabled={currentPage === pages.length - 1}
             title={dictionary.pagination.nextPage}
-            onClick={() => setPageIndex((index) => index + 1)}
+            onClick={() => setPageIndex(currentPage + 1)}
           >
             <Icon name="arrow-right" size={16} />
           </button>
@@ -54,8 +51,8 @@ export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dict
       )}
 
       <CvPage
-        page={pages[pageIndex] ?? []}
-        pageIndex={pageIndex}
+        page={pages[currentPage] ?? []}
+        pageIndex={currentPage}
         data={data}
         dictionary={dictionary}
         themeStyle={themeStyle}

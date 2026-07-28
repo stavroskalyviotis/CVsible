@@ -1,8 +1,8 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
-import { buildMainBlockMetas } from "./mainBlocks";
-import type { MainBlockMeta } from "./mainBlocks";
+import { buildMainBlockMetas } from "./blockMeta";
+import type { MainBlockMeta } from "./blockMeta";
 
 export const MAIN_CONTENT_WIDTH = 468;
 export const MAIN_CONTENT_CAPACITY = 1043;

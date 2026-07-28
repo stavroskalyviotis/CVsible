@@ -1,4 +1,5 @@
-import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
+import { LanguageProvider } from "./i18n/LanguageContext";
+import { useLanguage } from "./i18n/useLanguage";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { LandingPage } from "./pages/LandingPage";
 import { BuilderPage } from "./pages/BuilderPage";

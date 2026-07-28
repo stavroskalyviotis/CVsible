@@ -60,7 +60,7 @@ export function RichTextEditor({
 
   const emitChange = () => onChange(editorRef.current?.innerHTML ?? "");
 
-  const runCommand = (command: keyof ActiveFormats) => (event: MouseEvent) => {
+  const runCommand = (command: keyof ActiveFormats, event: MouseEvent) => {
     event.preventDefault();
     editorRef.current?.focus();
     document.execCommand("styleWithCSS", false, "false");
@@ -78,7 +78,7 @@ export function RichTextEditor({
             type="button"
             className={activeFormats.bold ? "active" : ""}
             title={dictionary.richText.bold}
-            onMouseDown={runCommand("bold")}
+            onMouseDown={(event) => runCommand("bold", event)}
           >
             <b>B</b>
           </button>
@@ -86,7 +86,7 @@ export function RichTextEditor({
             type="button"
             className={activeFormats.italic ? "active" : ""}
             title={dictionary.richText.italic}
-            onMouseDown={runCommand("italic")}
+            onMouseDown={(event) => runCommand("italic", event)}
           >
             <i>I</i>
           </button>
@@ -94,7 +94,7 @@ export function RichTextEditor({
             type="button"
             className={activeFormats.underline ? "active" : ""}
             title={dictionary.richText.underline}
-            onMouseDown={runCommand("underline")}
+            onMouseDown={(event) => runCommand("underline", event)}
           >
             <u>U</u>
           </button>
@@ -102,7 +102,7 @@ export function RichTextEditor({
             type="button"
             className={activeFormats.insertUnorderedList ? "active" : ""}
             title={dictionary.richText.bulletList}
-            onMouseDown={runCommand("insertUnorderedList")}
+            onMouseDown={(event) => runCommand("insertUnorderedList", event)}
           >
             •≡
           </button>

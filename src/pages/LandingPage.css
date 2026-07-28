@@ -431,10 +431,15 @@
   .landing-hero {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 32px;
   }
 
   .landing-copy {
     order: 2;
+  }
+
+  .landing-visual {
+    margin-bottom: 4px;
   }
 
   .landing-subtitle {
@@ -453,5 +458,40 @@
 
   .landing-steps-grid {
     grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .landing-steps-grid article {
+    text-align: center;
+    padding-left: 0;
+  }
+
+  .step-number {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-topbar {
+    padding: 16px 20px;
+  }
+
+  .landing-hero {
+    padding-bottom: 32px;
+  }
+
+  .landing-steps {
+    padding-top: 12px;
+  }
+
+  .landing-final-cta {
+    padding: 32px 20px;
+    margin: 16px auto 8px;
+    border-radius: var(--radius-md);
+  }
+
+  .mock-resume {
+    transform: none;
   }
 }

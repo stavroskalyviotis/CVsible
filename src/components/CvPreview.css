@@ -275,6 +275,13 @@
   text-align: center;
 }
 
+@media (max-width: 640px) {
+  .cv-pagination button {
+    width: 34px;
+    height: 34px;
+  }
+}
+
 .cv-print-stack {
   display: none;
 }
