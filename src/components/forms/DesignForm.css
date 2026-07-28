@@ -1,0 +1,44 @@
+.design-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.design-label {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin: 0;
+}
+
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--line-strong);
+  position: relative;
+  overflow: hidden;
+}
+
+.color-swatch.active {
+  box-shadow: 0 0 0 2px var(--paper-raised), 0 0 0 4px var(--ink);
+}
+
+.color-swatch-custom {
+  background: conic-gradient(from 180deg, #ff5252, #ffd452, #52ff8f, #52d4ff, #7a52ff, #ff52c8, #ff5252);
+  cursor: pointer;
+}
+
+.color-swatch-custom input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}

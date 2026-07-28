@@ -1,0 +1,35 @@
+.contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-type-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: var(--paper-raised);
+}
+
+.contact-type-icon {
+  display: flex;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.contact-type-select select {
+  border: none;
+  background: transparent;
+  padding: 9px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  width: 100%;
+}
+
+.contact-type-select select:focus {
+  outline: none;
+}

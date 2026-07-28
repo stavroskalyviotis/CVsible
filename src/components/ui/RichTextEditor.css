@@ -1,0 +1,54 @@
+.rich-text-field {
+  gap: 6px;
+}
+
+.rich-text-editor {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--paper-raised);
+}
+
+.rich-text-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.rich-text-toolbar button {
+  width: 28px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  display: grid;
+  place-items: center;
+}
+
+.rich-text-toolbar button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rich-text-input {
+  min-height: 90px;
+  padding: 10px 11px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink);
+  outline: none;
+}
+
+.rich-text-input:empty::before {
+  content: attr(data-placeholder);
+  color: #a19c9c;
+}
+
+.rich-text-input ul {
+  margin: 4px 0;
+  padding-left: 20px;
+}

@@ -1,0 +1,186 @@
+import type { Dictionary } from "../i18n/translations";
+import type { LanguageCode } from "../types";
+import "./LandingPage.css";
+
+const MOCK_CONTENT = {
+  el: {
+    name: "ΑΝΝΑ ΝΙΚΟΛΑΟΥ",
+    role: "Product Designer",
+    contacts: ["anna@mail.com", "Αθήνα, Ελλάδα"],
+    skills: ["Figma", "Έρευνα χρηστών"],
+    sectionTitle: "ΕΜΠΕΙΡΙΑ",
+    entryTitle: "Senior Product Designer",
+    entryMeta: "Northwind Labs · 2022 — Σήμερα",
+    entryDesc: "Redesign της κύριας εφαρμογής, +24% ικανοποίηση χρηστών.",
+  },
+  en: {
+    name: "JANE DOE",
+    role: "Product Designer",
+    contacts: ["jane@mail.com", "New York, USA"],
+    skills: ["Figma", "User research"],
+    sectionTitle: "EXPERIENCE",
+    entryTitle: "Senior Product Designer",
+    entryMeta: "Northwind Labs · 2022 — Present",
+    entryDesc: "Redesigned the flagship app, +24% user satisfaction.",
+  },
+};
+
+export function LandingPage({
+  dictionary,
+  language,
+  onLanguageChange,
+  onStart,
+}: {
+  dictionary: Dictionary;
+  language: LanguageCode;
+  onLanguageChange: (language: LanguageCode) => void;
+  onStart: () => void;
+}) {
+  const { landing } = dictionary;
+  const mock = MOCK_CONTENT[language];
+
+  return (
+    <div className="landing">
+      <header className="landing-topbar">
+        <span className="landing-brand">
+          <span className="landing-brand-mark" aria-hidden="true">
+            CV
+          </span>
+          CVsible
+        </span>
+        <div className="landing-lang-switch" role="group" aria-label="Language">
+          <button
+            type="button"
+            className={language === "el" ? "active" : ""}
+            onClick={() => onLanguageChange("el")}
+          >
+            EL
+          </button>
+          <button
+            type="button"
+            className={language === "en" ? "active" : ""}
+            onClick={() => onLanguageChange("en")}
+          >
+            EN
+          </button>
+        </div>
+      </header>
+
+      <main className="landing-hero">
+        <div className="landing-copy">
+          <span className="landing-badge">{landing.badge}</span>
+          <h1>
+            {landing.title} <span className="landing-highlight">{landing.titleHighlight}</span>
+          </h1>
+          <p className="landing-subtitle">{landing.subtitle}</p>
+          <div className="landing-actions">
+            <button type="button" className="landing-cta" onClick={onStart}>
+              {landing.ctaStart}
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="landing-visual" aria-hidden="true">
+          <div className="mock-resume">
+            <div className="mock-sidebar">
+              <div className="mock-avatar" />
+              {mock.contacts.map((line) => (
+                <span className="mock-contact-line" key={line}>
+                  {line}
+                </span>
+              ))}
+              <div className="mock-gap" />
+              <span className="mock-side-heading">{language === "el" ? "ΔΕΞΙΟΤΗΤΕΣ" : "SKILLS"}</span>
+              {mock.skills.map((skill) => (
+                <div className="mock-skill" key={skill}>
+                  <span>{skill}</span>
+                  <div className="mock-skill-track">
+                    <div className="mock-skill-fill" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mock-main">
+              <strong className="mock-name">{mock.name}</strong>
+              <span className="mock-role">{mock.role}</span>
+              <div className="mock-divider" />
+              <span className="mock-section-title">{mock.sectionTitle}</span>
+              <strong className="mock-entry-title">{mock.entryTitle}</strong>
+              <em className="mock-entry-meta">{mock.entryMeta}</em>
+              <p className="mock-entry-desc">{mock.entryDesc}</p>
+            </div>
+          </div>
+          <div className="landing-visual-badge">
+            <strong>PDF</strong>
+            <span>ready</span>
+          </div>
+        </div>
+      </main>
+
+      <section className="landing-steps">
+        <h2>{landing.howItWorksTitle}</h2>
+        <div className="landing-steps-grid">
+          <article>
+            <span className="step-number">1</span>
+            <h3>{landing.step1Title}</h3>
+            <p>{landing.step1Body}</p>
+          </article>
+          <article>
+            <span className="step-number">2</span>
+            <h3>{landing.step2Title}</h3>
+            <p>{landing.step2Body}</p>
+          </article>
+          <article>
+            <span className="step-number">3</span>
+            <h3>{landing.step3Title}</h3>
+            <p>{landing.step3Body}</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="landing-features">
+        <article>
+          <span className="feature-icon" aria-hidden="true">
+            ⚡
+          </span>
+          <h3>{landing.feature1Title}</h3>
+          <p>{landing.feature1Body}</p>
+        </article>
+        <article>
+          <span className="feature-icon" aria-hidden="true">
+            🎨
+          </span>
+          <h3>{landing.feature2Title}</h3>
+          <p>{landing.feature2Body}</p>
+        </article>
+        <article>
+          <span className="feature-icon" aria-hidden="true">
+            ⬇
+          </span>
+          <h3>{landing.feature3Title}</h3>
+          <p>{landing.feature3Body}</p>
+        </article>
+      </section>
+
+      <section className="landing-final-cta">
+        <h2>{landing.finalCtaTitle}</h2>
+        <p>{landing.finalCtaBody}</p>
+        <button type="button" className="landing-cta" onClick={onStart}>
+          {landing.ctaStart}
+          <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
+      <footer className="landing-footer">
+        <p>{landing.footerNote}</p>
+        <p className="landing-credit">
+          {landing.madeBy}{" "}
+          <a href="https://www.linkedin.com/in/stavros-kalyviotis/" target="_blank" rel="noopener noreferrer">
+            Stavros Kalyviotis
+          </a>
+        </p>
+      </footer>
+    </div>
+  );
+}

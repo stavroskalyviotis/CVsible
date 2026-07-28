@@ -1,0 +1,31 @@
+@media print {
+  #root {
+    display: none !important;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .cv-print-stack {
+    display: block !important;
+  }
+
+  .cv-print-stack .cv-page {
+    zoom: 1 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+  }
+
+  .cv-print-stack .cv-page:last-child {
+    page-break-after: auto;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}

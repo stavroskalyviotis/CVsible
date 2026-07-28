@@ -1,0 +1,77 @@
+:root {
+  --ink: #1c1a1f;
+  --ink-soft: #55505c;
+  --paper: #faf8f6;
+  --paper-raised: #ffffff;
+  --line: #e6e2df;
+  --line-strong: #d4cfcb;
+  --accent: #7a3bcf;
+  --accent-ink: #ffffff;
+  --accent-soft: #f1e9fb;
+  --danger: #b3413a;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-card: 0 1px 2px rgba(28, 26, 31, 0.04), 0 8px 24px rgba(28, 26, 31, 0.06);
+  --shadow-pop: 0 4px 10px rgba(28, 26, 31, 0.08), 0 20px 48px rgba(28, 26, 31, 0.14);
+  --font-body:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+}
