@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
 import { useCvData } from "../hooks/useCvData";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { CvPreview } from "../components/CvPreview";
+import type { CvPreviewHandle } from "../components/CvPreview";
 import { Icon } from "../components/Icon";
 import { AccordionSection } from "../components/ui/AccordionSection";
 import { PersonalInfoForm } from "../components/forms/PersonalInfoForm";
@@ -43,6 +44,8 @@ export function BuilderPage({
   const cv = useCvData();
   const { containerRef, scale } = usePreviewScale();
   const [openSection, setOpenSection] = useState<SectionId>("personalInfo");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const previewRef = useRef<CvPreviewHandle>(null);
 
   const toggleSection = (id: SectionId) => setOpenSection((current) => (current === id ? ("" as SectionId) : id));
 
@@ -52,8 +55,13 @@ export function BuilderPage({
     }
   };
 
-  const handleDownload = () => {
-    window.print();
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await previewRef.current?.exportPdf();
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -84,9 +92,14 @@ export function BuilderPage({
           <button type="button" className="builder-ghost-button" onClick={handleStartOver}>
             {dictionary.nav.startOver}
           </button>
-          <button type="button" className="builder-primary-button" onClick={handleDownload}>
+          <button
+            type="button"
+            className="builder-primary-button"
+            onClick={handleDownload}
+            disabled={isDownloading}
+          >
             <Icon name="download" size={16} />
-            {dictionary.nav.download}
+            {isDownloading ? dictionary.nav.downloading : dictionary.nav.download}
           </button>
         </div>
       </header>
@@ -205,7 +218,7 @@ export function BuilderPage({
 
         <div className="builder-preview" ref={containerRef}>
           <div className="builder-preview-scaled" style={{ zoom: scale }}>
-            <CvPreview data={cv.data} dictionary={dictionary} />
+            <CvPreview data={cv.data} dictionary={dictionary} ref={previewRef} />
           </div>
         </div>
       </div>

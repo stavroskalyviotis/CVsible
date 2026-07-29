@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, Ref } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
 import { ContactIcon } from "../components/ContactIcon";
@@ -22,6 +22,7 @@ export function CvPage({
   dictionary,
   themeStyle,
   className = "",
+  pageRef,
 }: {
   page: PageBlock[];
   pageIndex: number;
@@ -29,12 +30,19 @@ export function CvPage({
   dictionary: Dictionary;
   themeStyle: CSSProperties;
   className?: string;
+  pageRef?: Ref<HTMLDivElement>;
 }) {
   const { personalInfo } = data;
   const contacts = personalInfo.contacts.filter((item) => item.value.trim());
 
   return (
-    <div className={`cv-page ${className}`} style={themeStyle} lang={dictionary.locale} data-cv-page={pageIndex + 1}>
+    <div
+      className={`cv-page ${className}`}
+      style={themeStyle}
+      lang={dictionary.locale}
+      data-cv-page={pageIndex + 1}
+      ref={pageRef}
+    >
       <aside className="cv-sidebar">
         {pageIndex === 0 && (
           <>

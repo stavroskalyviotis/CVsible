@@ -1,19 +1,57 @@
-import { useState } from "react";
-import type { CSSProperties } from "react";
+import { useImperativeHandle, useRef, useState } from "react";
+import type { CSSProperties, Ref } from "react";
 import { createPortal } from "react-dom";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
 import { getSidebarPalette } from "../utils/contrast";
+import { buildPdfFilename, exportPagesToPdf } from "../utils/exportPdf";
 import { CvPage } from "../pagination/CvPage";
 import { MeasurePanel } from "../pagination/MeasurePanel";
 import { useMainPagination } from "../pagination/useMainPagination";
 import { Icon } from "./Icon";
 import "./CvPreview.css";
 
-export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dictionary }) {
+export interface CvPreviewHandle {
+  exportPdf: () => Promise<void>;
+}
+
+function waitForPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
+}
+
+export function CvPreview({
+  data,
+  dictionary,
+  ref,
+}: {
+  data: CvData;
+  dictionary: Dictionary;
+  ref?: Ref<CvPreviewHandle>;
+}) {
   const { pages, metas, itemRefs, headingSampleRef } = useMainPagination(data, dictionary);
   const [pageIndex, setPageIndex] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
+  const printPageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const currentPage = Math.min(pageIndex, Math.max(0, pages.length - 1));
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      exportPdf: async () => {
+        setIsExporting(true);
+        await waitForPaint();
+        try {
+          const elements = printPageRefs.current.filter((el): el is HTMLDivElement => el !== null);
+          await exportPagesToPdf(elements, buildPdfFilename(data.personalInfo.fullName));
+        } finally {
+          setIsExporting(false);
+        }
+      },
+    }),
+    [data],
+  );
 
   const palette = getSidebarPalette(data.themeColor);
   const themeStyle = {
@@ -71,7 +109,11 @@ export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dict
       )}
 
       {createPortal(
-        <div className="cv-print-stack" aria-hidden="true">
+        <div
+          className="cv-print-stack"
+          aria-hidden="true"
+          style={isExporting ? { display: "block", position: "fixed", top: 0, left: -10000, zIndex: -1 } : undefined}
+        >
           {pages.map((page, index) => (
             <CvPage
               key={index}
@@ -81,6 +123,9 @@ export function CvPreview({ data, dictionary }: { data: CvData; dictionary: Dict
               dictionary={dictionary}
               themeStyle={themeStyle}
               className="cv-print-page"
+              pageRef={(el) => {
+                printPageRefs.current[index] = el;
+              }}
             />
           ))}
         </div>,

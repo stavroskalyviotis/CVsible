@@ -90,6 +90,11 @@
   font-weight: 600;
 }
 
+.builder-primary-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .builder-body {
   flex: 1;
   display: grid;
