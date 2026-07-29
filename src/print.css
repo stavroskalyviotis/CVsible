@@ -17,11 +17,15 @@
   .cv-print-stack .cv-page {
     zoom: 1 !important;
     box-shadow: none !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
     page-break-after: always;
+    break-after: page;
   }
 
   .cv-print-stack .cv-page:last-child {
     page-break-after: auto;
+    break-after: auto;
   }
 
   @page {
