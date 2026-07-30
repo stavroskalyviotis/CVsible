@@ -31,6 +31,7 @@ export interface Dictionary {
     backToHome: string;
     download: string;
     downloading: string;
+    downloadError: string;
     startOver: string;
     startOverConfirm: string;
   };
@@ -183,6 +184,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       backToHome: "Αρχική",
       download: "Λήψη PDF",
       downloading: "Προετοιμασία…",
+      downloadError: "Κάτι πήγε στραβά με τη λήψη του PDF. Δοκίμασε ξανά.",
       startOver: "Νέο βιογραφικό",
       startOverConfirm: "Θα σβηστούν όλα τα στοιχεία που έχεις συμπληρώσει. Συνέχεια;",
     },
@@ -341,6 +343,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       backToHome: "Home",
       download: "Download PDF",
       downloading: "Preparing…",
+      downloadError: "Something went wrong while creating the PDF. Please try again.",
       startOver: "New resume",
       startOverConfirm: "This will clear everything you've entered. Continue?",
     },

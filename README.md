@@ -17,23 +17,22 @@
 
 **CVsible** is a free, browser-based resume builder for creating clean and customizable CVs with a live preview. It requires no account, adds no watermark, and keeps the user's data on their own device.
 
-The interface is available in **Greek and English**, and the completed resume can be saved as a print-ready **A4 PDF**.
+The interface is available in **Greek and English**, and the completed resume can be downloaded as an **A4 PDF** directly from the browser, on desktop or mobile.
 
 ## Features
 
 - Live resume preview while editing
 - Greek and English interface
-- Personal details and customizable contact links
-- Professional summary with rich-text formatting
-- Work experience and education sections
+- Personal details and customizable contact links (email, phone, location, website, LinkedIn, GitHub, X, or a custom link)
+- Professional summary with rich-text formatting (bold, italic, underline, bullet lists)
+- Work experience and education sections, with a decade → year → month date picker and start/end date validation
 - Skills and language proficiency levels
 - Certifications and projects
 - Optional profile photo
 - Drag-and-drop entry reordering
-- Preset and custom sidebar colors
-- Automatic text contrast for light and dark colors
-- Automatic multi-page A4 layout
-- PDF export through the browser's print dialog
+- Preset and custom sidebar colors, with automatic text contrast for light and dark colors
+- Automatic multi-page A4 layout, with page navigation in the preview
+- One-click PDF export that works the same on desktop and mobile
 - Automatic local saving with `localStorage`
 - Responsive layout for desktop and smaller screens
 - No sign-up, subscription, watermark, or backend
@@ -52,7 +51,7 @@ Clearing the browser's site data or selecting **New resume** removes the locally
 - **CSS**
 - **Vercel** for deployment
 - Browser `localStorage` for persistence
-- Browser print API for PDF generation
+- `html2canvas` + `jsPDF` (lazy-loaded on demand) for client-side PDF generation
 
 ## Getting started
 
@@ -103,9 +102,9 @@ CVsible/
 
 ## How PDF export works
 
-Select **Download PDF** and choose **Save as PDF** in the browser print dialog. CVsible prepares the resume as full-bleed A4 pages and preserves the selected sidebar color.
+Selecting **Download PDF** renders each A4 page of the resume to canvas in the browser and assembles the result into a real PDF file, which downloads immediately — no print dialog involved.
 
-For the best output, enable background graphics in the print settings if the browser does not include them automatically.
+This avoids the inconsistent margins and extra blank pages that browser/OS print pipelines (like Windows' "Microsoft Print to PDF" or iOS's system print sheet) can add, so the export looks the same and works reliably on both desktop and mobile.
 
 ## Possible next steps
 

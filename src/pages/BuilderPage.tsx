@@ -59,6 +59,8 @@ export function BuilderPage({
     setIsDownloading(true);
     try {
       await previewRef.current?.exportPdf();
+    } catch {
+      window.alert(dictionary.nav.downloadError);
     } finally {
       setIsDownloading(false);
     }

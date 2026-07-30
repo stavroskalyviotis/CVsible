@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#faf8f6"/>
+  <rect x="0" y="0" width="420" height="630" fill="#a9435a"/>
+  <circle cx="120" cy="150" r="46" fill="rgba(255,255,255,0.85)"/>
+  <rect x="60" y="230" width="240" height="14" rx="7" fill="rgba(255,255,255,0.85)"/>
+  <rect x="60" y="260" width="180" height="14" rx="7" fill="rgba(255,255,255,0.55)"/>
+  <rect x="60" y="320" width="130" height="12" rx="6" fill="rgba(255,255,255,0.45)"/>
+  <rect x="60" y="350" width="240" height="10" rx="5" fill="rgba(255,255,255,0.7)"/>
+  <rect x="60" y="368" width="240" height="10" rx="5" fill="rgba(255,255,255,0.5)"/>
+  <rect x="60" y="410" width="130" height="12" rx="6" fill="rgba(255,255,255,0.45)"/>
+  <rect x="60" y="428" width="200" height="10" rx="5" fill="rgba(255,255,255,0.7)"/>
+  <rect x="60" y="446" width="180" height="10" rx="5" fill="rgba(255,255,255,0.5)"/>
+
+  <rect x="500" y="120" width="36" height="36" rx="10" fill="#1c1a1f"/>
+  <text x="551" y="147" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#1c1a1f">CVsible</text>
+
+  <text x="500" y="240" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#1c1a1f">Φτιάξε το βιογραφικό σου</text>
+  <text x="500" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#a9435a">σε λίγα λεπτά</text>
+
+  <text x="500" y="370" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">Ζωντανή προεπισκόπηση, πλήρης προσαρμογή χρώματος,</text>
+  <text x="500" y="405" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">λήψη σε PDF. Χωρίς λογαριασμό, 100% δωρεάν.</text>
+
+  <rect x="500" y="450" width="220" height="58" rx="29" fill="#1c1a1f"/>
+  <text x="536" y="486" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#ffffff">Ξεκίνα τώρα →</text>
+</svg>
