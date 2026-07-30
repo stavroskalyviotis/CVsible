@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import { useLanguage } from "./i18n/useLanguage";
 import { useHashRoute } from "./hooks/useHashRoute";
@@ -33,6 +34,7 @@ function App() {
   return (
     <LanguageProvider>
       <AppShell />
+      <Analytics />
     </LanguageProvider>
   );
 }

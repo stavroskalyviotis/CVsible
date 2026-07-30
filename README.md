@@ -44,13 +44,15 @@ CVsible is a client-side application. Resume information and uploaded photos are
 
 Clearing the browser's site data or selecting **New resume** removes the locally stored resume.
 
+The deployed app uses [Vercel Web Analytics](https://vercel.com/docs/analytics) for anonymous, aggregate page-view counts (no cookies, no personal data, no resume content). It's inactive during local development.
+
 ## Tech stack
 
 - **React 19**
 - **TypeScript 6**
 - **Vite 8**
 - **CSS**
-- **Vercel** for deployment
+- **Vercel** for deployment and [Web Analytics](https://vercel.com/docs/analytics)
 - Browser `localStorage` for persistence
 - `html2canvas` + `jsPDF` (lazy-loaded on demand) for client-side PDF generation
 
