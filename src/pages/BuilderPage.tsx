@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
-import type { LanguageCode } from "../types";
+import type { LanguageCode, MainSectionOrderType, SidebarSectionType } from "../types";
 import { useCvData } from "../hooks/useCvData";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { CvPreview } from "../components/CvPreview";
 import type { CvPreviewHandle } from "../components/CvPreview";
 import { Icon } from "../components/Icon";
+import type { IconName } from "../components/Icon";
 import { AccordionSection } from "../components/ui/AccordionSection";
 import { PersonalInfoForm } from "../components/forms/PersonalInfoForm";
 import { SummaryForm } from "../components/forms/SummaryForm";
@@ -16,6 +17,8 @@ import { LanguagesForm } from "../components/forms/LanguagesForm";
 import { CertificationsForm } from "../components/forms/CertificationsForm";
 import { ProjectsForm } from "../components/forms/ProjectsForm";
 import { DesignForm } from "../components/forms/DesignForm";
+import { SimpleNameListForm } from "../components/forms/SimpleNameListForm";
+import { SectionOrderList } from "../components/forms/SectionOrderList";
 import { createEmptyCvData } from "../data/defaultData";
 import "./BuilderPage.css";
 
@@ -25,10 +28,27 @@ type SectionId =
   | "experience"
   | "education"
   | "skills"
+  | "softSkills"
   | "languages"
+  | "interests"
   | "certifications"
   | "projects"
+  | "sectionOrder"
   | "design";
+
+const SIDEBAR_ICONS: Record<SidebarSectionType, IconName> = {
+  skills: "star",
+  softSkills: "award",
+  languages: "languages",
+  interests: "heart",
+};
+
+const MAIN_ICONS: Record<MainSectionOrderType, IconName> = {
+  experience: "briefcase",
+  education: "book",
+  projects: "folder",
+  certifications: "award",
+};
 
 export function BuilderPage({
   dictionary,
@@ -64,6 +84,20 @@ export function BuilderPage({
     } finally {
       setIsDownloading(false);
     }
+  };
+
+  const sidebarLabels: Record<SidebarSectionType, string> = {
+    skills: dictionary.sections.skills,
+    softSkills: dictionary.sections.softSkills,
+    languages: dictionary.sections.languages,
+    interests: dictionary.sections.interests,
+  };
+
+  const mainLabels: Record<MainSectionOrderType, string> = {
+    experience: dictionary.sections.experience,
+    education: dictionary.sections.education,
+    projects: dictionary.sections.projects,
+    certifications: dictionary.sections.certifications,
   };
 
   return (
@@ -177,12 +211,52 @@ export function BuilderPage({
           </AccordionSection>
 
           <AccordionSection
+            title={dictionary.sections.softSkills}
+            icon="award"
+            open={openSection === "softSkills"}
+            onToggle={() => toggleSection("softSkills")}
+          >
+            <SimpleNameListForm
+              items={cv.data.softSkills}
+              actions={cv.softSkills}
+              fieldLabel={dictionary.fields.softSkillName}
+              placeholder={dictionary.placeholders.softSkillName}
+              emptyState={dictionary.emptyStates.softSkills}
+              addLabel={dictionary.actions.add}
+              removeLabel={dictionary.actions.remove}
+              moveUpLabel={dictionary.actions.moveUp}
+              moveDownLabel={dictionary.actions.moveDown}
+              dragLabel={dictionary.actions.dragReorder}
+            />
+          </AccordionSection>
+
+          <AccordionSection
             title={dictionary.sections.languages}
             icon="languages"
             open={openSection === "languages"}
             onToggle={() => toggleSection("languages")}
           >
             <LanguagesForm items={cv.data.languages} actions={cv.languages} dictionary={dictionary} />
+          </AccordionSection>
+
+          <AccordionSection
+            title={dictionary.sections.interests}
+            icon="heart"
+            open={openSection === "interests"}
+            onToggle={() => toggleSection("interests")}
+          >
+            <SimpleNameListForm
+              items={cv.data.interests}
+              actions={cv.interests}
+              fieldLabel={dictionary.fields.interestName}
+              placeholder={dictionary.placeholders.interestName}
+              emptyState={dictionary.emptyStates.interests}
+              addLabel={dictionary.actions.add}
+              removeLabel={dictionary.actions.remove}
+              moveUpLabel={dictionary.actions.moveUp}
+              moveDownLabel={dictionary.actions.moveDown}
+              dragLabel={dictionary.actions.dragReorder}
+            />
           </AccordionSection>
 
           <AccordionSection
@@ -209,12 +283,44 @@ export function BuilderPage({
           </AccordionSection>
 
           <AccordionSection
+            title={dictionary.sectionOrder.title}
+            icon="layout"
+            open={openSection === "sectionOrder"}
+            onToggle={() => toggleSection("sectionOrder")}
+          >
+            <p className="design-label">{dictionary.sectionOrder.sidebarTitle}</p>
+            <SectionOrderList
+              items={cv.data.sidebarOrder}
+              labels={sidebarLabels}
+              icons={SIDEBAR_ICONS}
+              onReorder={cv.reorderSidebarSection}
+              dragLabel={dictionary.actions.dragReorder}
+            />
+            <p className="design-label">{dictionary.sectionOrder.mainTitle}</p>
+            <SectionOrderList
+              items={cv.data.mainOrder}
+              labels={mainLabels}
+              icons={MAIN_ICONS}
+              onReorder={cv.reorderMainSection}
+              dragLabel={dictionary.actions.dragReorder}
+            />
+          </AccordionSection>
+
+          <AccordionSection
             title={dictionary.sections.design}
-            icon="star"
+            icon="type"
             open={openSection === "design"}
             onToggle={() => toggleSection("design")}
           >
-            <DesignForm themeColor={cv.data.themeColor} onChange={cv.setThemeColor} dictionary={dictionary} />
+            <DesignForm
+              themeColor={cv.data.themeColor}
+              onColorChange={cv.setThemeColor}
+              density={cv.data.density}
+              onDensityChange={cv.setDensity}
+              fontFamily={cv.data.fontFamily}
+              onFontFamilyChange={cv.setFontFamily}
+              dictionary={dictionary}
+            />
           </AccordionSection>
         </div>
 

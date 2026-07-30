@@ -82,10 +82,13 @@ export function BlockContent({ meta, data, dictionary }: { meta: MainBlockMeta; 
     if (!item) return null;
     return (
       <article className="cv-entry">
-        <div className="cv-entry-head">
-          <strong>{item.title}</strong>
-          {item.link && <span>{item.link}</span>}
-        </div>
+        <strong className="cv-project-title">{item.title}</strong>
+        {item.link && (
+          <div className="cv-project-link">
+            <Icon name="globe" size={11} />
+            <span>{item.link}</span>
+          </div>
+        )}
         <RichBlock html={item.description} className="cv-rich" />
       </article>
     );
@@ -96,7 +99,9 @@ export function BlockContent({ meta, data, dictionary }: { meta: MainBlockMeta; 
   return (
     <div className="cv-cert-row">
       <strong>{item.title}</strong>
-      <span>{[item.issuer, formatMonth(item.date, locale)].filter(Boolean).join(" · ")}</span>
+      {(item.issuer || item.date) && (
+        <em>{[item.issuer, formatMonth(item.date, locale)].filter(Boolean).join(" · ")}</em>
+      )}
     </div>
   );
 }

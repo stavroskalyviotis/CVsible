@@ -41,7 +41,9 @@ export interface Dictionary {
     experience: string;
     education: string;
     skills: string;
+    softSkills: string;
     languages: string;
+    interests: string;
     certifications: string;
     projects: string;
     design: string;
@@ -61,8 +63,10 @@ export interface Dictionary {
     institution: string;
     skillName: string;
     skillLevel: string;
+    softSkillName: string;
     languageName: string;
     languageLevel: string;
+    interestName: string;
     certTitle: string;
     certIssuer: string;
     certDate: string;
@@ -96,7 +100,9 @@ export interface Dictionary {
     institution: string;
     educationDescription: string;
     skillName: string;
+    softSkillName: string;
     languageName: string;
+    interestName: string;
     certTitle: string;
     certIssuer: string;
     projectTitle: string;
@@ -139,12 +145,29 @@ export interface Dictionary {
   dateValidation: {
     endNotBeforeStart: string;
   };
+  appearance: {
+    density: string;
+    densityCompact: string;
+    densityComfortable: string;
+    densitySpacious: string;
+    fontFamily: string;
+    fontSans: string;
+    fontSerif: string;
+    fontCondensed: string;
+  };
+  sectionOrder: {
+    title: string;
+    sidebarTitle: string;
+    mainTitle: string;
+  };
   languageLevels: string[];
   emptyStates: {
     experience: string;
     education: string;
     skills: string;
+    softSkills: string;
     languages: string;
+    interests: string;
     certifications: string;
     projects: string;
     contacts: string;
@@ -194,7 +217,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       experience: "Εργασιακή εμπειρία",
       education: "Εκπαίδευση",
       skills: "Δεξιότητες",
+      softSkills: "Ήπιες δεξιότητες",
       languages: "Γλώσσες",
+      interests: "Ενδιαφέροντα",
       certifications: "Πιστοποιήσεις",
       projects: "Έργα",
       design: "Εμφάνιση",
@@ -214,8 +239,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Ίδρυμα",
       skillName: "Δεξιότητα",
       skillLevel: "Επίπεδο",
+      softSkillName: "Ήπια δεξιότητα",
       languageName: "Γλώσσα",
       languageLevel: "Επίπεδο",
+      interestName: "Ενδιαφέρον",
       certTitle: "Τίτλος",
       certIssuer: "Φορέας",
       certDate: "Ημερομηνία",
@@ -250,7 +277,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Όνομα ιδρύματος",
       educationDescription: "Προαιρετικές λεπτομέρειες, βαθμός, διπλωματική.",
       skillName: "π.χ. Figma",
+      softSkillName: "π.χ. Ομαδικότητα",
       languageName: "π.χ. Αγγλικά",
+      interestName: "π.χ. Φωτογραφία",
       certTitle: "π.χ. AWS Certified",
       certIssuer: "Φορέας πιστοποίησης",
       projectTitle: "Όνομα έργου",
@@ -293,6 +322,21 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     dateValidation: {
       endNotBeforeStart: "Η ημερομηνία λήξης δεν μπορεί να είναι πριν την έναρξη.",
     },
+    appearance: {
+      density: "Πυκνότητα διάταξης",
+      densityCompact: "Συμπαγής",
+      densityComfortable: "Κανονική",
+      densitySpacious: "Άνετη",
+      fontFamily: "Γραμματοσειρά",
+      fontSans: "Μοντέρνα",
+      fontSerif: "Κλασική",
+      fontCondensed: "Συμπυκνωμένη",
+    },
+    sectionOrder: {
+      title: "Σειρά ενοτήτων",
+      sidebarTitle: "Πλαϊνή στήλη",
+      mainTitle: "Κύρια στήλη",
+    },
     languageLevels: [
       "Βασικό",
       "Μέτριο",
@@ -305,7 +349,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       experience: "Δεν έχεις προσθέσει ακόμα εργασιακή εμπειρία.",
       education: "Δεν έχεις προσθέσει ακόμα εκπαίδευση.",
       skills: "Δεν έχεις προσθέσει ακόμα δεξιότητες.",
+      softSkills: "Δεν έχεις προσθέσει ακόμα ήπιες δεξιότητες.",
       languages: "Δεν έχεις προσθέσει ακόμα γλώσσες.",
+      interests: "Δεν έχεις προσθέσει ακόμα ενδιαφέροντα.",
       certifications: "Δεν έχεις προσθέσει ακόμα πιστοποιήσεις.",
       projects: "Δεν έχεις προσθέσει ακόμα έργα.",
       contacts: "Δεν έχεις προσθέσει ακόμα στοιχεία επικοινωνίας.",
@@ -353,7 +399,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       experience: "Work experience",
       education: "Education",
       skills: "Skills",
+      softSkills: "Soft skills",
       languages: "Languages",
+      interests: "Interests",
       certifications: "Certifications",
       projects: "Projects",
       design: "Appearance",
@@ -373,8 +421,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Institution",
       skillName: "Skill",
       skillLevel: "Level",
+      softSkillName: "Soft skill",
       languageName: "Language",
       languageLevel: "Level",
+      interestName: "Interest",
       certTitle: "Title",
       certIssuer: "Issuer",
       certDate: "Date",
@@ -408,7 +458,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Institution name",
       educationDescription: "Optional details, GPA, thesis.",
       skillName: "e.g. Figma",
+      softSkillName: "e.g. Teamwork",
       languageName: "e.g. English",
+      interestName: "e.g. Photography",
       certTitle: "e.g. AWS Certified",
       certIssuer: "Issuing organization",
       projectTitle: "Project name",
@@ -451,6 +503,21 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     dateValidation: {
       endNotBeforeStart: "The end date can't be earlier than the start date.",
     },
+    appearance: {
+      density: "Layout density",
+      densityCompact: "Compact",
+      densityComfortable: "Comfortable",
+      densitySpacious: "Spacious",
+      fontFamily: "Font",
+      fontSans: "Modern",
+      fontSerif: "Classic",
+      fontCondensed: "Condensed",
+    },
+    sectionOrder: {
+      title: "Section order",
+      sidebarTitle: "Sidebar",
+      mainTitle: "Main column",
+    },
     languageLevels: [
       "Basic",
       "Intermediate",
@@ -463,7 +530,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       experience: "You haven't added any work experience yet.",
       education: "You haven't added any education yet.",
       skills: "You haven't added any skills yet.",
+      softSkills: "You haven't added any soft skills yet.",
       languages: "You haven't added any languages yet.",
+      interests: "You haven't added any interests yet.",
       certifications: "You haven't added any certifications yet.",
       projects: "You haven't added any projects yet.",
       contacts: "You haven't added any contact links yet.",

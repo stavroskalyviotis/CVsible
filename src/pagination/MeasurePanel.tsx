@@ -1,9 +1,8 @@
-import type { RefObject } from "react";
+import type { CSSProperties, RefObject } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
 import { BlockContent, SectionHeading } from "./mainBlocks";
 import type { MainBlockMeta } from "./blockMeta";
-import { MAIN_CONTENT_WIDTH } from "./useMainPagination";
 
 export function MeasurePanel({
   metas,
@@ -11,21 +10,26 @@ export function MeasurePanel({
   dictionary,
   itemRefs,
   headingSampleRef,
+  width,
+  themeStyle,
 }: {
   metas: MainBlockMeta[];
   data: CvData;
   dictionary: Dictionary;
   itemRefs: RefObject<(HTMLDivElement | null)[]>;
   headingSampleRef: RefObject<HTMLDivElement | null>;
+  width: number;
+  themeStyle: CSSProperties;
 }) {
   return (
     <div
       className="cv-measure-panel"
       style={{
+        ...themeStyle,
         position: "fixed",
         top: 0,
         left: -9999,
-        width: MAIN_CONTENT_WIDTH,
+        width,
         visibility: "hidden",
         pointerEvents: "none",
       }}

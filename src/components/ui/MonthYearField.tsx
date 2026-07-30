@@ -53,7 +53,9 @@ export function MonthYearField({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1;
   const [valueYear] = value ? value.split("-").map(Number) : [null];
   const [minYear, minMonth] = minValue ? minValue.split("-").map(Number) : [null, null];
 
@@ -106,7 +108,7 @@ export function MonthYearField({
   };
 
   const decades: number[] = [];
-  for (let d = START_YEAR; d <= Math.floor(currentYear / 10) * 10 + 10; d += 10) decades.push(d);
+  for (let d = START_YEAR; d <= Math.floor(currentYear / 10) * 10; d += 10) decades.push(d);
 
   const goBack = () => {
     if (level === "month") setLevel("year");
@@ -170,7 +172,7 @@ export function MonthYearField({
             {level === "year" && decade !== null && (
               <div className="month-year-grid year-grid">
                 {Array.from({ length: 10 }, (_, i) => decade + i)
-                  .filter((y) => y <= currentYear + 5)
+                  .filter((y) => y <= currentYear)
                   .map((y) => {
                     const isDisabled = minYear !== null && y < minYear;
                     return (
@@ -194,7 +196,8 @@ export function MonthYearField({
               <div className="month-year-grid month-grid">
                 {monthLabels(locale).map((label, index) => {
                   const isDisabled =
-                    minYear !== null && minMonth !== null && pendingYear === minYear && index + 1 < minMonth;
+                    (minYear !== null && minMonth !== null && pendingYear === minYear && index + 1 < minMonth) ||
+                    (pendingYear === currentYear && index + 1 > currentMonth);
                   return (
                     <button
                       key={label}

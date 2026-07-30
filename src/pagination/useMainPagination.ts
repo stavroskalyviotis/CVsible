@@ -1,13 +1,10 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
+import { getDensityMetrics } from "../data/density";
 import { buildMainBlockMetas } from "./blockMeta";
 import type { MainBlockMeta } from "./blockMeta";
 
-export const MAIN_CONTENT_WIDTH = 476;
-export const MAIN_CONTENT_CAPACITY = 1059;
-export const SECTION_GAP = 16;
-export const ENTRY_GAP = 10;
 const OVERFLOW_TOLERANCE = 24;
 
 export interface PageBlock {
@@ -19,6 +16,9 @@ function paginateBlocks(
   metas: MainBlockMeta[],
   heights: number[],
   continuationHeadingHeight: number,
+  capacity: number,
+  sectionGap: number,
+  entryGap: number,
 ): PageBlock[][] {
   if (metas.length === 0) return [[]];
 
@@ -35,10 +35,10 @@ function paginateBlocks(
     if (isFirstOnPage) {
       if (needsContinuationHeading) cost += continuationHeadingHeight;
     } else {
-      cost += meta.isSectionStart ? SECTION_GAP : ENTRY_GAP;
+      cost += meta.isSectionStart ? sectionGap : entryGap;
     }
 
-    if (!isFirstOnPage && used + cost > MAIN_CONTENT_CAPACITY + OVERFLOW_TOLERANCE) {
+    if (!isFirstOnPage && used + cost > capacity + OVERFLOW_TOLERANCE) {
       pages.push(current);
       current = [];
       used = 0;
@@ -55,6 +55,7 @@ function paginateBlocks(
 }
 
 export function useMainPagination(data: CvData, dictionary: Dictionary) {
+  const metrics = getDensityMetrics(data.density);
   const metas = useMemo(() => buildMainBlockMetas(data), [data]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const headingSampleRef = useRef<HTMLDivElement | null>(null);
@@ -65,18 +66,26 @@ export function useMainPagination(data: CvData, dictionary: Dictionary) {
     const measured = metas.map((_, index) => itemRefs.current[index]?.offsetHeight ?? 0);
     setHeights(measured);
     setContinuationHeadingHeight(headingSampleRef.current?.offsetHeight ?? 0);
-  }, [metas, dictionary]);
+  }, [metas, dictionary, metrics.mainWidth, metrics.scale]);
 
   const pages = useMemo<PageBlock[][]>(() => {
     if (heights.length !== metas.length) return [[]];
-    return paginateBlocks(metas, heights, continuationHeadingHeight);
-  }, [metas, heights, continuationHeadingHeight]);
+    return paginateBlocks(
+      metas,
+      heights,
+      continuationHeadingHeight,
+      metrics.mainCapacity,
+      metrics.sectionGap,
+      metrics.entryGap,
+    );
+  }, [metas, heights, continuationHeadingHeight, metrics.mainCapacity, metrics.sectionGap, metrics.entryGap]);
 
   return {
     pages,
     metas,
     itemRefs,
     headingSampleRef,
+    metrics,
     isMeasuring: heights.length !== metas.length,
   };
 }

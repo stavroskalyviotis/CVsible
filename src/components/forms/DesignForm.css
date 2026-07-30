@@ -42,3 +42,27 @@
   height: 100%;
   cursor: pointer;
 }
+
+.segmented-control {
+  display: flex;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented-control button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 7px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.segmented-control button.active {
+  background: var(--ink);
+  color: #fff;
+}

@@ -72,6 +72,16 @@ export interface ProjectItem {
   description: string;
 }
 
+export interface SoftSkillItem {
+  id: string;
+  name: string;
+}
+
+export interface InterestItem {
+  id: string;
+  name: string;
+}
+
 export type ThemeColorId =
   | "berry"
   | "teal"
@@ -81,15 +91,27 @@ export type ThemeColorId =
   | "slate"
   | "custom";
 
+export type FontFamily = "sans" | "serif" | "condensed";
+export type Density = "compact" | "comfortable" | "spacious";
+
+export type SidebarSectionType = "skills" | "softSkills" | "languages" | "interests";
+export type MainSectionOrderType = "experience" | "education" | "projects" | "certifications";
+
 export interface CvData {
   themeColor: string;
+  fontFamily: FontFamily;
+  density: Density;
   showPhoto: boolean;
   photo: string | null;
   personalInfo: PersonalInfo;
   experience: ExperienceItem[];
   education: EducationItem[];
   skills: SkillItem[];
+  softSkills: SoftSkillItem[];
   languages: LanguageItem[];
+  interests: InterestItem[];
   certifications: CertificationItem[];
   projects: ProjectItem[];
+  sidebarOrder: SidebarSectionType[];
+  mainOrder: MainSectionOrderType[];
 }

@@ -1,5 +1,6 @@
 .cv-page {
   --cv-accent: #a9435a;
+  --cv-scale: 1;
   box-sizing: border-box;
   margin: 0;
   width: 794px;
@@ -8,7 +9,6 @@
   color: #2a2730;
   display: grid;
   grid-template-columns: 258px 1fr;
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
   box-shadow: var(--shadow-pop);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
@@ -18,10 +18,10 @@
 .cv-sidebar {
   background: var(--cv-accent);
   color: var(--cv-sidebar-text, #fff);
-  padding: 32px 22px;
+  padding: calc(32px * var(--cv-scale)) calc(22px * var(--cv-scale));
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16px * var(--cv-scale));
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
   color-adjust: exact;
@@ -45,7 +45,7 @@
 }
 
 .cv-name {
-  font-size: 1.5rem;
+  font-size: calc(1.5rem * var(--cv-scale));
   font-weight: 700;
   line-height: 1.2;
   margin-top: -8px;
@@ -53,20 +53,20 @@
 }
 
 .cv-role {
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--cv-scale));
   color: var(--cv-sidebar-text-soft, rgba(255, 255, 255, 0.85));
   margin-top: -14px;
   font-weight: 500;
 }
 
 .cv-side-section h2 {
-  font-size: 0.72rem;
+  font-size: calc(0.72rem * var(--cv-scale));
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--cv-sidebar-text-soft, rgba(255, 255, 255, 0.7));
-  margin-bottom: 9px;
-  padding-bottom: 6px;
+  margin-bottom: calc(9px * var(--cv-scale));
+  padding-bottom: calc(6px * var(--cv-scale));
   border-bottom: 1px solid var(--cv-sidebar-border, rgba(255, 255, 255, 0.3));
 }
 
@@ -76,14 +76,14 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: calc(7px * var(--cv-scale));
 }
 
 .cv-contact-list li {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--cv-scale));
   line-height: 1.35;
   word-break: break-word;
 }
@@ -101,11 +101,11 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8px * var(--cv-scale));
 }
 
 .cv-skill-list li {
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--cv-scale));
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -128,7 +128,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--cv-scale));
 }
 
 .cv-lang-list em {
@@ -136,8 +136,23 @@
   color: var(--cv-sidebar-text-soft, rgba(255, 255, 255, 0.75));
 }
 
+.cv-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cv-chip-list span {
+  font-size: calc(0.72rem * var(--cv-scale));
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--cv-sidebar-track, rgba(255, 255, 255, 0.18));
+  border: 1px solid var(--cv-sidebar-border, rgba(255, 255, 255, 0.3));
+}
+
 .cv-main {
-  padding: 32px 30px;
+  padding: calc(32px * var(--cv-scale)) calc(30px * var(--cv-scale));
   display: flex;
   flex-direction: column;
 }
@@ -145,19 +160,19 @@
 .cv-main-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8px * var(--cv-scale));
 }
 
 .cv-main-section h2 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--cv-scale));
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--cv-accent);
-  padding-bottom: 6px;
+  padding-bottom: calc(6px * var(--cv-scale));
   border-bottom: 2px solid var(--cv-accent);
 }
 
@@ -169,7 +184,7 @@
 }
 
 .cv-summary {
-  font-size: 0.84rem;
+  font-size: calc(0.84rem * var(--cv-scale));
   line-height: 1.45;
   color: #3a3640;
 }
@@ -179,7 +194,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
-  font-size: 0.88rem;
+  font-size: calc(0.88rem * var(--cv-scale));
 }
 
 .cv-entry-head strong {
@@ -187,7 +202,7 @@
 }
 
 .cv-entry-head span {
-  font-size: 0.76rem;
+  font-size: calc(0.76rem * var(--cv-scale));
   color: #6b6673;
   white-space: nowrap;
 }
@@ -196,12 +211,36 @@
   display: block;
   font-style: normal;
   color: #6b6673;
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--cv-scale));
   margin-top: 2px;
 }
 
+.cv-project-title {
+  display: block;
+  font-weight: 700;
+  font-size: calc(0.88rem * var(--cv-scale));
+  overflow-wrap: anywhere;
+}
+
+.cv-project-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: calc(0.76rem * var(--cv-scale));
+  color: var(--cv-accent);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cv-project-link svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
 .cv-entry .cv-rich {
-  font-size: 0.82rem;
+  font-size: calc(0.82rem * var(--cv-scale));
   line-height: 1.42;
   color: #3a3640;
   margin-top: 4px;
@@ -223,16 +262,15 @@
 
 .cv-cert-row {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  font-size: 0.85rem;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(0.85rem * var(--cv-scale));
 }
 
-.cv-cert-row span {
-  font-size: 0.76rem;
+.cv-cert-row em {
+  font-style: normal;
+  font-size: calc(0.76rem * var(--cv-scale));
   color: #6b6673;
-  white-space: nowrap;
 }
 
 .cv-preview-wrap {

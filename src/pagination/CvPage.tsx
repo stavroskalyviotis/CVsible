@@ -1,10 +1,10 @@
 import type { CSSProperties, Ref } from "react";
 import type { Dictionary } from "../i18n/translations";
-import type { CvData } from "../types";
+import type { CvData, SidebarSectionType } from "../types";
+import { getDensityMetrics } from "../data/density";
 import { ContactIcon } from "../components/ContactIcon";
 import { BlockContent, SectionHeading } from "./mainBlocks";
 import type { PageBlock } from "./useMainPagination";
-import { ENTRY_GAP, SECTION_GAP } from "./useMainPagination";
 
 function initials(name: string): string {
   return name
@@ -13,6 +13,78 @@ function initials(name: string): string {
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join("");
+}
+
+function SidebarSection({
+  section,
+  data,
+  dictionary,
+}: {
+  section: SidebarSectionType;
+  data: CvData;
+  dictionary: Dictionary;
+}) {
+  if (section === "skills") {
+    if (data.skills.length === 0) return null;
+    return (
+      <section className="cv-side-section">
+        <h2>{dictionary.sections.skills}</h2>
+        <ul className="cv-skill-list">
+          {data.skills.map((skill) => (
+            <li key={skill.id}>
+              <span>{skill.name}</span>
+              <div className="cv-skill-track">
+                <div className="cv-skill-fill" style={{ width: `${skill.level}%` }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  if (section === "softSkills") {
+    if (data.softSkills.length === 0) return null;
+    return (
+      <section className="cv-side-section">
+        <h2>{dictionary.sections.softSkills}</h2>
+        <div className="cv-chip-list">
+          {data.softSkills.map((item) => (
+            <span key={item.id}>{item.name}</span>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (section === "languages") {
+    if (data.languages.length === 0) return null;
+    return (
+      <section className="cv-side-section">
+        <h2>{dictionary.sections.languages}</h2>
+        <ul className="cv-lang-list">
+          {data.languages.map((item) => (
+            <li key={item.id}>
+              <span>{item.name}</span>
+              {item.level && <em>{item.level}</em>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  if (data.interests.length === 0) return null;
+  return (
+    <section className="cv-side-section">
+      <h2>{dictionary.sections.interests}</h2>
+      <div className="cv-chip-list">
+        {data.interests.map((item) => (
+          <span key={item.id}>{item.name}</span>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function CvPage({
@@ -34,6 +106,7 @@ export function CvPage({
 }) {
   const { personalInfo } = data;
   const contacts = personalInfo.contacts.filter((item) => item.value.trim());
+  const { sectionGap, entryGap } = getDensityMetrics(data.density);
 
   return (
     <div
@@ -75,35 +148,9 @@ export function CvPage({
               </section>
             )}
 
-            {data.skills.length > 0 && (
-              <section className="cv-side-section">
-                <h2>{dictionary.sections.skills}</h2>
-                <ul className="cv-skill-list">
-                  {data.skills.map((skill) => (
-                    <li key={skill.id}>
-                      <span>{skill.name}</span>
-                      <div className="cv-skill-track">
-                        <div className="cv-skill-fill" style={{ width: `${skill.level}%` }} />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {data.languages.length > 0 && (
-              <section className="cv-side-section">
-                <h2>{dictionary.sections.languages}</h2>
-                <ul className="cv-lang-list">
-                  {data.languages.map((item) => (
-                    <li key={item.id}>
-                      <span>{item.name}</span>
-                      {item.level && <em>{item.level}</em>}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+            {data.sidebarOrder.map((section) => (
+              <SidebarSection key={section} section={section} data={data} dictionary={dictionary} />
+            ))}
           </>
         )}
       </aside>
@@ -111,7 +158,7 @@ export function CvPage({
       <main className="cv-main">
         {page.map((block, index) => {
           const marginTop =
-            index === 0 ? 0 : block.meta.isSectionStart || block.needsContinuationHeading ? SECTION_GAP : ENTRY_GAP;
+            index === 0 ? 0 : block.meta.isSectionStart || block.needsContinuationHeading ? sectionGap : entryGap;
 
           if (block.meta.isSectionStart || block.needsContinuationHeading) {
             return (

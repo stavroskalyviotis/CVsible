@@ -5,6 +5,7 @@ import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
 import { getSidebarPalette } from "../utils/contrast";
 import { buildPdfFilename, exportPagesToPdf } from "../utils/exportPdf";
+import { FONT_STACKS } from "../data/fontStacks";
 import { CvPage } from "../pagination/CvPage";
 import { MeasurePanel } from "../pagination/MeasurePanel";
 import { useMainPagination } from "../pagination/useMainPagination";
@@ -30,7 +31,7 @@ export function CvPreview({
   dictionary: Dictionary;
   ref?: Ref<CvPreviewHandle>;
 }) {
-  const { pages, metas, itemRefs, headingSampleRef } = useMainPagination(data, dictionary);
+  const { pages, metas, itemRefs, headingSampleRef, metrics } = useMainPagination(data, dictionary);
   const [pageIndex, setPageIndex] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const printPageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -60,6 +61,8 @@ export function CvPreview({
     "--cv-sidebar-text-soft": palette.textSoft,
     "--cv-sidebar-border": palette.border,
     "--cv-sidebar-track": palette.track,
+    "--cv-scale": metrics.scale,
+    fontFamily: FONT_STACKS[data.fontFamily],
   } as CSSProperties;
 
   return (
@@ -104,6 +107,8 @@ export function CvPreview({
           dictionary={dictionary}
           itemRefs={itemRefs}
           headingSampleRef={headingSampleRef}
+          width={metrics.mainWidth}
+          themeStyle={themeStyle}
         />,
         document.body,
       )}

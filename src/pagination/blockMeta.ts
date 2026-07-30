@@ -1,5 +1,5 @@
 import type { Dictionary } from "../i18n/translations";
-import type { CvData } from "../types";
+import type { CvData, MainSectionOrderType } from "../types";
 import { hasRichText } from "../utils/richText";
 
 export type MainSectionType = "summary" | "experience" | "education" | "projects" | "certifications";
@@ -11,6 +11,21 @@ export interface MainBlockMeta {
   isSectionStart: boolean;
 }
 
+function pushSectionMetas(metas: MainBlockMeta[], section: MainSectionOrderType, data: CvData): void {
+  const items: { id: string }[] =
+    section === "experience"
+      ? data.experience
+      : section === "education"
+        ? data.education
+        : section === "projects"
+          ? data.projects
+          : data.certifications;
+
+  items.forEach((item, index) => {
+    metas.push({ key: `${section}-${item.id}`, section, itemId: item.id, isSectionStart: index === 0 });
+  });
+}
+
 export function buildMainBlockMetas(data: CvData): MainBlockMeta[] {
   const metas: MainBlockMeta[] = [];
 
@@ -18,26 +33,7 @@ export function buildMainBlockMetas(data: CvData): MainBlockMeta[] {
     metas.push({ key: "summary", section: "summary", itemId: null, isSectionStart: true });
   }
 
-  data.experience.forEach((item, index) => {
-    metas.push({ key: `experience-${item.id}`, section: "experience", itemId: item.id, isSectionStart: index === 0 });
-  });
-
-  data.education.forEach((item, index) => {
-    metas.push({ key: `education-${item.id}`, section: "education", itemId: item.id, isSectionStart: index === 0 });
-  });
-
-  data.projects.forEach((item, index) => {
-    metas.push({ key: `projects-${item.id}`, section: "projects", itemId: item.id, isSectionStart: index === 0 });
-  });
-
-  data.certifications.forEach((item, index) => {
-    metas.push({
-      key: `certifications-${item.id}`,
-      section: "certifications",
-      itemId: item.id,
-      isSectionStart: index === 0,
-    });
-  });
+  data.mainOrder.forEach((section) => pushSectionMetas(metas, section, data));
 
   return metas;
 }

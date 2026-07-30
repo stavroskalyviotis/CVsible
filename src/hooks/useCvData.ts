@@ -4,11 +4,29 @@ import type { CvData, ContactItem, PersonalInfo } from "../types";
 import { createEmptyCvData } from "../data/defaultData";
 import { loadCvData, saveCvData } from "../utils/storage";
 
-type ListKey = "experience" | "education" | "skills" | "languages" | "certifications" | "projects";
+type ListKey =
+  | "experience"
+  | "education"
+  | "skills"
+  | "softSkills"
+  | "languages"
+  | "interests"
+  | "certifications"
+  | "projects";
 
 function reorderList<T extends { id: string }>(list: T[], sourceId: string, targetId: string): T[] {
   const sourceIndex = list.findIndex((entry) => entry.id === sourceId);
   const targetIndex = list.findIndex((entry) => entry.id === targetId);
+  if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return list;
+  const next = [...list];
+  const [moved] = next.splice(sourceIndex, 1);
+  next.splice(targetIndex, 0, moved);
+  return next;
+}
+
+function reorderValues<T>(list: T[], source: T, target: T): T[] {
+  const sourceIndex = list.indexOf(source);
+  const targetIndex = list.indexOf(target);
   if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return list;
   const next = [...list];
   const [moved] = next.splice(sourceIndex, 1);
@@ -111,6 +129,10 @@ function normalizeCvData(stored: Partial<CvData> | null): CvData {
         ? stored.personalInfo.contacts
         : base.personalInfo.contacts,
     },
+    softSkills: Array.isArray(stored.softSkills) ? stored.softSkills : base.softSkills,
+    interests: Array.isArray(stored.interests) ? stored.interests : base.interests,
+    sidebarOrder: Array.isArray(stored.sidebarOrder) ? stored.sidebarOrder : base.sidebarOrder,
+    mainOrder: Array.isArray(stored.mainOrder) ? stored.mainOrder : base.mainOrder,
   };
 }
 
@@ -132,7 +154,15 @@ export function useCvData() {
   const setThemeColor = (themeColor: string) => setData((prev) => ({ ...prev, themeColor }));
   const setPhoto = (photo: string | null) => setData((prev) => ({ ...prev, photo }));
   const setShowPhoto = (showPhoto: boolean) => setData((prev) => ({ ...prev, showPhoto }));
+  const setFontFamily = (fontFamily: CvData["fontFamily"]) => setData((prev) => ({ ...prev, fontFamily }));
+  const setDensity = (density: CvData["density"]) => setData((prev) => ({ ...prev, density }));
   const replaceAll = (next: CvData) => setData(next);
+
+  const reorderSidebarSection = (source: CvData["sidebarOrder"][number], target: CvData["sidebarOrder"][number]) =>
+    setData((prev) => ({ ...prev, sidebarOrder: reorderValues(prev.sidebarOrder, source, target) }));
+
+  const reorderMainSection = (source: CvData["mainOrder"][number], target: CvData["mainOrder"][number]) =>
+    setData((prev) => ({ ...prev, mainOrder: reorderValues(prev.mainOrder, source, target) }));
 
   return {
     data,
@@ -140,12 +170,18 @@ export function useCvData() {
     setThemeColor,
     setPhoto,
     setShowPhoto,
+    setFontFamily,
+    setDensity,
+    reorderSidebarSection,
+    reorderMainSection,
     replaceAll,
     contacts: makeContactHelpers(setData),
     experience: makeListHelpers(setData, "experience"),
     education: makeListHelpers(setData, "education"),
     skills: makeListHelpers(setData, "skills"),
+    softSkills: makeListHelpers(setData, "softSkills"),
     languages: makeListHelpers(setData, "languages"),
+    interests: makeListHelpers(setData, "interests"),
     certifications: makeListHelpers(setData, "certifications"),
     projects: makeListHelpers(setData, "projects"),
   };

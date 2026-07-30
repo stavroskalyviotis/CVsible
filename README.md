@@ -25,12 +25,13 @@ The interface is available in **Greek and English**, and the completed resume ca
 - Greek and English interface
 - Personal details and customizable contact links (email, phone, location, website, LinkedIn, GitHub, X, or a custom link)
 - Professional summary with rich-text formatting (bold, italic, underline, bullet lists)
-- Work experience and education sections, with a decade → year → month date picker and start/end date validation
-- Skills and language proficiency levels
-- Certifications and projects
+- Work experience and education sections, with a decade → year → month date picker (no future dates) and start/end date validation
+- Skills, soft skills/characteristics, language proficiency levels, and hobbies/interests
+- Certifications and projects, with long titles, links, and descriptions wrapping cleanly instead of overflowing the page
 - Optional profile photo
-- Drag-and-drop entry reordering
+- Drag-and-drop entry reordering, plus drag-and-drop reordering of whole sections within the sidebar and main column
 - Preset and custom sidebar colors, with automatic text contrast for light and dark colors
+- Adjustable layout density (compact/comfortable/spacious) and font choice (modern/classic/condensed) to help longer resumes fit fewer pages
 - Automatic multi-page A4 layout with page navigation in the preview, tuned to keep concise resumes on a single page
 - One-click PDF export that works the same on desktop and mobile
 - Automatic local saving with `localStorage`
@@ -86,7 +87,7 @@ CVsible/
 ├── public/                  # Static assets and favicon
 ├── src/
 │   ├── components/          # Resume preview, forms, and reusable UI
-│   ├── data/                # Default CV data and theme presets
+│   ├── data/                # Default CV data, theme presets, density, and font options
 │   ├── hooks/               # CV state, routing, and preview scaling
 │   ├── i18n/                # Greek and English translations
 │   ├── pages/               # Landing page and resume builder
@@ -109,8 +110,8 @@ This avoids the inconsistent margins and extra blank pages that browser/OS print
 ## Possible next steps
 
 - [ ] Additional resume templates
+- [ ] Support for multiple saved resumes
 - [ ] Import and export resume data as JSON
-- [ ] More typography and spacing controls
 - [ ] Automated accessibility tests
 - [ ] Unit and end-to-end tests
 - [ ] Optional ATS-focused template
