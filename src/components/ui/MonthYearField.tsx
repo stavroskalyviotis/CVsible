@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { LanguageCode } from "../../types";
 import { Icon } from "../Icon";
 import "./MonthYearField.css";
 
 const START_YEAR = 1970;
+const POPOVER_WIDTH = 236;
+const VIEWPORT_MARGIN = 12;
 
 type Level = "decade" | "year" | "month";
 
@@ -45,7 +48,10 @@ export function MonthYearField({
   const [level, setLevel] = useState<Level>("decade");
   const [decade, setDecade] = useState<number | null>(null);
   const [pendingYear, setPendingYear] = useState<number | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const currentYear = new Date().getFullYear();
   const [valueYear] = value ? value.split("-").map(Number) : [null];
@@ -53,13 +59,32 @@ export function MonthYearField({
 
   useEffect(() => {
     if (!open) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
+
+    const computePosition = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const left = Math.min(rect.left, window.innerWidth - POPOVER_WIDTH - VIEWPORT_MARGIN);
+      setPopoverPos({ top: rect.bottom + 6, left: Math.max(VIEWPORT_MARGIN, left) });
     };
+
+    computePosition();
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (containerRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const close = () => setOpen(false);
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
   }, [open]);
 
   const openPicker = () => {
@@ -99,90 +124,98 @@ export function MonthYearField({
         className="month-year-trigger"
         onClick={openPicker}
         disabled={disabled}
+        ref={triggerRef}
       >
         {value ? formatDisplay(value, locale) : placeholder}
       </button>
 
-      {open && (
-        <div className="month-year-popover">
-          <div className="month-year-popover-head">
-            {level !== "decade" && (
-              <button type="button" className="month-year-back" onClick={goBack}>
-                <Icon name="arrow-left" size={13} />
-              </button>
-            )}
-            <span>{headerLabel}</span>
-          </div>
-
-          {level === "decade" && (
-            <div className="month-year-grid decade-grid">
-              {decades.map((d) => {
-                const isDisabled = minYear !== null && d + 9 < minYear;
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    disabled={isDisabled}
-                    onClick={() => {
-                      setDecade(d);
-                      setLevel("year");
-                    }}
-                  >
-                    {d}
-                  </button>
-                );
-              })}
+      {open &&
+        popoverPos &&
+        createPortal(
+          <div
+            className="month-year-popover"
+            ref={popoverRef}
+            style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left }}
+          >
+            <div className="month-year-popover-head">
+              {level !== "decade" && (
+                <button type="button" className="month-year-back" onClick={goBack}>
+                  <Icon name="arrow-left" size={13} />
+                </button>
+              )}
+              <span>{headerLabel}</span>
             </div>
-          )}
 
-          {level === "year" && decade !== null && (
-            <div className="month-year-grid year-grid">
-              {Array.from({ length: 10 }, (_, i) => decade + i)
-                .filter((y) => y <= currentYear + 5)
-                .map((y) => {
-                  const isDisabled = minYear !== null && y < minYear;
+            {level === "decade" && (
+              <div className="month-year-grid decade-grid">
+                {decades.map((d) => {
+                  const isDisabled = minYear !== null && d + 9 < minYear;
                   return (
                     <button
-                      key={y}
+                      key={d}
                       type="button"
                       disabled={isDisabled}
                       onClick={() => {
-                        setPendingYear(y);
-                        setLevel("month");
+                        setDecade(d);
+                        setLevel("year");
                       }}
                     >
-                      {y}
+                      {d}
                     </button>
                   );
                 })}
-            </div>
-          )}
+              </div>
+            )}
 
-          {level === "month" && pendingYear !== null && (
-            <div className="month-year-grid month-grid">
-              {monthLabels(locale).map((label, index) => {
-                const isDisabled =
-                  minYear !== null && minMonth !== null && pendingYear === minYear && index + 1 < minMonth;
-                return (
-                  <button
-                    key={label}
-                    type="button"
-                    disabled={isDisabled}
-                    onClick={() => {
-                      onChange(`${pendingYear}-${String(index + 1).padStart(2, "0")}`);
-                      setOpen(false);
-                    }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+            {level === "year" && decade !== null && (
+              <div className="month-year-grid year-grid">
+                {Array.from({ length: 10 }, (_, i) => decade + i)
+                  .filter((y) => y <= currentYear + 5)
+                  .map((y) => {
+                    const isDisabled = minYear !== null && y < minYear;
+                    return (
+                      <button
+                        key={y}
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={() => {
+                          setPendingYear(y);
+                          setLevel("month");
+                        }}
+                      >
+                        {y}
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
 
-          {minValue && minValueMessage && <p className="month-year-hint">{minValueMessage}</p>}
-        </div>
-      )}
+            {level === "month" && pendingYear !== null && (
+              <div className="month-year-grid month-grid">
+                {monthLabels(locale).map((label, index) => {
+                  const isDisabled =
+                    minYear !== null && minMonth !== null && pendingYear === minYear && index + 1 < minMonth;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      disabled={isDisabled}
+                      onClick={() => {
+                        onChange(`${pendingYear}-${String(index + 1).padStart(2, "0")}`);
+                        setOpen(false);
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {minValue && minValueMessage && <p className="month-year-hint">{minValueMessage}</p>}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

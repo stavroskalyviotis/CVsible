@@ -4,10 +4,10 @@ import type { CvData } from "../types";
 import { buildMainBlockMetas } from "./blockMeta";
 import type { MainBlockMeta } from "./blockMeta";
 
-export const MAIN_CONTENT_WIDTH = 468;
-export const MAIN_CONTENT_CAPACITY = 1043;
-export const SECTION_GAP = 22;
-export const ENTRY_GAP = 14;
+export const MAIN_CONTENT_WIDTH = 476;
+export const MAIN_CONTENT_CAPACITY = 1059;
+export const SECTION_GAP = 16;
+export const ENTRY_GAP = 10;
 const OVERFLOW_TOLERANCE = 24;
 
 export interface PageBlock {

@@ -31,7 +31,7 @@ The interface is available in **Greek and English**, and the completed resume ca
 - Optional profile photo
 - Drag-and-drop entry reordering
 - Preset and custom sidebar colors, with automatic text contrast for light and dark colors
-- Automatic multi-page A4 layout, with page navigation in the preview
+- Automatic multi-page A4 layout with page navigation in the preview, tuned to keep concise resumes on a single page
 - One-click PDF export that works the same on desktop and mobile
 - Automatic local saving with `localStorage`
 - Responsive layout for desktop and smaller screens

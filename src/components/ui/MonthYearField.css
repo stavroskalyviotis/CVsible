@@ -30,10 +30,7 @@
 }
 
 .month-year-popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 20;
+  z-index: 1000;
   width: 236px;
   max-width: calc(100vw - 48px);
   background: var(--paper-raised);
