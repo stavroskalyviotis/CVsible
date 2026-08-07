@@ -1,5 +1,6 @@
 import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
+import { Icon } from "../components/Icon";
 import "./LandingPage.css";
 
 const MOCK_CONTENT = {
@@ -30,11 +31,13 @@ export function LandingPage({
   language,
   onLanguageChange,
   onStart,
+  onStartWithCvisor,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   onStart: () => void;
+  onStartWithCvisor: () => void;
 }) {
   const { landing } = dictionary;
   const mock = MOCK_CONTENT[language];
@@ -77,6 +80,10 @@ export function LandingPage({
             <button type="button" className="landing-cta" onClick={onStart}>
               {landing.ctaStart}
               <span aria-hidden="true">→</span>
+            </button>
+            <button type="button" className="landing-cta-secondary" onClick={onStartWithCvisor}>
+              <Icon name="sparkles" size={16} />
+              {dictionary.cvisor.tryButton}
             </button>
           </div>
         </div>

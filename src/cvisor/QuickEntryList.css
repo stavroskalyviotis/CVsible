@@ -1,0 +1,74 @@
+.cvisor-quick-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cvisor-quick-heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cvisor-quick-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cvisor-quick-row-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.cvisor-quick-row-fields input,
+.cvisor-quick-row-fields textarea {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--paper-raised);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.cvisor-quick-row-fields input:focus,
+.cvisor-quick-row-fields textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.cvisor-quick-row-remove {
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--danger);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.cvisor-quick-add {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.cvisor-quick-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

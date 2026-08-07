@@ -132,6 +132,24 @@
   transform: translateX(3px);
 }
 
+.landing-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 13px 22px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.landing-cta-secondary:hover {
+  transform: translateY(-1px);
+}
+
 .landing-visual {
   position: relative;
   display: flex;

@@ -161,6 +161,63 @@ export interface Dictionary {
     mainTitle: string;
   };
   languageLevels: string[];
+  cvisor: {
+    brand: string;
+    openButton: string;
+    tryButton: string;
+    modalTitle: string;
+    modalIntro: string;
+    jobAdLabel: string;
+    jobAdPlaceholder: string;
+    quickIntro: string;
+    quickNoteExperiencePlaceholder: string;
+    quickNoteEducationPlaceholder: string;
+    quickNoteProjectPlaceholder: string;
+    skillsQuickPlaceholder: string;
+    languagesQuickPlaceholder: string;
+    extraNotesLabel: string;
+    extraNotesPlaceholder: string;
+    generateButton: string;
+    generating: string;
+    reviewTitle: string;
+    reviewNote: string;
+    applyButton: string;
+    cancelButton: string;
+    close: string;
+    backButton: string;
+    continueButton: string;
+    generateSuggestionsButton: string;
+    regenerateButton: string;
+    stepJobAdTitle: string;
+    stepFactsTitle: string;
+    stepSuggestionsTitle: string;
+    suggestedJobTitleLabel: string;
+    applyJobTitleLabel: string;
+    suggestedSkillsTitle: string;
+    suggestedSoftSkillsTitle: string;
+    suggestedInterestsTitle: string;
+    noSuggestionsHint: string;
+    themeSectionTitle: string;
+    applyColorLabel: string;
+    editElsewhereNote: string;
+    experienceTipsHint: string;
+    educationTipsHint: string;
+    keepSummaryLabel: string;
+    ownSkillsTitle: string;
+    relevantBadge: string;
+    notRelevantBadge: string;
+    privacyNote: string;
+    errorMissingFields: string;
+    errorTooLong: string;
+    errorRateLimited: string;
+    errorRefused: string;
+    errorGeneric: string;
+    improveButton: string;
+    improving: string;
+    suggestionTitle: string;
+    acceptSuggestion: string;
+    discardSuggestion: string;
+  };
   emptyStates: {
     experience: string;
     education: string;
@@ -345,6 +402,68 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Άριστο",
       "Μητρική γλώσσα",
     ],
+    cvisor: {
+      brand: "CVisor",
+      openButton: "Δημιουργία με τον CVisor",
+      tryButton: "Δοκίμασε με τον CVisor",
+      modalTitle: "Δημιουργία βιογραφικού με τον CVisor",
+      modalIntro:
+        "Επικόλλησε μια αγγελία εργασίας και περίγραψε ελεύθερα την εμπειρία, την εκπαίδευση και τις δεξιότητές σου. Ο CVisor θα προτείνει περιεχόμενο για το βιογραφικό σου, βασισμένο αποκλειστικά σε όσα του πεις — ποτέ εφευρήματα.",
+      jobAdLabel: "Αγγελία εργασίας",
+      jobAdPlaceholder: "Επικόλλησε εδώ το κείμενο της αγγελίας…",
+      quickIntro:
+        "Δεν χρειάζεται να γράψεις εκτενή κείμενα — αρκούν σύντομες λέξεις-κλειδιά ή σημειώσεις σε κάθε πεδίο. Ο CVisor θα τα διατυπώσει σε πλήρεις, επαγγελματικές προτάσεις.",
+      quickNoteExperiencePlaceholder: "π.χ. διαχειριζόμουν την ομάδα πωλήσεων, αύξηση πωλήσεων 20%…",
+      quickNoteEducationPlaceholder: "π.χ. βαθμός, διπλωματική εργασία, μαθήματα…",
+      quickNoteProjectPlaceholder: "π.χ. τι έκανε το έργο, ποιες τεχνολογίες χρησιμοποίησες…",
+      skillsQuickPlaceholder: "π.χ. Python, Figma, Διαχείριση έργων — χώρισέ τα με κόμμα",
+      languagesQuickPlaceholder: "π.χ. Αγγλικά (πολύ καλά), Γαλλικά (βασικά)",
+      extraNotesLabel: "Κάτι άλλο να προσθέσεις;",
+      extraNotesPlaceholder: "Ήπιες δεξιότητες, ενδιαφέροντα, ή οτιδήποτε άλλο θες να συμπεριληφθεί.",
+      backButton: "Πίσω",
+      continueButton: "Συνέχεια",
+      generateSuggestionsButton: "Δημιουργία προτάσεων",
+      regenerateButton: "Νέες προτάσεις",
+      stepJobAdTitle: "Αγγελία",
+      stepFactsTitle: "Στοιχεία",
+      stepSuggestionsTitle: "Προτάσεις",
+      suggestedJobTitleLabel: "Προτεινόμενος επαγγελματικός τίτλος",
+      applyJobTitleLabel: "Εφαρμογή τίτλου",
+      suggestedSkillsTitle: "Επιπλέον δεξιότητες",
+      suggestedSoftSkillsTitle: "Επιπλέον ήπιες δεξιότητες",
+      suggestedInterestsTitle: "Προτεινόμενα ενδιαφέροντα",
+      noSuggestionsHint: "Δεν υπάρχουν επιπλέον προτάσεις αυτή τη φορά.",
+      themeSectionTitle: "Προτεινόμενο χρώμα",
+      applyColorLabel: "Εφαρμογή χρώματος",
+      editElsewhereNote:
+        "Θες να αλλάξεις τη σειρά των ενοτήτων, τα χρώματα ή κάτι άλλο; Μπορείς πάντα να το προσαρμόσεις ελεύθερα από τις κανονικές φόρμες του βιογραφικού σου.",
+      experienceTipsHint: "Δεν πρόσθεσες εργασιακή εμπειρία — μερικές ιδέες:",
+      educationTipsHint: "Δεν πρόσθεσες εκπαίδευση — μερικές ιδέες:",
+      keepSummaryLabel: "Κράτησε αυτή τη σύνοψη στις επόμενες προτάσεις",
+      ownSkillsTitle: "Οι δεξιότητές σου",
+      relevantBadge: "Ταιριάζει με την αγγελία",
+      notRelevantBadge: "Ίσως δεν ταιριάζει με την αγγελία — θες να την αφαιρέσεις;",
+      generateButton: "Δημιουργία με CVisor",
+      generating: "Ο CVisor σκέφτεται…",
+      reviewTitle: "Έλεγξε πριν εφαρμόσεις",
+      reviewNote:
+        "Ο CVisor βασίστηκε αποκλειστικά σε όσα έγραψες. Η εφαρμογή θα αντικαταστήσει το επαγγελματικό προφίλ και τις ενότητες εμπειρίας, εκπαίδευσης, δεξιοτήτων, γλωσσών, πιστοποιήσεων και έργων.",
+      applyButton: "Εφαρμογή στο βιογραφικό",
+      cancelButton: "Άκυρο",
+      close: "Κλείσιμο",
+      privacyNote:
+        "Το κείμενο που γράφεις εδώ στέλνεται στην Anthropic για επεξεργασία· δεν αποθηκεύεται σε server του CVsible.",
+      errorMissingFields: "Συμπλήρωσε και τα δύο πεδία πριν συνεχίσεις.",
+      errorTooLong: "Το κείμενο είναι πολύ μεγάλο — προσπάθησε να το συντομέψεις.",
+      errorRateLimited: "Έφτασες το ημερήσιο όριο χρήσης του CVisor. Δοκίμασε ξανά αύριο.",
+      errorRefused: "Ο CVisor δεν μπόρεσε να επεξεργαστεί αυτό το κείμενο. Δοκίμασε διαφορετική διατύπωση.",
+      errorGeneric: "Κάτι πήγε στραβά. Δοκίμασε ξανά σε λίγο.",
+      improveButton: "Βελτίωση με CVisor",
+      improving: "Βελτίωση…",
+      suggestionTitle: "Πρόταση του CVisor",
+      acceptSuggestion: "Χρήση αυτής της εκδοχής",
+      discardSuggestion: "Απόρριψη",
+    },
     emptyStates: {
       experience: "Δεν έχεις προσθέσει ακόμα εργασιακή εμπειρία.",
       education: "Δεν έχεις προσθέσει ακόμα εκπαίδευση.",
@@ -526,6 +645,67 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Excellent",
       "Native",
     ],
+    cvisor: {
+      brand: "CVisor",
+      openButton: "Create with CVisor",
+      tryButton: "Try CVisor",
+      modalTitle: "Build your resume with CVisor",
+      modalIntro:
+        "Paste a job posting and freely describe your experience, education and skills. CVisor will suggest resume content tailored to the posting — based only on what you tell it, never invented.",
+      jobAdLabel: "Job posting",
+      jobAdPlaceholder: "Paste the job posting text here…",
+      quickIntro:
+        "No need to write full paragraphs — short keywords or notes in each field are enough. CVisor will turn them into complete, professional sentences.",
+      quickNoteExperiencePlaceholder: "e.g. managed the sales team, grew sales by 20%…",
+      quickNoteEducationPlaceholder: "e.g. GPA, thesis, coursework…",
+      quickNoteProjectPlaceholder: "e.g. what the project did, which technologies you used…",
+      skillsQuickPlaceholder: "e.g. Python, Figma, Project management — comma-separated",
+      languagesQuickPlaceholder: "e.g. English (fluent), French (basic)",
+      extraNotesLabel: "Anything else to add?",
+      extraNotesPlaceholder: "Soft skills, interests, or anything else you'd like included.",
+      backButton: "Back",
+      continueButton: "Continue",
+      generateSuggestionsButton: "Generate suggestions",
+      regenerateButton: "New suggestions",
+      stepJobAdTitle: "Job posting",
+      stepFactsTitle: "Quick facts",
+      stepSuggestionsTitle: "Suggestions",
+      suggestedJobTitleLabel: "Suggested job title",
+      applyJobTitleLabel: "Apply title",
+      suggestedSkillsTitle: "Additional skills",
+      suggestedSoftSkillsTitle: "Additional soft skills",
+      suggestedInterestsTitle: "Suggested interests",
+      noSuggestionsHint: "No additional suggestions this time.",
+      themeSectionTitle: "Suggested color",
+      applyColorLabel: "Apply color",
+      editElsewhereNote:
+        "Want to change the section order, colors, or anything else? You can always adjust that freely from your resume's regular forms.",
+      experienceTipsHint: "You haven't added any work experience — a few ideas:",
+      educationTipsHint: "You haven't added any education — a few ideas:",
+      keepSummaryLabel: "Keep this summary for future suggestions",
+      ownSkillsTitle: "Your skills",
+      relevantBadge: "Matches the posting",
+      notRelevantBadge: "May not match the posting — remove it?",
+      generateButton: "Generate with CVisor",
+      generating: "CVisor is thinking…",
+      reviewTitle: "Review before applying",
+      reviewNote:
+        "CVisor worked only from what you wrote. Applying will replace your professional summary and the experience, education, skills, languages, certifications and projects sections.",
+      applyButton: "Apply to resume",
+      cancelButton: "Cancel",
+      close: "Close",
+      privacyNote: "The text you write here is sent to Anthropic for processing; it isn't stored on a CVsible server.",
+      errorMissingFields: "Fill in both fields before continuing.",
+      errorTooLong: "That text is too long — try shortening it.",
+      errorRateLimited: "You've reached CVisor's daily usage limit. Try again tomorrow.",
+      errorRefused: "CVisor couldn't process that text. Try rephrasing it.",
+      errorGeneric: "Something went wrong. Please try again shortly.",
+      improveButton: "Improve with CVisor",
+      improving: "Improving…",
+      suggestionTitle: "CVisor's suggestion",
+      acceptSuggestion: "Use this version",
+      discardSuggestion: "Discard",
+    },
     emptyStates: {
       experience: "You haven't added any work experience yet.",
       education: "You haven't added any education yet.",

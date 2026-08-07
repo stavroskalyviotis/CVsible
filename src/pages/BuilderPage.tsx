@@ -20,6 +20,10 @@ import { DesignForm } from "../components/forms/DesignForm";
 import { SimpleNameListForm } from "../components/forms/SimpleNameListForm";
 import { SectionOrderList } from "../components/forms/SectionOrderList";
 import { createEmptyCvData } from "../data/defaultData";
+import { createId } from "../utils/id";
+import { CvisorPanel } from "../cvisor/CvisorPanel";
+import type { CvisorApplyResult } from "../cvisor/api";
+import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import "./BuilderPage.css";
 
 type SectionId =
@@ -55,16 +59,20 @@ export function BuilderPage({
   language,
   onLanguageChange,
   onGoHome,
+  autoOpenCvisor = false,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   onGoHome: () => void;
+  autoOpenCvisor?: boolean;
 }) {
   const cv = useCvData();
   const { containerRef, scale } = usePreviewScale();
   const [openSection, setOpenSection] = useState<SectionId>("personalInfo");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isCvisorOpen, setIsCvisorOpen] = useState(autoOpenCvisor);
+  const [jobAd, setJobAd] = useCvisorJobAd();
   const previewRef = useRef<CvPreviewHandle>(null);
 
   const toggleSection = (id: SectionId) => setOpenSection((current) => (current === id ? ("" as SectionId) : id));
@@ -84,6 +92,27 @@ export function BuilderPage({
     } finally {
       setIsDownloading(false);
     }
+  };
+
+  const handleApplyCvisor = (result: CvisorApplyResult) => {
+    cv.replaceAll({
+      ...cv.data,
+      personalInfo: {
+        ...cv.data.personalInfo,
+        summary: result.summary,
+        jobTitle: result.jobTitle ?? cv.data.personalInfo.jobTitle,
+      },
+      experience: result.experience.map((item) => ({ id: createId(), ...item })),
+      education: result.education.map((item) => ({ id: createId(), ...item })),
+      skills: result.skills.map((item) => ({ id: createId(), ...item })),
+      softSkills: result.softSkills.map((item) => ({ id: createId(), ...item })),
+      languages: result.languages.map((item) => ({ id: createId(), ...item })),
+      interests: result.interests.map((item) => ({ id: createId(), ...item })),
+      certifications: result.certifications.map((item) => ({ id: createId(), ...item })),
+      projects: result.projects.map((item) => ({ id: createId(), ...item })),
+      themeColor: result.themeColor ?? cv.data.themeColor,
+    });
+    setOpenSection("summary");
   };
 
   const sidebarLabels: Record<SidebarSectionType, string> = {
@@ -125,6 +154,10 @@ export function BuilderPage({
               EN
             </button>
           </div>
+          <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
+            <Icon name="sparkles" size={15} />
+            {dictionary.cvisor.brand}
+          </button>
           <button type="button" className="builder-ghost-button" onClick={handleStartOver}>
             {dictionary.nav.startOver}
           </button>
@@ -170,6 +203,7 @@ export function BuilderPage({
               summary={cv.data.personalInfo.summary}
               onChange={(summary) => cv.updatePersonalInfo({ summary })}
               dictionary={dictionary}
+              jobAd={jobAd}
             />
           </AccordionSection>
 
@@ -184,6 +218,7 @@ export function BuilderPage({
               actions={cv.experience}
               dictionary={dictionary}
               locale={dictionary.locale}
+              jobAd={jobAd}
             />
           </AccordionSection>
 
@@ -198,6 +233,7 @@ export function BuilderPage({
               actions={cv.education}
               dictionary={dictionary}
               locale={dictionary.locale}
+              jobAd={jobAd}
             />
           </AccordionSection>
 
@@ -279,7 +315,7 @@ export function BuilderPage({
             open={openSection === "projects"}
             onToggle={() => toggleSection("projects")}
           >
-            <ProjectsForm items={cv.data.projects} actions={cv.projects} dictionary={dictionary} />
+            <ProjectsForm items={cv.data.projects} actions={cv.projects} dictionary={dictionary} jobAd={jobAd} />
           </AccordionSection>
 
           <AccordionSection
@@ -330,6 +366,16 @@ export function BuilderPage({
           </div>
         </div>
       </div>
+
+      <CvisorPanel
+        open={isCvisorOpen}
+        onClose={() => setIsCvisorOpen(false)}
+        dictionary={dictionary}
+        language={language}
+        jobAd={jobAd}
+        onJobAdChange={setJobAd}
+        onApply={handleApplyCvisor}
+      />
     </div>
   );
 }

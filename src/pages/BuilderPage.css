@@ -77,6 +77,19 @@
   font-weight: 600;
 }
 
+.builder-cvisor-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
 .builder-primary-button {
   display: inline-flex;
   align-items: center;
@@ -171,6 +184,7 @@
   }
 
   .builder-ghost-button,
+  .builder-cvisor-button,
   .builder-primary-button {
     padding: 8px 12px;
     font-size: 0.8rem;

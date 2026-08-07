@@ -1,6 +1,7 @@
 import type { Dictionary } from "../../i18n/translations";
 import type { EducationItem, LanguageCode } from "../../types";
 import { createId } from "../../utils/id";
+import { CvisorImproveButton } from "../../cvisor/CvisorImproveButton";
 import { AddButton, EmptyHint } from "../ui/AccordionSection";
 import { EntryCard } from "../ui/EntryCard";
 import { CheckboxField, FieldRow, TextField } from "../ui/FormField";
@@ -20,11 +21,13 @@ export function EducationForm({
   actions,
   dictionary,
   locale,
+  jobAd,
 }: {
   items: EducationItem[];
   actions: EducationActions;
   dictionary: Dictionary;
   locale: LanguageCode;
+  jobAd: string;
 }) {
   const { fields, placeholders, actions: actionLabels } = dictionary;
 
@@ -95,6 +98,15 @@ export function EducationForm({
             placeholder={placeholders.educationDescription}
             onChange={(description) => actions.update(item.id, { description })}
             dictionary={dictionary}
+          />
+          <CvisorImproveButton
+            section="education"
+            text={item.description}
+            jobAd={jobAd}
+            language={dictionary.locale}
+            dictionary={dictionary}
+            context={{ degree: item.degree, institution: item.institution }}
+            onAccept={(description) => actions.update(item.id, { description })}
           />
         </EntryCard>
       ))}
