@@ -1,6 +1,7 @@
 import type { Dictionary } from "../../i18n/translations";
 import type { ProjectItem } from "../../types";
 import { createId } from "../../utils/id";
+import { CvisorImproveButton } from "../../cvisor/CvisorImproveButton";
 import { AddButton, EmptyHint } from "../ui/AccordionSection";
 import { EntryCard } from "../ui/EntryCard";
 import { TextField } from "../ui/FormField";
@@ -18,10 +19,12 @@ export function ProjectsForm({
   items,
   actions,
   dictionary,
+  jobAd,
 }: {
   items: ProjectItem[];
   actions: ProjectActions;
   dictionary: Dictionary;
+  jobAd: string;
 }) {
   const { fields, placeholders, actions: actionLabels } = dictionary;
 
@@ -62,6 +65,15 @@ export function ProjectsForm({
             placeholder={placeholders.projectDescription}
             onChange={(description) => actions.update(item.id, { description })}
             dictionary={dictionary}
+          />
+          <CvisorImproveButton
+            section="project"
+            text={item.description}
+            jobAd={jobAd}
+            language={dictionary.locale}
+            dictionary={dictionary}
+            context={{ title: item.title }}
+            onAccept={(description) => actions.update(item.id, { description })}
           />
         </EntryCard>
       ))}

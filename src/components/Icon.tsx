@@ -22,7 +22,8 @@ export type IconName =
   | "grip"
   | "heart"
   | "type"
-  | "layout";
+  | "layout"
+  | "sparkles";
 
 const paths: Record<IconName, string> = {
   mail: "M3 6h18v12H3z M3 6l9 7 9-7",
@@ -52,6 +53,7 @@ const paths: Record<IconName, string> = {
     "M12 21s-7.5-4.6-10-9.3C.5 8 2 4 6 4c2 0 3.5 1 6 3.5C14.5 5 16 4 18 4c4 0 5.5 4 4 7.7C19.5 16.4 12 21 12 21z",
   type: "M4 7V4h16v3 M9 20h6 M12 4v16",
   layout: "M3 4h18v16H3z M3 9h18 M9 9v11",
+  sparkles: "M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6z M19 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z",
 };
 
 export function Icon({

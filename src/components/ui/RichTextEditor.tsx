@@ -38,11 +38,15 @@ export function RichTextEditor({
   const [activeFormats, setActiveFormats] = useState<ActiveFormats>(EMPTY_FORMATS);
 
   useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value;
+    const editor = editorRef.current;
+    if (!editor) return;
+    // Skip while the user is actively typing in this editor, so we don't clobber the
+    // caret position with an echo of the value it just produced.
+    if (document.activeElement === editor) return;
+    if (editor.innerHTML !== value) {
+      editor.innerHTML = value;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     const updateActiveFormats = () => {

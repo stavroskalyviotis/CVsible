@@ -1,6 +1,7 @@
 import type { Dictionary } from "../../i18n/translations";
 import type { ExperienceItem, LanguageCode } from "../../types";
 import { createId } from "../../utils/id";
+import { CvisorImproveButton } from "../../cvisor/CvisorImproveButton";
 import { AddButton, EmptyHint } from "../ui/AccordionSection";
 import { EntryCard } from "../ui/EntryCard";
 import { CheckboxField, FieldRow, TextField } from "../ui/FormField";
@@ -20,11 +21,13 @@ export function ExperienceForm({
   actions,
   dictionary,
   locale,
+  jobAd,
 }: {
   items: ExperienceItem[];
   actions: ExperienceActions;
   dictionary: Dictionary;
   locale: LanguageCode;
+  jobAd: string;
 }) {
   const { fields, placeholders, actions: actionLabels } = dictionary;
 
@@ -95,6 +98,15 @@ export function ExperienceForm({
             placeholder={placeholders.experienceDescription}
             onChange={(description) => actions.update(item.id, { description })}
             dictionary={dictionary}
+          />
+          <CvisorImproveButton
+            section="experience"
+            text={item.description}
+            jobAd={jobAd}
+            language={dictionary.locale}
+            dictionary={dictionary}
+            context={{ role: item.role, company: item.company }}
+            onAccept={(description) => actions.update(item.id, { description })}
           />
         </EntryCard>
       ))}
