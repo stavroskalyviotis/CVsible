@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { buildSuggestSystemPrompt, getAnthropicClient } from "./_lib/anthropic";
-import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit";
-import { SUGGEST_SCHEMA, type SuggestResult } from "./_lib/schema";
-import { CVISOR_MODEL, MAX_JOB_AD_CHARS, MAX_SECTION_TEXT_CHARS, SUGGEST_DAILY_LIMIT, SUGGEST_MAX_TOKENS } from "./_lib/constants";
+import { buildSuggestSystemPrompt, getAnthropicClient } from "./_lib/anthropic.js";
+import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit.js";
+import { SUGGEST_SCHEMA, type SuggestResult } from "./_lib/schema.js";
+import { CVISOR_MODEL, MAX_JOB_AD_CHARS, MAX_SECTION_TEXT_CHARS, SUGGEST_DAILY_LIMIT, SUGGEST_MAX_TOKENS } from "./_lib/constants.js";
 
 const SECTION_LABELS: Record<string, string> = {
   summary: "Επαγγελματικό προφίλ / σύνοψη",

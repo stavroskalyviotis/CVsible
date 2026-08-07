@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 import type { VercelRequest } from "@vercel/node";
-import { RATE_LIMIT_TTL_SECONDS } from "./constants";
+import { RATE_LIMIT_TTL_SECONDS } from "./constants.js";
 
 let cachedClient: Redis | null | undefined;
 

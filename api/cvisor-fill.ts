@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { buildFillSystemPrompt, getAnthropicClient } from "./_lib/anthropic";
-import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit";
-import { buildFillSchema, type FillResult } from "./_lib/schema";
+import { buildFillSystemPrompt, getAnthropicClient } from "./_lib/anthropic.js";
+import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit.js";
+import { buildFillSchema, type FillResult } from "./_lib/schema.js";
 import {
   CVISOR_MODEL,
   FILL_DAILY_LIMIT,
@@ -10,7 +10,7 @@ import {
   MAX_BACKGROUND_CHARS,
   MAX_JOB_AD_CHARS,
   THEME_COLOR_IDS,
-} from "./_lib/constants";
+} from "./_lib/constants.js";
 
 const MAX_TIPS = 4;
 const MAX_PREVIOUS_ITEMS = 30;
