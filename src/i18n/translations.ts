@@ -25,6 +25,15 @@ export interface Dictionary {
     step3Body: string;
     finalCtaTitle: string;
     finalCtaBody: string;
+    cvisorBadge: string;
+    cvisorTitle: string;
+    cvisorBody: string;
+    cvisorStep1Title: string;
+    cvisorStep1Body: string;
+    cvisorStep2Title: string;
+    cvisorStep2Body: string;
+    cvisorStep3Title: string;
+    cvisorStep3Body: string;
   };
   nav: {
     brand: string;
@@ -258,6 +267,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       step3Body: "Έτοιμο για αποστολή σε αγγελίες και recruiters, χωρίς υδατογράφημα.",
       finalCtaTitle: "Έτοιμος να ξεκινήσεις;",
       finalCtaBody: "Δεν χρειάζεται λογαριασμός. Το πρώτο σου βιογραφικό είναι λίγα λεπτά μακριά.",
+      cvisorBadge: "Νέο · με τεχνητή νοημοσύνη",
+      cvisorTitle: "Δεν ξέρεις πώς να ξεκινήσεις; Άσε τον CVisor να σε βοηθήσει.",
+      cvisorBody:
+        "Ο CVisor είναι ένας ενσωματωμένος βοηθός που φτιάχνει προσχέδιο του βιογραφικού σου προσαρμοσμένο σε μια αγγελία εργασίας (ή απλά στον στόχο σου). Δουλεύει αποκλειστικά με ό,τι του πεις — ποτέ δεν εφευρίσκει εμπειρία που δεν έχεις — και εσύ εγκρίνεις κάθε πρόταση, ακόμα και σε επίπεδο μεμονωμένης πρότασης, πριν εφαρμοστεί οτιδήποτε.",
+      cvisorStep1Title: "Πες του τον στόχο σου",
+      cvisorStep1Body: "Επικόλλησε μια αγγελία εργασίας ή περίγραψε τι δουλειά ψάχνεις.",
+      cvisorStep2Title: "Δώσε σύντομα στοιχεία",
+      cvisorStep2Body: "Λίγες λέξεις-κλειδιά για την εμπειρία, τις σπουδές και τις δεξιότητές σου αρκούν.",
+      cvisorStep3Title: "Έγκρινε τις προτάσεις",
+      cvisorStep3Body: "Δες τι πρότεινε ο CVisor και διάλεξε τι θα κρατήσεις πριν εφαρμοστεί στο βιογραφικό σου.",
     },
     nav: {
       brand: "CVsible",
@@ -408,15 +427,15 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       tryButton: "Δοκίμασε με τον CVisor",
       modalTitle: "Δημιουργία βιογραφικού με τον CVisor",
       modalIntro:
-        "Επικόλλησε μια αγγελία εργασίας και περίγραψε ελεύθερα την εμπειρία, την εκπαίδευση και τις δεξιότητές σου. Ο CVisor θα προτείνει περιεχόμενο για το βιογραφικό σου, βασισμένο αποκλειστικά σε όσα του πεις — ποτέ εφευρήματα.",
-      jobAdLabel: "Αγγελία εργασίας",
-      jobAdPlaceholder: "Επικόλλησε εδώ το κείμενο της αγγελίας…",
+        "Επικόλλησε μια αγγελία εργασίας — ή απλά περίγραψε τι δουλειά ψάχνεις — και πες ελεύθερα την εμπειρία, την εκπαίδευση και τις δεξιότητές σου. Ο CVisor θα προτείνει περιεχόμενο για το βιογραφικό σου, βασισμένο αποκλειστικά σε όσα του πεις — ποτέ εφευρήματα.",
+      jobAdLabel: "Αγγελία εργασίας ή στόχος",
+      jobAdPlaceholder: "Επικόλλησε μια αγγελία εργασίας, ή γράψε π.χ. «Θέλω να βρω δουλειά ως…»",
       quickIntro:
         "Δεν χρειάζεται να γράψεις εκτενή κείμενα — αρκούν σύντομες λέξεις-κλειδιά ή σημειώσεις σε κάθε πεδίο. Ο CVisor θα τα διατυπώσει σε πλήρεις, επαγγελματικές προτάσεις.",
       quickNoteExperiencePlaceholder: "π.χ. διαχειριζόμουν την ομάδα πωλήσεων, αύξηση πωλήσεων 20%…",
       quickNoteEducationPlaceholder: "π.χ. βαθμός, διπλωματική εργασία, μαθήματα…",
       quickNoteProjectPlaceholder: "π.χ. τι έκανε το έργο, ποιες τεχνολογίες χρησιμοποίησες…",
-      skillsQuickPlaceholder: "π.χ. Python, Figma, Διαχείριση έργων — χώρισέ τα με κόμμα",
+      skillsQuickPlaceholder: "Γράψε ή επικόλλησε (π.χ. απευθείας από LinkedIn) — Python, Figma, Διαχείριση έργων…",
       languagesQuickPlaceholder: "π.χ. Αγγλικά (πολύ καλά), Γαλλικά (βασικά)",
       extraNotesLabel: "Κάτι άλλο να προσθέσεις;",
       extraNotesPlaceholder: "Ήπιες δεξιότητες, ενδιαφέροντα, ή οτιδήποτε άλλο θες να συμπεριληφθεί.",
@@ -424,7 +443,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       continueButton: "Συνέχεια",
       generateSuggestionsButton: "Δημιουργία προτάσεων",
       regenerateButton: "Νέες προτάσεις",
-      stepJobAdTitle: "Αγγελία",
+      stepJobAdTitle: "Στόχος",
       stepFactsTitle: "Στοιχεία",
       stepSuggestionsTitle: "Προτάσεις",
       suggestedJobTitleLabel: "Προτεινόμενος επαγγελματικός τίτλος",
@@ -502,6 +521,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       step3Body: "Ready to send to job postings and recruiters, no watermark.",
       finalCtaTitle: "Ready to get started?",
       finalCtaBody: "No account needed. Your first resume is minutes away.",
+      cvisorBadge: "New · AI-powered",
+      cvisorTitle: "Not sure where to start? Let CVisor help.",
+      cvisorBody:
+        "CVisor is a built-in assistant that drafts your resume tailored to a job posting (or just your career goal). It works only from what you tell it — it never invents experience you don't have — and you approve every suggestion, down to individual sentences, before anything is applied.",
+      cvisorStep1Title: "Tell it your goal",
+      cvisorStep1Body: "Paste a job posting, or describe what job you're looking for.",
+      cvisorStep2Title: "Give quick facts",
+      cvisorStep2Body: "A few keywords about your experience, education and skills are enough.",
+      cvisorStep3Title: "Approve the suggestions",
+      cvisorStep3Body: "Review what CVisor drafted and pick what to keep before it's applied to your resume.",
     },
     nav: {
       brand: "CVsible",
@@ -651,15 +680,15 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       tryButton: "Try CVisor",
       modalTitle: "Build your resume with CVisor",
       modalIntro:
-        "Paste a job posting and freely describe your experience, education and skills. CVisor will suggest resume content tailored to the posting — based only on what you tell it, never invented.",
-      jobAdLabel: "Job posting",
-      jobAdPlaceholder: "Paste the job posting text here…",
+        "Paste a job posting — or just describe what job you're looking for — and freely share your experience, education and skills. CVisor will suggest resume content tailored to it — based only on what you tell it, never invented.",
+      jobAdLabel: "Job posting or goal",
+      jobAdPlaceholder: "Paste a job posting, or write e.g. \"I'm looking for a job as…\"",
       quickIntro:
         "No need to write full paragraphs — short keywords or notes in each field are enough. CVisor will turn them into complete, professional sentences.",
       quickNoteExperiencePlaceholder: "e.g. managed the sales team, grew sales by 20%…",
       quickNoteEducationPlaceholder: "e.g. GPA, thesis, coursework…",
       quickNoteProjectPlaceholder: "e.g. what the project did, which technologies you used…",
-      skillsQuickPlaceholder: "e.g. Python, Figma, Project management — comma-separated",
+      skillsQuickPlaceholder: "Type or paste (e.g. straight from LinkedIn) — Python, Figma, Project management…",
       languagesQuickPlaceholder: "e.g. English (fluent), French (basic)",
       extraNotesLabel: "Anything else to add?",
       extraNotesPlaceholder: "Soft skills, interests, or anything else you'd like included.",
@@ -667,7 +696,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       continueButton: "Continue",
       generateSuggestionsButton: "Generate suggestions",
       regenerateButton: "New suggestions",
-      stepJobAdTitle: "Job posting",
+      stepJobAdTitle: "Goal",
       stepFactsTitle: "Quick facts",
       stepSuggestionsTitle: "Suggestions",
       suggestedJobTitleLabel: "Suggested job title",

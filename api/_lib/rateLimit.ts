@@ -18,7 +18,23 @@ export interface RateLimitResult {
   limit: number;
 }
 
+let cachedUnlimitedIps: Set<string> | undefined;
+
+function getUnlimitedIps(): Set<string> {
+  if (cachedUnlimitedIps) return cachedUnlimitedIps;
+  cachedUnlimitedIps = new Set(
+    (process.env.CVISOR_UNLIMITED_IPS ?? "")
+      .split(",")
+      .map((ip) => ip.trim())
+      .filter(Boolean),
+  );
+  return cachedUnlimitedIps;
+}
+
 export async function checkDailyLimit(bucket: string, identifier: string, limit: number): Promise<RateLimitResult> {
+  if (getUnlimitedIps().has(identifier)) {
+    return { allowed: true, remaining: limit, limit };
+  }
   const redis = getClient();
   if (!redis) {
     // No Redis configured yet — fail open rather than blocking the feature entirely.

@@ -82,7 +82,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       parts.push(`ΣΤΟΙΧΕΙΑ ΠΛΑΙΣΙΟΥ: ${contextLine}`);
     }
     if (jobAd) {
-      parts.push(`ΑΓΓΕΛΙΑ ΕΡΓΑΣΙΑΣ (για στόχευση, όχι για νέα γεγονότα):\n${jobAd}`);
+      parts.push(`ΣΤΟΧΟΣ (για στόχευση/τόνο, όχι για νέα γεγονότα):\n${jobAd}`);
     }
     parts.push(`ΤΡΕΧΟΝ ΚΕΙΜΕΝΟ:\n${text || "(κενό — δημιούργησε νέο περιεχόμενο από τα στοιχεία πλαισίου)"}`);
 

@@ -146,6 +146,35 @@ export function LandingPage({
         </div>
       </section>
 
+      <section className="landing-cvisor">
+        <div className="landing-cvisor-copy">
+          <span className="landing-badge landing-cvisor-badge">{landing.cvisorBadge}</span>
+          <h2>{landing.cvisorTitle}</h2>
+          <p>{landing.cvisorBody}</p>
+          <button type="button" className="landing-cta-secondary" onClick={onStartWithCvisor}>
+            <Icon name="sparkles" size={16} />
+            {dictionary.cvisor.tryButton}
+          </button>
+        </div>
+        <div className="landing-cvisor-steps">
+          <article>
+            <span className="step-number">1</span>
+            <h3>{landing.cvisorStep1Title}</h3>
+            <p>{landing.cvisorStep1Body}</p>
+          </article>
+          <article>
+            <span className="step-number">2</span>
+            <h3>{landing.cvisorStep2Title}</h3>
+            <p>{landing.cvisorStep2Body}</p>
+          </article>
+          <article>
+            <span className="step-number">3</span>
+            <h3>{landing.cvisorStep3Title}</h3>
+            <p>{landing.cvisorStep3Body}</p>
+          </article>
+        </div>
+      </section>
+
       <section className="landing-features">
         <article>
           <span className="feature-icon" aria-hidden="true">
