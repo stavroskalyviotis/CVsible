@@ -144,7 +144,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       messages: [
         {
           role: "user",
-          content: `ΑΓΓΕΛΙΑ ΕΡΓΑΣΙΑΣ:\n${jobAd}\n\n---\n\nΚΕΙΜΕΝΟ ΧΡΗΣΤΗ (εμπειρία, εκπαίδευση, δεξιότητες, background):\n${background}${buildAvoidRepeatsBlock(previousSuggestions)}`,
+          content: `ΣΤΟΧΟΣ:\n${jobAd}\n\n---\n\nΚΕΙΜΕΝΟ ΧΡΗΣΤΗ (εμπειρία, εκπαίδευση, δεξιότητες, background):\n${background}${buildAvoidRepeatsBlock(previousSuggestions)}`,
         },
       ],
     });

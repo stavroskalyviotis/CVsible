@@ -520,7 +520,7 @@ export function CvisorPanel({
               value={skills}
               onChange={setSkills}
               placeholder={c.skillsQuickPlaceholder}
-              rows={2}
+              rows={4}
             />
 
             <TextAreaField
@@ -528,7 +528,7 @@ export function CvisorPanel({
               value={languages}
               onChange={setLanguages}
               placeholder={c.languagesQuickPlaceholder}
-              rows={2}
+              rows={3}
             />
 
             <QuickEntryList
