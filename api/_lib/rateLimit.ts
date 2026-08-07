@@ -24,12 +24,18 @@ export async function checkDailyLimit(bucket: string, identifier: string, limit:
     // No Redis configured yet — fail open rather than blocking the feature entirely.
     return { allowed: true, remaining: limit, limit };
   }
-  const key = `cvisor:${bucket}:${identifier}`;
-  const count = await redis.incr(key);
-  if (count === 1) {
-    await redis.expire(key, RATE_LIMIT_TTL_SECONDS);
+  try {
+    const key = `cvisor:${bucket}:${identifier}`;
+    const count = await redis.incr(key);
+    if (count === 1) {
+      await redis.expire(key, RATE_LIMIT_TTL_SECONDS);
+    }
+    return { allowed: count <= limit, remaining: Math.max(0, limit - count), limit };
+  } catch (error) {
+    // Rate limiting must never take the whole feature down — fail open and log for visibility.
+    console.error("cvisor rate limit check failed", error);
+    return { allowed: true, remaining: limit, limit };
   }
-  return { allowed: count <= limit, remaining: Math.max(0, limit - count), limit };
 }
 
 export function getClientIdentifier(req: VercelRequest): string {
