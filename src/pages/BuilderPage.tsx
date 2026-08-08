@@ -154,22 +154,25 @@ export function BuilderPage({
               EN
             </button>
           </div>
-          <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
-            <Icon name="sparkles" size={15} />
-            {dictionary.cvisor.brand}
-          </button>
-          <button type="button" className="builder-ghost-button" onClick={handleStartOver}>
-            {dictionary.nav.startOver}
-          </button>
-          <button
-            type="button"
-            className="builder-primary-button"
-            onClick={handleDownload}
-            disabled={isDownloading}
-          >
-            <Icon name="download" size={16} />
-            {isDownloading ? dictionary.nav.downloading : dictionary.nav.download}
-          </button>
+          <div className="builder-topbar-buttons">
+            <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
+              <Icon name="sparkles" size={15} />
+              {dictionary.cvisor.brand}
+            </button>
+            <button type="button" className="builder-ghost-button" onClick={handleStartOver}>
+              <Icon name="refresh" size={14} />
+              {dictionary.nav.startOver}
+            </button>
+            <button
+              type="button"
+              className="builder-primary-button"
+              onClick={handleDownload}
+              disabled={isDownloading}
+            >
+              <Icon name="download" size={16} />
+              {isDownloading ? dictionary.nav.downloading : dictionary.nav.download}
+            </button>
+          </div>
         </div>
       </header>
 
