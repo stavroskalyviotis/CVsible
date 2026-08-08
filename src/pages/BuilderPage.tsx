@@ -184,9 +184,11 @@ export function BuilderPage({
             <PersonalInfoForm
               personalInfo={cv.data.personalInfo}
               photo={cv.data.photo}
+              photoPosition={cv.data.photoPosition}
               showPhoto={cv.data.showPhoto}
               onChange={cv.updatePersonalInfo}
               onPhotoChange={cv.setPhoto}
+              onPhotoPositionChange={cv.setPhotoPosition}
               onShowPhotoChange={cv.setShowPhoto}
               contactActions={cv.contacts}
               dictionary={dictionary}

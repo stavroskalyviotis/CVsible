@@ -21,6 +21,7 @@ export interface PersonalInfo {
   fullName: string;
   jobTitle: string;
   summary: string;
+  dateOfBirth: string;
   contacts: ContactItem[];
 }
 
@@ -103,6 +104,7 @@ export interface CvData {
   density: Density;
   showPhoto: boolean;
   photo: string | null;
+  photoPosition: { x: number; y: number };
   personalInfo: PersonalInfo;
   experience: ExperienceItem[];
   education: EducationItem[];

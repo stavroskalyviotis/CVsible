@@ -182,16 +182,18 @@ function BulletItemCard({
   bullets,
   selected,
   onToggleBullet,
+  noBulletsHint,
 }: {
   heading: string;
   bullets: string[];
   selected: Set<number>;
   onToggleBullet: (index: number) => void;
+  noBulletsHint: string;
 }) {
   return (
     <div className="cvisor-item-card">
       <strong className="cvisor-item-card-heading">{heading}</strong>
-      {bullets.length > 0 && (
+      {bullets.length > 0 ? (
         <ul className="cvisor-bullet-list">
           {bullets.map((bullet, index) => (
             <li key={index} className={selected.has(index) ? "" : "cvisor-bullet-off"}>
@@ -202,6 +204,8 @@ function BulletItemCard({
             </li>
           ))}
         </ul>
+      ) : (
+        <p className="cvisor-item-card-empty">{noBulletsHint}</p>
       )}
     </div>
   );
@@ -246,6 +250,9 @@ export function CvisorPanel({
   const [selectedSoftSkills, setSelectedSoftSkills] = useState<Set<string>>(new Set());
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
   const [keptOwnSkills, setKeptOwnSkills] = useState<Set<string>>(new Set());
+  const [keptOwnSoftSkills, setKeptOwnSoftSkills] = useState<Set<string>>(new Set());
+  const [keptOwnInterests, setKeptOwnInterests] = useState<Set<string>>(new Set());
+  const [keptOwnLanguages, setKeptOwnLanguages] = useState<Set<string>>(new Set());
   const [applyColor, setApplyColor] = useState(true);
   const [applyJobTitle, setApplyJobTitle] = useState(false);
   const [keepSummary, setKeepSummary] = useState(false);
@@ -310,6 +317,9 @@ export function CvisorPanel({
         mergeSuggestions(prev, data.suggestedInterests.map((s) => s.name), selectedInterests),
       );
       setKeptOwnSkills(new Set(data.skills.map((s) => s.name)));
+      setKeptOwnSoftSkills(new Set(data.softSkills.map((s) => s.name)));
+      setKeptOwnInterests(new Set(data.interests.filter((item) => item.relevant).map((item) => item.name)));
+      setKeptOwnLanguages(new Set(data.languages.map((l) => l.name)));
       setExperienceBulletSelection(data.experience.map((item) => allIndexesSelected(item.bullets.length)));
       setEducationBulletSelection(data.education.map((item) => allIndexesSelected(item.bullets.length)));
       setProjectBulletSelection(data.projects.map((item) => allIndexesSelected(item.bullets.length)));
@@ -332,6 +342,13 @@ export function CvisorPanel({
 
   const resetAndClose = () => {
     setStep("jobAd");
+    setExperienceRows([EMPTY_EXPERIENCE]);
+    setEducationRows([EMPTY_EDUCATION]);
+    setCertificationRows([]);
+    setProjectRows([]);
+    setSkills("");
+    setLanguages("");
+    setExtraNotes("");
     setResult(null);
     setHasGeneratedOnce(false);
     setSkillSuggestions([]);
@@ -342,6 +359,9 @@ export function CvisorPanel({
     setSelectedSoftSkills(new Set());
     setSelectedInterests(new Set());
     setKeptOwnSkills(new Set());
+    setKeptOwnSoftSkills(new Set());
+    setKeptOwnInterests(new Set());
+    setKeptOwnLanguages(new Set());
     setLockedJobTitle(null);
     setLockedThemeColor(null);
     setLockedSummary(null);
@@ -360,11 +380,11 @@ export function CvisorPanel({
       ...skillSuggestions.filter((name) => selectedSkills.has(name)).map((name) => ({ name, level: 60 })),
     ];
     const mergedSoftSkills = [
-      ...result.softSkills,
+      ...result.softSkills.filter((item) => keptOwnSoftSkills.has(item.name)).map((item) => ({ name: item.name })),
       ...softSkillSuggestions.filter((name) => selectedSoftSkills.has(name)).map((name) => ({ name })),
     ];
     const mergedInterests = [
-      ...result.interests,
+      ...result.interests.filter((item) => keptOwnInterests.has(item.name)).map((item) => ({ name: item.name })),
       ...interestSuggestions.filter((name) => selectedInterests.has(name)).map((name) => ({ name })),
     ];
     const chosenJobTitle = lockedJobTitle ?? result.suggestedJobTitle;
@@ -395,7 +415,7 @@ export function CvisorPanel({
       })),
       skills: mergedSkills,
       softSkills: mergedSoftSkills,
-      languages: result.languages,
+      languages: result.languages.filter((item) => keptOwnLanguages.has(item.name)),
       interests: mergedInterests,
       certifications: result.certifications,
       projects: result.projects.map((item, index) => ({
@@ -590,19 +610,25 @@ export function CvisorPanel({
             <p className="cvisor-modal-review-note">{c.reviewNote}</p>
 
             <div className="cvisor-summary-block">
-              <div className="cvisor-review-summary" dangerouslySetInnerHTML={{ __html: displayedSummary }} />
-              <label className="cvisor-toggle-row">
-                <input
-                  type="checkbox"
-                  checked={keepSummary}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setKeepSummary(checked);
-                    setLockedSummary(checked ? displayedSummary : null);
-                  }}
-                />
-                <span>{c.keepSummaryLabel}</span>
-              </label>
+              {displayedSummary ? (
+                <div className="cvisor-review-summary" dangerouslySetInnerHTML={{ __html: displayedSummary }} />
+              ) : (
+                <p className="cvisor-review-summary cvisor-summary-empty">{c.noSummaryHint}</p>
+              )}
+              {displayedSummary && (
+                <label className="cvisor-toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={keepSummary}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setKeepSummary(checked);
+                      setLockedSummary(checked ? displayedSummary : null);
+                    }}
+                  />
+                  <span>{c.keepSummaryLabel}</span>
+                </label>
+              )}
             </div>
 
             {result.experience.length > 0 && (
@@ -619,6 +645,7 @@ export function CvisorPanel({
                         prev.map((set, i) => (i === index ? toggleIn(set, bulletIndex) : set)),
                       )
                     }
+                    noBulletsHint={c.noBulletsHint}
                   />
                 ))}
               </div>
@@ -649,6 +676,7 @@ export function CvisorPanel({
                         prev.map((set, i) => (i === index ? toggleIn(set, bulletIndex) : set)),
                       )
                     }
+                    noBulletsHint={c.noBulletsHint}
                   />
                 ))}
               </div>
@@ -679,6 +707,7 @@ export function CvisorPanel({
                         prev.map((set, i) => (i === index ? toggleIn(set, bulletIndex) : set)),
                       )
                     }
+                    noBulletsHint={c.noBulletsHint}
                   />
                 ))}
               </div>
@@ -711,20 +740,86 @@ export function CvisorPanel({
               </div>
             )}
 
-            <ul className="cvisor-review-counts">
-              <li>
-                {sections.softSkills}: <strong>{result.softSkills.length}</strong>
-              </li>
-              <li>
-                {sections.languages}: <strong>{result.languages.length}</strong>
-              </li>
-              <li>
+            {result.softSkills.length > 0 && (
+              <div className="cvisor-chip-section">
+                <span className="cvisor-chip-heading">{c.ownSoftSkillsTitle}</span>
+                <ul className="cvisor-own-skills-list">
+                  {result.softSkills.map((item) => (
+                    <li key={item.name} className={item.relevant ? "" : "cvisor-own-skill-flagged"}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={keptOwnSoftSkills.has(item.name)}
+                          onChange={() => setKeptOwnSoftSkills((prev) => toggleIn(prev, item.name))}
+                        />
+                        <span>{item.name}</span>
+                      </label>
+                      {item.relevant ? (
+                        <span className="cvisor-badge cvisor-badge-good" title={c.relevantBadge}>
+                          ✓
+                        </span>
+                      ) : (
+                        <span className="cvisor-badge cvisor-badge-warn">{c.notRelevantBadge}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.languages.length > 0 && (
+              <div className="cvisor-chip-section">
+                <span className="cvisor-chip-heading">{c.ownLanguagesTitle}</span>
+                <ul className="cvisor-own-skills-list">
+                  {result.languages.map((item) => (
+                    <li key={item.name}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={keptOwnLanguages.has(item.name)}
+                          onChange={() => setKeptOwnLanguages((prev) => toggleIn(prev, item.name))}
+                        />
+                        <span>{item.name}</span>
+                      </label>
+                      <span className="cvisor-lang-level">{item.level}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.interests.length > 0 && (
+              <div className="cvisor-chip-section">
+                <span className="cvisor-chip-heading">{c.ownInterestsTitle}</span>
+                <ul className="cvisor-own-skills-list">
+                  {result.interests.map((item) => (
+                    <li key={item.name} className={item.relevant ? "" : "cvisor-own-skill-flagged"}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={keptOwnInterests.has(item.name)}
+                          onChange={() => setKeptOwnInterests((prev) => toggleIn(prev, item.name))}
+                        />
+                        <span>{item.name}</span>
+                      </label>
+                      {item.relevant ? (
+                        <span className="cvisor-badge cvisor-badge-good" title={c.relevantBadge}>
+                          ✓
+                        </span>
+                      ) : (
+                        <span className="cvisor-badge cvisor-badge-warn">{c.notRelevantInterestBadge}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.certifications.length > 0 && (
+              <p className="cvisor-cert-count">
                 {sections.certifications}: <strong>{result.certifications.length}</strong>
-              </li>
-              <li>
-                {sections.interests}: <strong>{result.interests.length}</strong>
-              </li>
-            </ul>
+              </p>
+            )}
 
             {displayedJobTitle && (
               <label className="cvisor-toggle-row">

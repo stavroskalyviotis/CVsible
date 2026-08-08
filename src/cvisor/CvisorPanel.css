@@ -148,19 +148,33 @@
   color: var(--ink);
 }
 
-.cvisor-review-counts {
+.cvisor-cert-count {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px 18px;
   font-size: 0.85rem;
   color: var(--ink-soft);
 }
 
-.cvisor-review-counts strong {
+.cvisor-cert-count strong {
   color: var(--ink);
+}
+
+.cvisor-summary-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.cvisor-lang-level {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.cvisor-item-card-empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-style: italic;
 }
 
 .cvisor-stepper {
@@ -451,12 +465,6 @@
   color: #8a5a11;
   white-space: normal;
   text-align: right;
-}
-
-@media (max-width: 520px) {
-  .cvisor-review-counts {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 480px) {

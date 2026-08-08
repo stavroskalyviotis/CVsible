@@ -125,52 +125,70 @@ export function LandingPage({
         </div>
       </main>
 
-      <section className="landing-steps">
+      <section className="landing-paths">
         <h2>{landing.howItWorksTitle}</h2>
-        <div className="landing-steps-grid">
-          <article>
-            <span className="step-number">1</span>
-            <h3>{landing.step1Title}</h3>
-            <p>{landing.step1Body}</p>
+        <div className="landing-paths-grid">
+          <article className="landing-path-card">
+            <span className="landing-path-label">{landing.pathManualLabel}</span>
+            <ol className="landing-path-steps">
+              <li>
+                <span className="step-number">1</span>
+                <div>
+                  <h3>{landing.step1Title}</h3>
+                  <p>{landing.step1Body}</p>
+                </div>
+              </li>
+              <li>
+                <span className="step-number">2</span>
+                <div>
+                  <h3>{landing.step2Title}</h3>
+                  <p>{landing.step2Body}</p>
+                </div>
+              </li>
+              <li>
+                <span className="step-number">3</span>
+                <div>
+                  <h3>{landing.step3Title}</h3>
+                  <p>{landing.step3Body}</p>
+                </div>
+              </li>
+            </ol>
+            <button type="button" className="landing-cta landing-path-cta" onClick={onStart}>
+              {landing.ctaStart}
+              <span aria-hidden="true">→</span>
+            </button>
           </article>
-          <article>
-            <span className="step-number">2</span>
-            <h3>{landing.step2Title}</h3>
-            <p>{landing.step2Body}</p>
-          </article>
-          <article>
-            <span className="step-number">3</span>
-            <h3>{landing.step3Title}</h3>
-            <p>{landing.step3Body}</p>
-          </article>
-        </div>
-      </section>
 
-      <section className="landing-cvisor">
-        <div className="landing-cvisor-copy">
-          <span className="landing-badge landing-cvisor-badge">{landing.cvisorBadge}</span>
-          <h2>{landing.cvisorTitle}</h2>
-          <p>{landing.cvisorBody}</p>
-          <button type="button" className="landing-cta-secondary" onClick={onStartWithCvisor}>
-            <Icon name="sparkles" size={16} />
-            {dictionary.cvisor.tryButton}
-          </button>
-        </div>
-        <div className="landing-cvisor-steps">
-          <article>
-            <span className="step-number">1</span>
-            <h3>{landing.cvisorStep1Title}</h3>
-            <p>{landing.cvisorStep1Body}</p>
-          </article>
-          <article>
-            <span className="step-number">2</span>
-            <h3>{landing.cvisorStep2Title}</h3>
-            <p>{landing.cvisorStep2Body}</p>
-          </article>
-          <article>
-            <span className="step-number">3</span>
-            <h3>{landing.cvisorStep3Title}</h3>
-            <p>{landing.cvisorStep3Body}</p>
+          <article className="landing-path-card landing-path-card-accent">
+            <span className="landing-badge landing-cvisor-badge">{landing.cvisorBadge}</span>
+            <p className="landing-path-intro">{landing.cvisorBody}</p>
+            <ol className="landing-path-steps">
+              <li>
+                <span className="step-number">1</span>
+                <div>
+                  <h3>{landing.cvisorStep1Title}</h3>
+                  <p>{landing.cvisorStep1Body}</p>
+                </div>
+              </li>
+              <li>
+                <span className="step-number">2</span>
+                <div>
+                  <h3>{landing.cvisorStep2Title}</h3>
+                  <p>{landing.cvisorStep2Body}</p>
+                </div>
+              </li>
+              <li>
+                <span className="step-number">3</span>
+                <div>
+                  <h3>{landing.cvisorStep3Title}</h3>
+                  <p>{landing.cvisorStep3Body}</p>
+                </div>
+              </li>
+            </ol>
+            <button type="button" className="landing-cta-secondary landing-path-cta" onClick={onStartWithCvisor}>
+              <Icon name="sparkles" size={16} />
+              {dictionary.cvisor.tryButton}
+            </button>
           </article>
         </div>
       </section>

@@ -23,7 +23,9 @@ export type IconName =
   | "heart"
   | "type"
   | "layout"
-  | "sparkles";
+  | "sparkles"
+  | "calendar"
+  | "refresh";
 
 const paths: Record<IconName, string> = {
   mail: "M3 6h18v12H3z M3 6l9 7 9-7",
@@ -54,6 +56,9 @@ const paths: Record<IconName, string> = {
   type: "M4 7V4h16v3 M9 20h6 M12 4v16",
   layout: "M3 4h18v16H3z M3 9h18 M9 9v11",
   sparkles: "M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6z M19 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z",
+  calendar: "M4 5h16v16H4z M4 9h16 M8 3v4 M16 3v4",
+  refresh:
+    "M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0 1 14.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0 0 20.49 15",
 };
 
 export function Icon({

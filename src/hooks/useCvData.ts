@@ -153,6 +153,8 @@ export function useCvData() {
 
   const setThemeColor = (themeColor: string) => setData((prev) => ({ ...prev, themeColor }));
   const setPhoto = (photo: string | null) => setData((prev) => ({ ...prev, photo }));
+  const setPhotoPosition = (photoPosition: CvData["photoPosition"]) =>
+    setData((prev) => ({ ...prev, photoPosition }));
   const setShowPhoto = (showPhoto: boolean) => setData((prev) => ({ ...prev, showPhoto }));
   const setFontFamily = (fontFamily: CvData["fontFamily"]) => setData((prev) => ({ ...prev, fontFamily }));
   const setDensity = (density: CvData["density"]) => setData((prev) => ({ ...prev, density }));
@@ -169,6 +171,7 @@ export function useCvData() {
     updatePersonalInfo,
     setThemeColor,
     setPhoto,
+    setPhotoPosition,
     setShowPhoto,
     setFontFamily,
     setDensity,

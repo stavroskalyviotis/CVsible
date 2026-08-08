@@ -28,6 +28,11 @@ export interface FillNamedItem {
   name: string;
 }
 
+export interface FillRelevantNamedItem {
+  name: string;
+  relevant: boolean;
+}
+
 export interface FillLanguageItem {
   name: string;
   level: string;
@@ -51,9 +56,9 @@ export interface FillResult {
   experience: FillExperienceItem[];
   education: FillEducationItem[];
   skills: FillSkillItem[];
-  softSkills: FillNamedItem[];
+  softSkills: FillRelevantNamedItem[];
   languages: FillLanguageItem[];
-  interests: FillNamedItem[];
+  interests: FillRelevantNamedItem[];
   certifications: FillCertificationItem[];
   projects: FillProjectItem[];
   suggestedSkills: FillNamedItem[];
@@ -169,8 +174,15 @@ export function buildFillSchema(languageLevels: string[], themeColorIds: readonl
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["name"],
-          properties: { name: { type: "string" } },
+          required: ["name", "relevant"],
+          properties: {
+            name: { type: "string" },
+            relevant: {
+              type: "boolean",
+              description:
+                "true αν η ήπια δεξιότητα ταιριάζει/βοηθάει για αυτόν τον ΣΤΟΧΟ. false ΜΟΝΟ αν πραγματικά δεν σχετίζεται καθόλου. Στην αμφιβολία, true.",
+            },
+          },
         },
       },
       languages: {
@@ -195,8 +207,15 @@ export function buildFillSchema(languageLevels: string[], themeColorIds: readonl
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["name"],
-          properties: { name: { type: "string" } },
+          required: ["name", "relevant"],
+          properties: {
+            name: { type: "string" },
+            relevant: {
+              type: "boolean",
+              description:
+                "true αν το ενδιαφέρον σχετίζεται με τον ΣΤΟΧΟ ΚΑΙ είναι κατάλληλο για επαγγελματικό βιογραφικό. false αν δεν σχετίζεται καθόλου, Ή αν είναι ριψοκίνδυνο/αμφιλεγόμενο για βιογραφικό ανεξαρτήτως ΣΤΟΧΟΥ (π.χ. τζόγος, χρήση ουσιών, ακραίος πολιτικός/θρησκευτικός ακτιβισμός). Στην αμφιβολία για απλή μη-συνάφεια, true· στην αμφιβολία για επαγγελματική καταλληλότητα, false.",
+            },
+          },
         },
       },
       certifications: {

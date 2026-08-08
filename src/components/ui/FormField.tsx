@@ -12,7 +12,7 @@ export function TextField({
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  type?: "text" | "email" | "tel" | "url" | "month";
+  type?: "text" | "email" | "tel" | "url" | "month" | "date";
 }) {
   return (
     <label className="field">

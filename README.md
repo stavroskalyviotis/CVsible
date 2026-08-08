@@ -17,7 +17,7 @@
 
 **CVsible** is a free, browser-based resume builder for creating clean and customizable CVs with a live preview. It requires no account, adds no watermark, and keeps the user's data on their own device.
 
-Optionally, **CVisor** — an AI assistant built into the app — can draft resume content from a job posting through a guided 3-step flow, then hand back granular, checkbox-level control: keep or drop individual bullet points, accept or reject each suggested skill, and see a flag on any of your own listed skills that don't seem to fit the posting. It only works from information you provide (never invents facts) and is entirely opt-in; the manual builder works exactly as before if you don't use it.
+Optionally, **CVisor** — an AI assistant built into the app — can draft resume content from a job posting (or just a career goal) through a guided 3-step flow, then hand back granular, checkbox-level control: keep or drop individual bullet points, accept or reject each suggested skill, and see which of your own skills, soft skills, languages and interests it kept, flagged, or thinks you should drop — including automatically de-selecting interests that could hurt your chances with any employer (e.g. gambling), regardless of the specific job. Wording is tuned to read like a stronger candidate — action verbs, results first, matching the posting's own keywords — without ever inventing facts, and everything stays opt-in with a "regenerate" option on individual suggestions; the manual builder works exactly as before if you don't use it.
 
 The interface is available in **Greek and English**, and the completed resume can be downloaded as an **A4 PDF** directly from the browser, on desktop or mobile.
 
@@ -25,12 +25,12 @@ The interface is available in **Greek and English**, and the completed resume ca
 
 - Live resume preview while editing
 - Greek and English interface
-- Personal details and customizable contact links (email, phone, location, website, LinkedIn, GitHub, X, or a custom link)
+- Personal details (including optional date of birth) and customizable contact links (email, phone, location, website, LinkedIn, GitHub, X, or a custom link)
 - Professional summary with rich-text formatting (bold, italic, underline, bullet lists)
 - Work experience and education sections, with a decade → year → month date picker (no future dates) and start/end date validation
 - Skills, soft skills/characteristics, language proficiency levels, and hobbies/interests
 - Certifications and projects, with long titles, links, and descriptions wrapping cleanly instead of overflowing the page
-- Optional profile photo
+- Optional profile photo, with drag-to-reposition to fine-tune the crop
 - Drag-and-drop entry reordering, plus drag-and-drop reordering of whole sections within the sidebar and main column
 - Preset and custom sidebar colors, with automatic text contrast for light and dark colors
 - Adjustable layout density (compact/comfortable/spacious) and font choice (modern/classic/condensed) to help longer resumes fit fewer pages
@@ -39,7 +39,7 @@ The interface is available in **Greek and English**, and the completed resume ca
 - Automatic local saving with `localStorage`
 - Responsive layout for desktop and smaller screens
 - No sign-up, subscription, or watermark
-- **CVisor** (optional): a guided 3-step assistant — paste a job posting, add quick notes about your experience, then review everything CVisor drafted at bullet-point granularity: keep/drop each individual bullet for experience, education and projects, accept/reject each suggested skill, soft skill and interest, see which of your own skills may not fit the posting, and lock in a summary, job title, or color you like before regenerating fresh ideas. Nothing is applied until you approve it. Also improves the wording of individual sections on demand — powered by Claude
+- **CVisor** (optional): a guided 3-step assistant — paste a job posting or describe your career goal, add quick notes about your experience, then review everything CVisor drafted at bullet-point granularity: keep/drop each individual bullet for experience, education and projects, accept/reject each suggested skill, soft skill and interest, see which of your own skills, soft skills, languages and interests it kept or flagged (with unsuitable interests pre-deselected), and lock in a summary, job title, or color you like before regenerating fresh ideas — each individual suggestion also has its own "regenerate" option. Nothing is applied until you approve it. Also improves the wording of individual sections on demand, tuned toward stronger, results-first phrasing — powered by Claude
 
 ## Privacy
 
@@ -62,7 +62,7 @@ The deployed app uses [Vercel Web Analytics](https://vercel.com/docs/analytics) 
 - **Vercel** for deployment, [Web Analytics](https://vercel.com/docs/analytics), [Speed Insights](https://vercel.com/docs/speed-insights), and Serverless Functions (CVisor's backend)
 - Browser `localStorage` for persistence
 - `html2canvas` + `jsPDF` (lazy-loaded on demand) for client-side PDF generation
-- **CVisor**: Claude Haiku 4.5 via the Anthropic API, with Upstash Redis (through Vercel's Storage integration) for per-visitor rate limiting
+- **CVisor**: Claude Sonnet 5 (resume drafting) and Claude Haiku 4.5 (single-section wording) via the Anthropic API, with Upstash Redis (through Vercel's Storage integration) for per-visitor rate limiting
 
 ## Getting started
 
