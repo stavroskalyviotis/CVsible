@@ -166,7 +166,8 @@
 
   .builder-topbar-actions {
     width: 100%;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .builder-lang-switch {

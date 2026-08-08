@@ -5,13 +5,14 @@ import { getDensityMetrics } from "../data/density";
 import { ContactIcon } from "../components/ContactIcon";
 import { Icon } from "../components/Icon";
 import { BlockContent, SectionHeading } from "./mainBlocks";
-
-function formatDateOfBirth(value: string, locale: string): string {
-  const parsed = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(parsed);
-}
 import type { PageBlock } from "./useMainPagination";
+
+function formatDateOfBirth(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
+}
 
 function initials(name: string): string {
   return name
@@ -150,7 +151,7 @@ export function CvPage({
                   {personalInfo.dateOfBirth && (
                     <li>
                       <Icon name="calendar" size={13} />
-                      <span>{formatDateOfBirth(personalInfo.dateOfBirth, dictionary.locale)}</span>
+                      <span>{formatDateOfBirth(personalInfo.dateOfBirth)}</span>
                     </li>
                   )}
                   {contacts.map((item) => (
