@@ -3,7 +3,7 @@ import { buildFillSystemPrompt, getAnthropicClient } from "./_lib/anthropic.js";
 import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit.js";
 import { buildFillSchema, type FillResult } from "./_lib/schema.js";
 import {
-  CVISOR_MODEL,
+  CVISOR_FILL_MODEL,
   FILL_DAILY_LIMIT,
   FILL_MAX_TOKENS,
   LANGUAGE_LEVELS,
@@ -137,8 +137,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const schema = buildFillSchema(LANGUAGE_LEVELS[language], THEME_COLOR_IDS);
 
     const response = await client.messages.create({
-      model: CVISOR_MODEL,
+      model: CVISOR_FILL_MODEL,
       max_tokens: FILL_MAX_TOKENS,
+      thinking: { type: "disabled" },
       system: buildFillSystemPrompt(language),
       output_config: { format: { type: "json_schema", schema } },
       messages: [
@@ -166,6 +167,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       level: clampSkillLevel(skill.level),
       relevant: skill.relevant !== false,
     }));
+    data.softSkills = data.softSkills.map((item) => ({ ...item, relevant: item.relevant !== false }));
+    data.interests = data.interests.map((item) => ({ ...item, relevant: item.relevant !== false }));
     data.experience = data.experience.map((item) => ({ ...item, bullets: sanitizeBullets(item.bullets) }));
     data.education = data.education.map((item) => ({ ...item, bullets: sanitizeBullets(item.bullets) }));
     data.projects = data.projects.map((item) => ({ ...item, bullets: sanitizeBullets(item.bullets) }));

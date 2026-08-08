@@ -87,3 +87,27 @@
   padding: 7px 12px;
   border-radius: var(--radius-sm);
 }
+
+.cvisor-suggestion-regenerate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.cvisor-suggestion-regenerate:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.cvisor-suggestion-regenerate:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

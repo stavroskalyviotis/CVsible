@@ -9,10 +9,12 @@ export function createEmptyCvData(): CvData {
     density: "comfortable",
     showPhoto: true,
     photo: null,
+    photoPosition: { x: 50, y: 50 },
     personalInfo: {
       fullName: "",
       jobTitle: "",
       summary: "",
+      dateOfBirth: "",
       contacts: [
         { id: createId(), type: "email", value: "", label: "" },
         { id: createId(), type: "phone", value: "", label: "" },

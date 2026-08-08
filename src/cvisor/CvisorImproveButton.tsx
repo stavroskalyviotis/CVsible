@@ -59,14 +59,18 @@ export function CvisorImproveButton({
 
   return (
     <div className="cvisor-improve">
-      <button type="button" className="cvisor-improve-trigger" onClick={handleRun} disabled={status === "loading"}>
-        <Icon name="sparkles" size={14} />
-        {status === "loading"
-          ? dictionary.cvisor.improving
-          : hasText
-            ? dictionary.cvisor.improveButton
-            : dictionary.cvisor.generateButton}
-      </button>
+      {!suggestion && (
+        <button type="button" className="cvisor-improve-trigger" onClick={handleRun} disabled={status === "loading"}>
+          <Icon name="sparkles" size={14} />
+          {status === "loading"
+            ? hasText
+              ? dictionary.cvisor.improving
+              : dictionary.cvisor.generating
+            : hasText
+              ? dictionary.cvisor.improveButton
+              : dictionary.cvisor.generateButton}
+        </button>
+      )}
 
       {status === "error" && errorMessage && <p className="cvisor-improve-error">{errorMessage}</p>}
 
@@ -80,6 +84,16 @@ export function CvisorImproveButton({
             </button>
             <button type="button" className="cvisor-suggestion-discard" onClick={() => setSuggestion(null)}>
               {dictionary.cvisor.discardSuggestion}
+            </button>
+            <button
+              type="button"
+              className="cvisor-suggestion-regenerate"
+              onClick={handleRun}
+              disabled={status === "loading"}
+              title={dictionary.cvisor.regenerateSuggestion}
+              aria-label={dictionary.cvisor.regenerateSuggestion}
+            >
+              <Icon name="refresh" size={13} />
             </button>
           </div>
         </div>

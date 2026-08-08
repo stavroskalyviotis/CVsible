@@ -80,15 +80,20 @@ export interface CvisorFillSkillItem {
   relevant: boolean;
 }
 
+export interface CvisorFillRelevantNamedItem {
+  name: string;
+  relevant: boolean;
+}
+
 export interface CvisorFillResult {
   summary: string;
   suggestedJobTitle: string;
   experience: CvisorSuggestedExperience[];
   education: CvisorSuggestedEducation[];
   skills: CvisorFillSkillItem[];
-  softSkills: CvisorNamedItem[];
+  softSkills: CvisorFillRelevantNamedItem[];
   languages: CvisorLanguageItem[];
-  interests: CvisorNamedItem[];
+  interests: CvisorFillRelevantNamedItem[];
   certifications: CvisorCertificationItem[];
   projects: CvisorSuggestedProject[];
   suggestedSkills: CvisorNamedItem[];

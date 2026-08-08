@@ -15,18 +15,22 @@ type ContactActions = {
 export function PersonalInfoForm({
   personalInfo,
   photo,
+  photoPosition,
   showPhoto,
   onChange,
   onPhotoChange,
+  onPhotoPositionChange,
   onShowPhotoChange,
   contactActions,
   dictionary,
 }: {
   personalInfo: PersonalInfo;
   photo: string | null;
+  photoPosition: { x: number; y: number };
   showPhoto: boolean;
   onChange: (patch: Partial<PersonalInfo>) => void;
   onPhotoChange: (photo: string | null) => void;
+  onPhotoPositionChange: (position: { x: number; y: number }) => void;
   onShowPhotoChange: (showPhoto: boolean) => void;
   contactActions: ContactActions;
   dictionary: Dictionary;
@@ -37,7 +41,15 @@ export function PersonalInfoForm({
     <>
       <CheckboxField label={fields.showPhoto} checked={showPhoto} onChange={onShowPhotoChange} />
 
-      {showPhoto && <PhotoUpload photo={photo} onChange={onPhotoChange} dictionary={dictionary} />}
+      {showPhoto && (
+        <PhotoUpload
+          photo={photo}
+          position={photoPosition}
+          onChange={onPhotoChange}
+          onPositionChange={onPhotoPositionChange}
+          dictionary={dictionary}
+        />
+      )}
 
       <FieldRow>
         <TextField
@@ -53,6 +65,13 @@ export function PersonalInfoForm({
           onChange={(jobTitle) => onChange({ jobTitle })}
         />
       </FieldRow>
+
+      <TextField
+        label={fields.dateOfBirth}
+        value={personalInfo.dateOfBirth}
+        type="date"
+        onChange={(dateOfBirth) => onChange({ dateOfBirth })}
+      />
 
       <ContactsForm items={personalInfo.contacts} actions={contactActions} dictionary={dictionary} />
     </>

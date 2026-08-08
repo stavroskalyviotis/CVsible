@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { buildSuggestSystemPrompt, getAnthropicClient } from "./_lib/anthropic.js";
 import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit.js";
 import { SUGGEST_SCHEMA, type SuggestResult } from "./_lib/schema.js";
-import { CVISOR_MODEL, MAX_JOB_AD_CHARS, MAX_SECTION_TEXT_CHARS, SUGGEST_DAILY_LIMIT, SUGGEST_MAX_TOKENS } from "./_lib/constants.js";
+import { CVISOR_SUGGEST_MODEL, MAX_JOB_AD_CHARS, MAX_SECTION_TEXT_CHARS, SUGGEST_DAILY_LIMIT, SUGGEST_MAX_TOKENS } from "./_lib/constants.js";
 
 const SECTION_LABELS: Record<string, string> = {
   summary: "Επαγγελματικό προφίλ / σύνοψη",
@@ -87,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     parts.push(`ΤΡΕΧΟΝ ΚΕΙΜΕΝΟ:\n${text || "(κενό — δημιούργησε νέο περιεχόμενο από τα στοιχεία πλαισίου)"}`);
 
     const response = await client.messages.create({
-      model: CVISOR_MODEL,
+      model: CVISOR_SUGGEST_MODEL,
       max_tokens: SUGGEST_MAX_TOKENS,
       system: buildSuggestSystemPrompt(language),
       output_config: { format: { type: "json_schema", schema: SUGGEST_SCHEMA } },

@@ -3,7 +3,14 @@ import type { Dictionary } from "../i18n/translations";
 import type { CvData, SidebarSectionType } from "../types";
 import { getDensityMetrics } from "../data/density";
 import { ContactIcon } from "../components/ContactIcon";
+import { Icon } from "../components/Icon";
 import { BlockContent, SectionHeading } from "./mainBlocks";
+
+function formatDateOfBirth(value: string, locale: string): string {
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).format(parsed);
+}
 import type { PageBlock } from "./useMainPagination";
 
 function initials(name: string): string {
@@ -121,7 +128,12 @@ export function CvPage({
           <>
             {data.showPhoto &&
               (data.photo ? (
-                <img className="cv-photo" src={data.photo} alt={personalInfo.fullName} />
+                <img
+                  className="cv-photo"
+                  src={data.photo}
+                  alt={personalInfo.fullName}
+                  style={{ objectPosition: `${data.photoPosition.x}% ${data.photoPosition.y}%` }}
+                />
               ) : (
                 <div className="cv-photo cv-photo-placeholder">
                   <span>{initials(personalInfo.fullName) || "CV"}</span>
@@ -131,10 +143,16 @@ export function CvPage({
             <h1 className="cv-name">{personalInfo.fullName || dictionary.placeholders.fullName}</h1>
             {personalInfo.jobTitle && <p className="cv-role">{personalInfo.jobTitle}</p>}
 
-            {contacts.length > 0 && (
+            {(contacts.length > 0 || personalInfo.dateOfBirth) && (
               <section className="cv-side-section">
                 <h2>{dictionary.sections.personalInfo}</h2>
                 <ul className="cv-contact-list">
+                  {personalInfo.dateOfBirth && (
+                    <li>
+                      <Icon name="calendar" size={13} />
+                      <span>{formatDateOfBirth(personalInfo.dateOfBirth, dictionary.locale)}</span>
+                    </li>
+                  )}
                   {contacts.map((item) => (
                     <li key={item.id}>
                       <ContactIcon type={item.type} size={13} />

@@ -34,6 +34,7 @@ export interface Dictionary {
     cvisorStep2Body: string;
     cvisorStep3Title: string;
     cvisorStep3Body: string;
+    pathManualLabel: string;
   };
   nav: {
     brand: string;
@@ -62,6 +63,7 @@ export interface Dictionary {
     jobTitle: string;
     location: string;
     summary: string;
+    dateOfBirth: string;
     role: string;
     company: string;
     startDate: string;
@@ -94,6 +96,7 @@ export interface Dictionary {
     dragReorder: string;
     uploadPhoto: string;
     removePhoto: string;
+    dragToReposition: string;
     chooseColor: string;
     customColor: string;
   };
@@ -211,10 +214,16 @@ export interface Dictionary {
     editElsewhereNote: string;
     experienceTipsHint: string;
     educationTipsHint: string;
+    noBulletsHint: string;
     keepSummaryLabel: string;
+    noSummaryHint: string;
     ownSkillsTitle: string;
+    ownLanguagesTitle: string;
+    ownSoftSkillsTitle: string;
+    ownInterestsTitle: string;
     relevantBadge: string;
     notRelevantBadge: string;
+    notRelevantInterestBadge: string;
     privacyNote: string;
     errorMissingFields: string;
     errorTooLong: string;
@@ -226,6 +235,7 @@ export interface Dictionary {
     suggestionTitle: string;
     acceptSuggestion: string;
     discardSuggestion: string;
+    regenerateSuggestion: string;
   };
   emptyStates: {
     experience: string;
@@ -277,6 +287,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvisorStep2Body: "Λίγες λέξεις-κλειδιά για την εμπειρία, τις σπουδές και τις δεξιότητές σου αρκούν.",
       cvisorStep3Title: "Έγκρινε τις προτάσεις",
       cvisorStep3Body: "Δες τι πρότεινε ο CVisor και διάλεξε τι θα κρατήσεις πριν εφαρμοστεί στο βιογραφικό σου.",
+      pathManualLabel: "Μόνος σου",
     },
     nav: {
       brand: "CVsible",
@@ -305,6 +316,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       jobTitle: "Επαγγελματικός τίτλος",
       location: "Τοποθεσία",
       summary: "Σύνοψη",
+      dateOfBirth: "Ημερομηνία γέννησης (προαιρετικό)",
       role: "Θέση",
       company: "Εταιρεία",
       startDate: "Έναρξη",
@@ -337,6 +349,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       dragReorder: "Σύρε για αναδιάταξη",
       uploadPhoto: "Ανέβασμα φωτογραφίας",
       removePhoto: "Αφαίρεση φωτογραφίας",
+      dragToReposition: "Σύρε για να αλλάξεις την εστίαση της φωτογραφίας",
       chooseColor: "Χρώμα στήλης",
       customColor: "Προσαρμοσμένο",
     },
@@ -458,10 +471,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "Θες να αλλάξεις τη σειρά των ενοτήτων, τα χρώματα ή κάτι άλλο; Μπορείς πάντα να το προσαρμόσεις ελεύθερα από τις κανονικές φόρμες του βιογραφικού σου.",
       experienceTipsHint: "Δεν πρόσθεσες εργασιακή εμπειρία — μερικές ιδέες:",
       educationTipsHint: "Δεν πρόσθεσες εκπαίδευση — μερικές ιδέες:",
+      noBulletsHint: "Δεν προέκυψε προτεινόμενο περιεχόμενο — δοκίμασε «Νέες προτάσεις».",
       keepSummaryLabel: "Κράτησε αυτή τη σύνοψη στις επόμενες προτάσεις",
+      noSummaryHint: "Δεν δημιουργήθηκε σύνοψη αυτή τη φορά — δοκίμασε «Νέες προτάσεις».",
       ownSkillsTitle: "Οι δεξιότητές σου",
+      ownLanguagesTitle: "Οι γλώσσες σου",
+      ownSoftSkillsTitle: "Οι ήπιες δεξιότητές σου",
+      ownInterestsTitle: "Τα ενδιαφέροντά σου",
       relevantBadge: "Ταιριάζει με την αγγελία",
       notRelevantBadge: "Ίσως δεν ταιριάζει με την αγγελία — θες να την αφαιρέσεις;",
+      notRelevantInterestBadge: "Πιθανώς ακατάλληλο για επαγγελματικό βιογραφικό — αφαιρέθηκε, πάτα για να το κρατήσεις",
       generateButton: "Δημιουργία με CVisor",
       generating: "Ο CVisor σκέφτεται…",
       reviewTitle: "Έλεγξε πριν εφαρμόσεις",
@@ -482,6 +501,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       suggestionTitle: "Πρόταση του CVisor",
       acceptSuggestion: "Χρήση αυτής της εκδοχής",
       discardSuggestion: "Απόρριψη",
+      regenerateSuggestion: "Νέα απόπειρα",
     },
     emptyStates: {
       experience: "Δεν έχεις προσθέσει ακόμα εργασιακή εμπειρία.",
@@ -531,6 +551,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvisorStep2Body: "A few keywords about your experience, education and skills are enough.",
       cvisorStep3Title: "Approve the suggestions",
       cvisorStep3Body: "Review what CVisor drafted and pick what to keep before it's applied to your resume.",
+      pathManualLabel: "On your own",
     },
     nav: {
       brand: "CVsible",
@@ -559,6 +580,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       jobTitle: "Job title",
       location: "Location",
       summary: "Summary",
+      dateOfBirth: "Date of birth (optional)",
       role: "Role",
       company: "Company",
       startDate: "Start date",
@@ -591,6 +613,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       dragReorder: "Drag to reorder",
       uploadPhoto: "Upload photo",
       removePhoto: "Remove photo",
+      dragToReposition: "Drag to reposition the photo",
       chooseColor: "Sidebar color",
       customColor: "Custom",
     },
@@ -711,10 +734,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "Want to change the section order, colors, or anything else? You can always adjust that freely from your resume's regular forms.",
       experienceTipsHint: "You haven't added any work experience — a few ideas:",
       educationTipsHint: "You haven't added any education — a few ideas:",
+      noBulletsHint: "No suggested content came up for this — try \"New suggestions\".",
       keepSummaryLabel: "Keep this summary for future suggestions",
+      noSummaryHint: "No summary was generated this time — try \"New suggestions\".",
       ownSkillsTitle: "Your skills",
+      ownLanguagesTitle: "Your languages",
+      ownSoftSkillsTitle: "Your soft skills",
+      ownInterestsTitle: "Your interests",
       relevantBadge: "Matches the posting",
       notRelevantBadge: "May not match the posting — remove it?",
+      notRelevantInterestBadge: "Possibly unsuitable for a professional resume — removed, tap to keep it",
       generateButton: "Generate with CVisor",
       generating: "CVisor is thinking…",
       reviewTitle: "Review before applying",
@@ -734,6 +763,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       suggestionTitle: "CVisor's suggestion",
       acceptSuggestion: "Use this version",
       discardSuggestion: "Discard",
+      regenerateSuggestion: "Try again",
     },
     emptyStates: {
       experience: "You haven't added any work experience yet.",
