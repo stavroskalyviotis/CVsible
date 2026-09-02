@@ -39,7 +39,15 @@ function scoreOf(checks: AtsCheck[]): number {
     0,
   );
   const possible = checks.reduce((total, item) => total + item.weight, 0);
-  return possible === 0 ? 0 : Math.round((earned / possible) * 100);
+  const raw = possible === 0 ? 0 : Math.round((earned / possible) * 100);
+
+  // One blocking failure (unreadable text, wrong headings, ...) can be enough
+  // for an ATS to reject the document outright, no matter how strong every
+  // other check scores — so the number can never read as "good"/"excellent"
+  // while passesAts() would say no. Keeps the score and the pass/fail verdict
+  // from ever contradicting each other.
+  const hasFail = checks.some((item) => item.status === "fail");
+  return hasFail ? Math.min(raw, 69) : raw;
 }
 
 function keywordSection(text: string, jobAd: string) {

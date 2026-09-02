@@ -66,7 +66,10 @@ export function PhotoUpload({
         onPointerMove={handlePointerMove}
         onPointerUp={stopDragging}
         onPointerCancel={stopDragging}
-        title={photo ? dictionary.actions.dragToReposition : undefined}
+        onClick={() => {
+          if (!photo) inputRef.current?.click();
+        }}
+        title={photo ? dictionary.actions.dragToReposition : dictionary.actions.uploadPhoto}
       >
         {photo ? (
           <img

@@ -36,6 +36,7 @@
   place-items: center;
   background: var(--accent-soft);
   color: var(--accent);
+  cursor: pointer;
 }
 
 .photo-upload-actions {

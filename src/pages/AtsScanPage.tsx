@@ -17,6 +17,7 @@ import { analyzeResumeText } from "../ats/analyzeText";
 import type { ResumeAnalysis } from "../ats/analyzeText";
 import { cvToExtractedResume } from "../ats/cvToResume";
 import { CvFixCard } from "../cvisor/CvFixCard";
+import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { ACCEPTED_RESUME_TYPES, extractResume, ResumeReadError } from "../ats/extractResume";
 import type { ExtractedResume } from "../ats/extractResume";
 import "./AtsScanPage.css";
@@ -126,7 +127,7 @@ export function AtsScanPage({
   const [error, setError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [jobAd, setJobAd] = useState("");
+  const [jobAd, setJobAd] = useCvisorJobAd();
   const [copied, setCopied] = useState(false);
 
   const [builderData, setBuilderData] = useState<CvData | null>(null);
