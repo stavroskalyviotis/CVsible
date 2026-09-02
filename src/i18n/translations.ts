@@ -120,6 +120,7 @@ export interface Dictionary {
     photo: string;
     showPhoto: string;
     customLabel: string;
+    contactType: string;
   };
   actions: {
     add: string;
@@ -636,6 +637,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       photo: "Φωτογραφία",
       showPhoto: "Εμφάνιση φωτογραφίας στο βιογραφικό",
       customLabel: "Ετικέτα",
+      contactType: "Τύπος επικοινωνίας",
     },
     actions: {
       add: "Προσθήκη",
@@ -1261,6 +1263,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       photo: "Photo",
       showPhoto: "Show photo on resume",
       customLabel: "Label",
+      contactType: "Contact type",
     },
     actions: {
       add: "Add",

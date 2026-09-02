@@ -73,6 +73,7 @@ export function ContactsForm({
                 <ContactIcon type={item.type} size={14} />
               </span>
               <select
+                aria-label={dictionary.fields.contactType}
                 value={item.type}
                 onChange={(e) => actions.update(item.id, { type: e.target.value as ContactType })}
               >

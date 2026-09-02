@@ -38,6 +38,7 @@
   min-height: 90px;
   padding: 10px 11px;
   font-size: 0.9rem;
+  font-weight: normal;
   line-height: 1.5;
   color: var(--ink);
   outline: none;

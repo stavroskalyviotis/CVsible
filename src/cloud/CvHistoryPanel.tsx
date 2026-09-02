@@ -88,7 +88,7 @@ export function CvHistoryPanel({
                     {copy.viewAd}
                   </a>
                 )}
-                <button type="button" onClick={() => removeEntry(entry.id)} aria-label={copy.add}>
+                <button type="button" onClick={() => removeEntry(entry.id)} aria-label={dictionary.actions.remove}>
                   <Icon name="trash" size={12} />
                 </button>
               </div>

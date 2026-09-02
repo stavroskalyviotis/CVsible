@@ -195,7 +195,9 @@
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.65);
+  /* 0.65 read as only ~3.6:1 against --accent, under the 4.5:1 AA minimum for
+     this small text; 0.85 clears it with margin (~5:1). */
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .mock-skill {
