@@ -1,12 +1,22 @@
-// The fill flow asks the model to follow many simultaneous structural rules
-// (bullets, relevance flags, neutral levels, avoid-repeat, conditional tips)
-// against a large schema — Haiku 4.5 was unreliable at holding all of that
-// together consistently, so this one call uses a stronger model. The much
-// simpler single-field "improve/generate" endpoint stays on Haiku.
-export const CVISOR_FILL_MODEL = "claude-sonnet-5";
+// The single-field "improve this text" endpoint is a small, well-bounded job.
 export const CVISOR_SUGGEST_MODEL = "claude-haiku-4-5";
 
-export const FILL_DAILY_LIMIT = 5;
+// Tried Haiku 4.5 here: it stalled inside the 4-round cap on a blocking
+// summary-length fix and once re-added a skill the grounding check had
+// already stripped as fabricated. This is the step that writes the
+// candidate's actual words, so it stays on the model that reliably converges.
+export const AGENT_MODEL = "claude-sonnet-5";
+export const AGENT_MAX_TOKENS = 8000;
+
+// CVfix never writes prose, it untangles an interleaved extraction into the
+// right fields — reading comprehension, not composition, so the small model
+// is enough, backed by the same verbatim/structure checks.
+export const CVFIX_MODEL = "claude-haiku-4-5";
+export const CVFIX_MAX_TOKENS = 8000;
+export const CVFIX_DAILY_LIMIT = 8;
+export const MAX_RESUME_TEXT_CHARS = 20000;
+
+export const AGENT_DAILY_LIMIT = 5;
 export const SUGGEST_DAILY_LIMIT = 20;
 export const RATE_LIMIT_TTL_SECONDS = 26 * 60 * 60;
 
@@ -14,12 +24,9 @@ export const MAX_JOB_AD_CHARS = 6000;
 export const MAX_BACKGROUND_CHARS = 8000;
 export const MAX_SECTION_TEXT_CHARS = 4000;
 
-export const FILL_MAX_TOKENS = 4500;
 export const SUGGEST_MAX_TOKENS = 700;
 
 export const LANGUAGE_LEVELS: Record<"el" | "en", string[]> = {
   el: ["Βασικό", "Μέτριο", "Καλό", "Πολύ καλό", "Άριστο", "Μητρική γλώσσα"],
   en: ["Basic", "Intermediate", "Good", "Fluent", "Excellent", "Native"],
 };
-
-export const THEME_COLOR_IDS = ["berry", "teal", "navy", "plum", "forest", "slate"] as const;

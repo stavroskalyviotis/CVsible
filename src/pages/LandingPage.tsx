@@ -1,6 +1,11 @@
 import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
+import type { Route } from "../hooks/useHashRoute";
 import { Icon } from "../components/Icon";
+import type { IconName } from "../components/Icon";
+import { SiteHeader } from "../components/SiteHeader";
+import { buildSiteNav } from "../components/siteNav";
+import { AuthMenu } from "../auth/AuthMenu";
 import "./LandingPage.css";
 
 const MOCK_CONTENT = {
@@ -30,12 +35,14 @@ export function LandingPage({
   dictionary,
   language,
   onLanguageChange,
+  navigate,
   onStart,
   onStartWithCvisor,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
+  navigate: (route: Exclude<Route, "public-cv">) => void;
   onStart: () => void;
   onStartWithCvisor: () => void;
 }) {
@@ -44,30 +51,14 @@ export function LandingPage({
 
   return (
     <div className="landing">
-      <header className="landing-topbar">
-        <span className="landing-brand">
-          <span className="landing-brand-mark" aria-hidden="true">
-            CV
-          </span>
-          CVsible
-        </span>
-        <div className="landing-lang-switch" role="group" aria-label="Language">
-          <button
-            type="button"
-            className={language === "el" ? "active" : ""}
-            onClick={() => onLanguageChange("el")}
-          >
-            EL
-          </button>
-          <button
-            type="button"
-            className={language === "en" ? "active" : ""}
-            onClick={() => onLanguageChange("en")}
-          >
-            EN
-          </button>
-        </div>
-      </header>
+      <SiteHeader
+        dictionary={dictionary}
+        language={language}
+        onLanguageChange={onLanguageChange}
+        items={buildSiteNav(dictionary, "landing", navigate)}
+        onBrandClick={() => navigate("landing")}
+        authSlot={<AuthMenu dictionary={dictionary} onOpenMyCvs={() => navigate("my-cvs")} />}
+      />
 
       <main className="landing-hero">
         <div className="landing-copy">
@@ -193,28 +184,58 @@ export function LandingPage({
         </div>
       </section>
 
-      <section className="landing-features">
-        <article>
-          <span className="feature-icon" aria-hidden="true">
-            ⚡
-          </span>
-          <h3>{landing.feature1Title}</h3>
-          <p>{landing.feature1Body}</p>
-        </article>
-        <article>
-          <span className="feature-icon" aria-hidden="true">
-            🎨
-          </span>
-          <h3>{landing.feature2Title}</h3>
-          <p>{landing.feature2Body}</p>
-        </article>
-        <article>
-          <span className="feature-icon" aria-hidden="true">
-            ⬇
-          </span>
-          <h3>{landing.feature3Title}</h3>
-          <p>{landing.feature3Body}</p>
-        </article>
+      <section className="landing-scan">
+        <div className="landing-scan-copy">
+          <span className="landing-badge landing-scan-badge">{landing.scanBadge}</span>
+          <h2>{landing.scanTitle}</h2>
+          <p>{landing.scanBody}</p>
+          <button type="button" className="landing-cta" onClick={() => navigate("ats")}>
+            <Icon name="shield" size={16} />
+            {landing.scanCta}
+          </button>
+        </div>
+        <div className="landing-scan-visual" aria-hidden="true">
+          <div className="scan-mock">
+            <div className="scan-mock-row">
+              <span className="scan-mock-dot pass" />
+              <span className="scan-mock-bar w70" />
+            </div>
+            <div className="scan-mock-row">
+              <span className="scan-mock-dot fail" />
+              <span className="scan-mock-bar w85" />
+            </div>
+            <div className="scan-mock-row">
+              <span className="scan-mock-dot pass" />
+              <span className="scan-mock-bar w60" />
+            </div>
+            <div className="scan-mock-row">
+              <span className="scan-mock-dot warn" />
+              <span className="scan-mock-bar w78" />
+            </div>
+            <div className="scan-mock-row">
+              <span className="scan-mock-dot pass" />
+              <span className="scan-mock-bar w52" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-features" id="features">
+        <div className="landing-features-head">
+          <h2>{landing.featuresTitle}</h2>
+          <p>{landing.featuresSubtitle}</p>
+        </div>
+        <div className="landing-features-grid">
+          {landing.features.map((feature) => (
+            <article key={feature.title}>
+              <span className="feature-icon" aria-hidden="true">
+                <Icon name={feature.icon as IconName} size={18} />
+              </span>
+              <h3>{feature.title}</h3>
+              <p>{feature.body}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="landing-final-cta">
@@ -233,6 +254,15 @@ export function LandingPage({
           <a href="https://www.linkedin.com/in/stavros-kalyviotis/" target="_blank" rel="noopener noreferrer">
             Stavros Kalyviotis
           </a>
+        </p>
+        <p className="landing-legal-links">
+          <button type="button" onClick={() => navigate("privacy")}>
+            {dictionary.legal.privacyLink}
+          </button>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={() => navigate("terms")}>
+            {dictionary.legal.termsLink}
+          </button>
         </p>
       </footer>
     </div>

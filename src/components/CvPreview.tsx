@@ -1,4 +1,4 @@
-import { useImperativeHandle, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { CSSProperties, Ref } from "react";
 import { createPortal } from "react-dom";
 import type { Dictionary } from "../i18n/translations";
@@ -8,7 +8,7 @@ import { buildPdfFilename, exportPagesToPdf } from "../utils/exportPdf";
 import { FONT_STACKS } from "../data/fontStacks";
 import { CvPage } from "../pagination/CvPage";
 import { MeasurePanel } from "../pagination/MeasurePanel";
-import { useMainPagination } from "../pagination/useMainPagination";
+import { usePagination } from "../pagination/usePagination";
 import { Icon } from "./Icon";
 import "./CvPreview.css";
 
@@ -25,17 +25,23 @@ function waitForPaint(): Promise<void> {
 export function CvPreview({
   data,
   dictionary,
+  onPageCountChange,
   ref,
 }: {
   data: CvData;
   dictionary: Dictionary;
+  onPageCountChange?: (count: number) => void;
   ref?: Ref<CvPreviewHandle>;
 }) {
-  const { pages, metas, itemRefs, headingSampleRef, metrics } = useMainPagination(data, dictionary);
+  const { pages, metas, itemRefs, headingSampleRef, headerSampleRef, metrics } = usePagination(data, dictionary);
   const [pageIndex, setPageIndex] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const printPageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const currentPage = Math.min(pageIndex, Math.max(0, pages.length - 1));
+
+  useEffect(() => {
+    onPageCountChange?.(pages.length);
+  }, [pages.length, onPageCountChange]);
 
   useImperativeHandle(
     ref,
@@ -45,7 +51,12 @@ export function CvPreview({
         await waitForPaint();
         try {
           const elements = printPageRefs.current.filter((el): el is HTMLDivElement => el !== null);
-          await exportPagesToPdf(elements, buildPdfFilename(data.personalInfo.fullName));
+          await exportPagesToPdf(elements, {
+            filename: buildPdfFilename(data.personalInfo.fullName),
+            fontFamily: data.fontFamily,
+            fullName: data.personalInfo.fullName,
+            jobTitle: data.personalInfo.jobTitle,
+          });
         } finally {
           setIsExporting(false);
         }
@@ -62,8 +73,19 @@ export function CvPreview({
     "--cv-sidebar-border": palette.border,
     "--cv-sidebar-track": palette.track,
     "--cv-scale": metrics.scale,
+    "--cv-pad-x": `${metrics.paddingX}px`,
+    "--cv-pad-y": `${metrics.paddingY}px`,
+    "--cv-sidebar-w": `${metrics.sidebarWidth}px`,
     fontFamily: FONT_STACKS[data.fontFamily],
   } as CSSProperties;
+
+  const pageProps = {
+    data,
+    dictionary,
+    themeStyle,
+    sectionGap: metrics.sectionGap,
+    entryGap: metrics.entryGap,
+  };
 
   return (
     <div className="cv-preview-wrap">
@@ -91,14 +113,7 @@ export function CvPreview({
         </nav>
       )}
 
-      <CvPage
-        page={pages[currentPage] ?? []}
-        pageIndex={currentPage}
-        data={data}
-        dictionary={dictionary}
-        themeStyle={themeStyle}
-        className="cv-screen-page"
-      />
+      <CvPage {...pageProps} page={pages[currentPage] ?? []} pageIndex={currentPage} className="cv-screen-page" />
 
       {createPortal(
         <MeasurePanel
@@ -107,7 +122,8 @@ export function CvPreview({
           dictionary={dictionary}
           itemRefs={itemRefs}
           headingSampleRef={headingSampleRef}
-          width={metrics.mainWidth}
+          headerSampleRef={headerSampleRef}
+          width={metrics.contentWidth}
           themeStyle={themeStyle}
         />,
         document.body,
@@ -121,12 +137,10 @@ export function CvPreview({
         >
           {pages.map((page, index) => (
             <CvPage
+              {...pageProps}
               key={index}
               page={page}
               pageIndex={index}
-              data={data}
-              dictionary={dictionary}
-              themeStyle={themeStyle}
               className="cv-print-page"
               pageRef={(el) => {
                 printPageRefs.current[index] = el;

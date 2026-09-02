@@ -1,22 +1,22 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { CvData } from "../types";
-import { getDensityMetrics } from "../data/density";
-import { buildMainBlockMetas } from "./blockMeta";
-import type { MainBlockMeta } from "./blockMeta";
+import { getTemplate, getTemplateMetrics } from "../templates/registry";
+import { buildBlockMetas } from "./blockMeta";
+import type { BlockMeta } from "./blockMeta";
 
 const OVERFLOW_TOLERANCE = 24;
 
 export interface PageBlock {
-  meta: MainBlockMeta;
+  meta: BlockMeta;
   needsContinuationHeading: boolean;
 }
 
 function paginateBlocks(
-  metas: MainBlockMeta[],
+  metas: BlockMeta[],
   heights: number[],
   continuationHeadingHeight: number,
-  capacity: number,
+  capacityFor: (pageIndex: number) => number,
   sectionGap: number,
   entryGap: number,
 ): PageBlock[][] {
@@ -38,7 +38,7 @@ function paginateBlocks(
       cost += meta.isSectionStart ? sectionGap : entryGap;
     }
 
-    if (!isFirstOnPage && used + cost > capacity + OVERFLOW_TOLERANCE) {
+    if (!isFirstOnPage && used + cost > capacityFor(pages.length) + OVERFLOW_TOLERANCE) {
       pages.push(current);
       current = [];
       used = 0;
@@ -54,38 +54,57 @@ function paginateBlocks(
   return pages;
 }
 
-export function useMainPagination(data: CvData, dictionary: Dictionary) {
-  const metrics = getDensityMetrics(data.density);
-  const metas = useMemo(() => buildMainBlockMetas(data), [data]);
+export function usePagination(data: CvData, dictionary: Dictionary) {
+  const template = getTemplate(data.template);
+  const metrics = getTemplateMetrics(data.template, data.density);
+  const metas = useMemo(() => buildBlockMetas(data, data.template), [data]);
+
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const headingSampleRef = useRef<HTMLDivElement | null>(null);
+  const headerSampleRef = useRef<HTMLDivElement | null>(null);
+
   const [heights, setHeights] = useState<number[]>([]);
   const [continuationHeadingHeight, setContinuationHeadingHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   useLayoutEffect(() => {
-    const measured = metas.map((_, index) => itemRefs.current[index]?.offsetHeight ?? 0);
-    setHeights(measured);
+    setHeights(metas.map((_, index) => itemRefs.current[index]?.offsetHeight ?? 0));
     setContinuationHeadingHeight(headingSampleRef.current?.offsetHeight ?? 0);
-  }, [metas, dictionary, metrics.mainWidth, metrics.scale]);
+    setHeaderHeight(headerSampleRef.current?.offsetHeight ?? 0);
+  }, [metas, dictionary, metrics.contentWidth, metrics.scale, data.template]);
 
   const pages = useMemo<PageBlock[][]>(() => {
     if (heights.length !== metas.length) return [[]];
+    const firstPageCapacity =
+      template.layout === "single" ? metrics.capacity - headerHeight - metrics.sectionGap : metrics.capacity;
+
     return paginateBlocks(
       metas,
       heights,
       continuationHeadingHeight,
-      metrics.mainCapacity,
+      (pageIndex) => (pageIndex === 0 ? firstPageCapacity : metrics.capacity),
       metrics.sectionGap,
       metrics.entryGap,
     );
-  }, [metas, heights, continuationHeadingHeight, metrics.mainCapacity, metrics.sectionGap, metrics.entryGap]);
+  }, [
+    metas,
+    heights,
+    continuationHeadingHeight,
+    headerHeight,
+    template.layout,
+    metrics.capacity,
+    metrics.sectionGap,
+    metrics.entryGap,
+  ]);
 
   return {
     pages,
     metas,
     itemRefs,
     headingSampleRef,
+    headerSampleRef,
     metrics,
+    template,
     isMeasuring: heights.length !== metas.length,
   };
 }

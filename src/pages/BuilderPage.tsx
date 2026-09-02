@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
-import type { LanguageCode, MainSectionOrderType, SidebarSectionType } from "../types";
+import type { LanguageCode, SectionKey } from "../types";
 import { useCvData } from "../hooks/useCvData";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { CvPreview } from "../components/CvPreview";
@@ -20,10 +20,19 @@ import { DesignForm } from "../components/forms/DesignForm";
 import { SimpleNameListForm } from "../components/forms/SimpleNameListForm";
 import { SectionOrderList } from "../components/forms/SectionOrderList";
 import { createEmptyCvData } from "../data/defaultData";
-import { createId } from "../utils/id";
 import { CvisorPanel } from "../cvisor/CvisorPanel";
-import type { CvisorApplyResult } from "../cvisor/api";
+import { applyDraft } from "../cvisor/agent";
+import type { CvDraft } from "../cvisor/agent";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
+import { AtsScoreChip } from "../ats/AtsScoreChip";
+import { analyzeResumeText } from "../ats/analyzeText";
+import { cvToExtractedResume } from "../ats/cvToResume";
+import { downloadCvJson, readCvJson } from "../utils/cvFile";
+import { getCurrentCloudId, setCurrentCloudId } from "../utils/storage";
+import { AuthMenu } from "../auth/AuthMenu";
+import { useAuth } from "../auth/useAuth";
+import { isCloudConfigured } from "../lib/supabaseClient";
+import { CloudCvError, createCv, updateCvData } from "../cloud/cvStore";
 import "./BuilderPage.css";
 
 type SectionId =
@@ -40,18 +49,15 @@ type SectionId =
   | "sectionOrder"
   | "design";
 
-const SIDEBAR_ICONS: Record<SidebarSectionType, IconName> = {
-  skills: "star",
-  softSkills: "award",
-  languages: "languages",
-  interests: "heart",
-};
-
-const MAIN_ICONS: Record<MainSectionOrderType, IconName> = {
+const SECTION_ICONS: Record<SectionKey, IconName> = {
   experience: "briefcase",
   education: "book",
   projects: "folder",
   certifications: "award",
+  skills: "star",
+  softSkills: "award",
+  languages: "languages",
+  interests: "heart",
 };
 
 export function BuilderPage({
@@ -59,27 +65,87 @@ export function BuilderPage({
   language,
   onLanguageChange,
   onGoHome,
+  onOpenScan,
+  onOpenMyCvs,
   autoOpenCvisor = false,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   onGoHome: () => void;
+  onOpenScan: () => void;
+  onOpenMyCvs: () => void;
   autoOpenCvisor?: boolean;
 }) {
   const cv = useCvData();
+  const { user } = useAuth();
   const { containerRef, scale } = usePreviewScale();
   const [openSection, setOpenSection] = useState<SectionId>("personalInfo");
   const [isDownloading, setIsDownloading] = useState(false);
   const [isCvisorOpen, setIsCvisorOpen] = useState(autoOpenCvisor);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSavingToCloud, setIsSavingToCloud] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
   const [jobAd, setJobAd] = useCvisorJobAd();
   const previewRef = useRef<CvPreviewHandle>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // The live score runs the same analyser the CVscan page uses, so the number
+  // in the toolbar and the full report can never disagree.
+  const atsReport = useMemo(
+    () => analyzeResumeText(cvToExtractedResume(cv.data, dictionary, pageCount), jobAd),
+    [cv.data, dictionary, pageCount, jobAd],
+  );
+  const handlePageCountChange = useCallback((count: number) => setPageCount(count), []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const meta = event.ctrlKey || event.metaKey;
+      if (!meta || event.key.toLowerCase() !== "z") return;
+      if (document.activeElement instanceof HTMLElement && document.activeElement.isContentEditable) return;
+      event.preventDefault();
+      if (event.shiftKey) cv.redo();
+      else cv.undo();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [cv]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setIsMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [isMenuOpen]);
 
   const toggleSection = (id: SectionId) => setOpenSection((current) => (current === id ? ("" as SectionId) : id));
 
   const handleStartOver = () => {
+    setIsMenuOpen(false);
     if (window.confirm(dictionary.nav.startOverConfirm)) {
       cv.replaceAll(createEmptyCvData());
+      setCurrentCloudId(null);
+    }
+  };
+
+  const handleExportJson = () => {
+    setIsMenuOpen(false);
+    downloadCvJson(cv.data);
+  };
+
+  const handleImportFile = async (file: File) => {
+    try {
+      const imported = await readCvJson(file);
+      if (window.confirm(dictionary.nav.importConfirm)) {
+        cv.replaceAll(imported);
+        setCurrentCloudId(null);
+        setOpenSection("personalInfo");
+      }
+    } catch {
+      window.alert(dictionary.nav.importError);
     }
   };
 
@@ -94,39 +160,46 @@ export function BuilderPage({
     }
   };
 
-  const handleApplyCvisor = (result: CvisorApplyResult) => {
-    cv.replaceAll({
-      ...cv.data,
-      personalInfo: {
-        ...cv.data.personalInfo,
-        summary: result.summary,
-        jobTitle: result.jobTitle ?? cv.data.personalInfo.jobTitle,
-      },
-      experience: result.experience.map((item) => ({ id: createId(), ...item })),
-      education: result.education.map((item) => ({ id: createId(), ...item })),
-      skills: result.skills.map((item) => ({ id: createId(), ...item })),
-      softSkills: result.softSkills.map((item) => ({ id: createId(), ...item })),
-      languages: result.languages.map((item) => ({ id: createId(), ...item })),
-      interests: result.interests.map((item) => ({ id: createId(), ...item })),
-      certifications: result.certifications.map((item) => ({ id: createId(), ...item })),
-      projects: result.projects.map((item) => ({ id: createId(), ...item })),
-      themeColor: result.themeColor ?? cv.data.themeColor,
-    });
+  const handleSaveToCloud = async () => {
+    if (!user) return;
+    setIsMenuOpen(false);
+    const existingId = getCurrentCloudId();
+    setIsSavingToCloud(true);
+    try {
+      if (existingId) {
+        await updateCvData(existingId, cv.data);
+      } else {
+        const name = window.prompt(dictionary.nav.saveToCloudPromptTitle, cv.data.personalInfo.fullName || "");
+        if (name === null) return;
+        const created = await createCv(user.id, name.trim() || dictionary.myCvsPage.untitled, cv.data);
+        setCurrentCloudId(created.id);
+      }
+      window.alert(dictionary.nav.savedToCloud);
+    } catch (error) {
+      if (error instanceof CloudCvError && error.code === "limit_reached") {
+        window.alert(dictionary.nav.cloudLimitReached);
+      } else {
+        window.alert(dictionary.nav.saveToCloudError);
+      }
+    } finally {
+      setIsSavingToCloud(false);
+    }
+  };
+
+  const handleApplyCvisor = (draft: CvDraft) => {
+    cv.replaceAll(applyDraft(cv.data, draft));
     setOpenSection("summary");
   };
 
-  const sidebarLabels: Record<SidebarSectionType, string> = {
-    skills: dictionary.sections.skills,
-    softSkills: dictionary.sections.softSkills,
-    languages: dictionary.sections.languages,
-    interests: dictionary.sections.interests,
-  };
-
-  const mainLabels: Record<MainSectionOrderType, string> = {
+  const sectionLabels: Record<SectionKey, string> = {
     experience: dictionary.sections.experience,
     education: dictionary.sections.education,
     projects: dictionary.sections.projects,
     certifications: dictionary.sections.certifications,
+    skills: dictionary.sections.skills,
+    softSkills: dictionary.sections.softSkills,
+    languages: dictionary.sections.languages,
+    interests: dictionary.sections.interests,
   };
 
   return (
@@ -138,13 +211,36 @@ export function BuilderPage({
         </button>
 
         <div className="builder-topbar-actions">
+          <div className="builder-undo-group">
+            <button
+              type="button"
+              className="builder-icon-button"
+              title={dictionary.nav.undo}
+              aria-label={dictionary.nav.undo}
+              disabled={!cv.canUndo}
+              onClick={() => cv.undo()}
+            >
+              <Icon name="undo" size={16} strokeWidth={2.2} />
+            </button>
+            <button
+              type="button"
+              className="builder-icon-button"
+              title={dictionary.nav.redo}
+              aria-label={dictionary.nav.redo}
+              disabled={!cv.canRedo}
+              onClick={() => cv.redo()}
+            >
+              <Icon name="redo" size={16} strokeWidth={2.2} />
+            </button>
+          </div>
+          {isCloudConfigured && <AuthMenu dictionary={dictionary} onOpenMyCvs={onOpenMyCvs} />}
           <div className="builder-lang-switch" role="group" aria-label="Language">
             <button
               type="button"
               className={language === "el" ? "active" : ""}
               onClick={() => onLanguageChange("el")}
             >
-              EL
+              GR
             </button>
             <button
               type="button"
@@ -155,13 +251,10 @@ export function BuilderPage({
             </button>
           </div>
           <div className="builder-topbar-buttons">
+            <AtsScoreChip score={atsReport.score} label={dictionary.siteNav.scan} onClick={onOpenScan} />
             <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
               <Icon name="sparkles" size={15} />
               {dictionary.cvisor.brand}
-            </button>
-            <button type="button" className="builder-ghost-button" onClick={handleStartOver}>
-              <Icon name="refresh" size={14} />
-              {dictionary.nav.startOver}
             </button>
             <button
               type="button"
@@ -172,6 +265,79 @@ export function BuilderPage({
               <Icon name="download" size={16} />
               {isDownloading ? dictionary.nav.downloading : dictionary.nav.download}
             </button>
+
+            <div className="builder-menu" ref={menuRef}>
+              <button
+                type="button"
+                className="builder-icon-button"
+                aria-haspopup="menu"
+                aria-expanded={isMenuOpen}
+                title={dictionary.nav.menu}
+                onClick={() => setIsMenuOpen((open) => !open)}
+              >
+                <Icon name="more" size={18} strokeWidth={2.6} />
+              </button>
+
+              {isMenuOpen && (
+                <div className="builder-menu-pop" role="menu">
+                  {user && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => void handleSaveToCloud()}
+                      disabled={isSavingToCloud}
+                    >
+                      <Icon name="upload" size={15} />
+                      {isSavingToCloud ? dictionary.nav.savingToCloud : dictionary.nav.saveToCloud}
+                    </button>
+                  )}
+                  {user && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onOpenMyCvs();
+                      }}
+                    >
+                      <Icon name="folder" size={15} />
+                      {dictionary.siteNav.myCvs}
+                    </button>
+                  )}
+                  <button type="button" role="menuitem" onClick={handleExportJson}>
+                    <Icon name="download" size={15} />
+                    {dictionary.nav.exportJson}
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      fileInputRef.current?.click();
+                    }}
+                  >
+                    <Icon name="upload" size={15} />
+                    {dictionary.nav.importJson}
+                  </button>
+                  <button type="button" role="menuitem" className="danger" onClick={handleStartOver}>
+                    <Icon name="refresh" size={15} />
+                    {dictionary.nav.startOver}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              hidden
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) void handleImportFile(file);
+              }}
+            />
           </div>
         </div>
       </header>
@@ -329,22 +495,17 @@ export function BuilderPage({
             open={openSection === "sectionOrder"}
             onToggle={() => toggleSection("sectionOrder")}
           >
-            <p className="design-label">{dictionary.sectionOrder.sidebarTitle}</p>
+            <p className="design-label">{dictionary.sectionOrder.hint}</p>
             <SectionOrderList
-              items={cv.data.sidebarOrder}
-              labels={sidebarLabels}
-              icons={SIDEBAR_ICONS}
-              onReorder={cv.reorderSidebarSection}
+              items={cv.data.sectionOrder}
+              labels={sectionLabels}
+              icons={SECTION_ICONS}
+              onReorder={cv.reorderSection}
               dragLabel={dictionary.actions.dragReorder}
             />
-            <p className="design-label">{dictionary.sectionOrder.mainTitle}</p>
-            <SectionOrderList
-              items={cv.data.mainOrder}
-              labels={mainLabels}
-              icons={MAIN_ICONS}
-              onReorder={cv.reorderMainSection}
-              dragLabel={dictionary.actions.dragReorder}
-            />
+            {cv.data.template === "aurora" && (
+              <p className="design-hint">{dictionary.sectionOrder.sidebarHint}</p>
+            )}
           </AccordionSection>
 
           <AccordionSection
@@ -354,12 +515,16 @@ export function BuilderPage({
             onToggle={() => toggleSection("design")}
           >
             <DesignForm
+              template={cv.data.template}
+              onTemplateChange={cv.setTemplate}
               themeColor={cv.data.themeColor}
               onColorChange={cv.setThemeColor}
               density={cv.data.density}
               onDensityChange={cv.setDensity}
               fontFamily={cv.data.fontFamily}
               onFontFamilyChange={cv.setFontFamily}
+              skillDisplay={cv.data.skillDisplay}
+              onSkillDisplayChange={cv.setSkillDisplay}
               dictionary={dictionary}
             />
           </AccordionSection>
@@ -367,7 +532,12 @@ export function BuilderPage({
 
         <div className="builder-preview" ref={containerRef}>
           <div className="builder-preview-scaled" style={{ zoom: scale }}>
-            <CvPreview data={cv.data} dictionary={dictionary} ref={previewRef} />
+            <CvPreview
+              data={cv.data}
+              dictionary={dictionary}
+              onPageCountChange={handlePageCountChange}
+              ref={previewRef}
+            />
           </div>
         </div>
       </div>
@@ -379,6 +549,7 @@ export function BuilderPage({
         language={language}
         jobAd={jobAd}
         onJobAdChange={setJobAd}
+        currentCv={cv.data}
         onApply={handleApplyCvisor}
       />
     </div>

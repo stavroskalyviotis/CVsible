@@ -1,0 +1,115 @@
+.public-cv-page {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.public-cv-header {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.public-cv-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  border: none;
+  background: none;
+  color: var(--ink);
+}
+
+.public-cv-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.public-cv-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.public-cv-status {
+  padding: 80px 20px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.public-cv-preview {
+  width: 100%;
+  max-width: 900px;
+  padding: 10px 20px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.public-cv-preview-scaled {
+  transform-origin: top center;
+}
+
+.public-cv-cta {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px 20px 48px;
+  flex-wrap: wrap;
+}
+
+.public-cv-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.public-cv-download:disabled {
+  opacity: 0.6;
+}
+
+.public-cv-make {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .public-cv-preview {
+    padding: 6px 10px 14px;
+  }
+}

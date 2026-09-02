@@ -11,6 +11,152 @@
   margin: 0;
 }
 
+.design-hint {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}
+
+/* ----------------------------------------------------------- template picker */
+
+.template-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.template-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--paper-raised);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.template-card:hover {
+  border-color: var(--ink-soft);
+}
+
+.template-card.active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.template-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.template-card-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.template-ats-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #dff3e6;
+  color: #1d6b3c;
+}
+
+.template-card-desc {
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.tpl-thumb {
+  --tpl-accent: var(--accent);
+  flex-shrink: 0;
+  width: 46px;
+  height: 62px;
+  border-radius: 4px;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+}
+
+.tpl-thumb i {
+  display: block;
+  height: 3px;
+  border-radius: 1px;
+  background: #d9d5dd;
+}
+
+.tpl-thumb .tpl-rule {
+  height: 2px;
+  width: 60%;
+  background: var(--tpl-accent);
+  margin-top: 3px;
+}
+
+.tpl-thumb .tpl-rule-dark {
+  height: 2px;
+  width: 100%;
+  background: #6b6673;
+  margin-top: 3px;
+}
+
+.tpl-thumb .tpl-title {
+  height: 6px;
+  width: 70%;
+  background: #4a4551;
+  margin: 0 auto 3px;
+}
+
+.tpl-thumb .tpl-title.tpl-accent {
+  background: var(--tpl-accent);
+  margin-left: 0;
+}
+
+.tpl-thumb .tpl-sub {
+  height: 3px;
+  width: 45%;
+  margin: 0 auto 4px;
+}
+
+.tpl-thumb-aurora .tpl-thumb-side {
+  width: 15px;
+  background: var(--tpl-accent);
+}
+
+.tpl-thumb-aurora .tpl-thumb-main {
+  flex: 1;
+  padding: 5px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tpl-thumb-meridian,
+.tpl-thumb-atlas {
+  flex-direction: column;
+  padding: 6px 5px;
+  gap: 3px;
+}
+
+.tpl-thumb-atlas .tpl-sub {
+  margin-left: 0;
+}
+
 .color-swatches {
   display: flex;
   flex-wrap: wrap;

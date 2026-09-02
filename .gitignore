@@ -26,3 +26,6 @@ dist-ssr
 
 .vercel
 .env*
+
+# Local verification output (screenshots, generated PDFs)
+.pdf-check/

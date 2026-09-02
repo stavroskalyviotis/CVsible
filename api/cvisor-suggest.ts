@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { buildSuggestSystemPrompt, getAnthropicClient } from "./_lib/anthropic.js";
-import { checkDailyLimit, getClientIdentifier } from "./_lib/rateLimit.js";
+import { checkDailyLimit } from "./_lib/rateLimit.js";
+import { resolveIdentifier } from "./_lib/identity.js";
 import { SUGGEST_SCHEMA, type SuggestResult } from "./_lib/schema.js";
 import { CVISOR_SUGGEST_MODEL, MAX_JOB_AD_CHARS, MAX_SECTION_TEXT_CHARS, SUGGEST_DAILY_LIMIT, SUGGEST_MAX_TOKENS } from "./_lib/constants.js";
 
@@ -64,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const identifier = getClientIdentifier(req);
+  const identifier = await resolveIdentifier(req);
   const rateLimit = await checkDailyLimit("suggest", identifier, SUGGEST_DAILY_LIMIT);
   if (!rateLimit.allowed) {
     res.status(429).json({ error: "rate_limited", limit: rateLimit.limit });

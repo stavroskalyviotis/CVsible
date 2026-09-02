@@ -20,5 +20,7 @@ export function formatRange(
   const endLabel = current ? presentLabel : formatMonth(end, locale);
   if (!startLabel && !endLabel) return "";
   if (!endLabel) return startLabel;
-  return `${startLabel} — ${endLabel}`;
+  // A plain hyphen, not an en/em dash: date-range parsers in ATS software are
+  // written against "Mar 2022 - Present".
+  return `${startLabel} - ${endLabel}`;
 }

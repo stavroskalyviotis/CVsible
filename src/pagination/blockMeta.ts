@@ -1,43 +1,77 @@
 import type { Dictionary } from "../i18n/translations";
-import type { CvData, MainSectionOrderType } from "../types";
+import type { CvData, SectionKey, TemplateId } from "../types";
 import { hasRichText } from "../utils/richText";
+import { mainFlowSections } from "../templates/registry";
 
-export type MainSectionType = "summary" | "experience" | "education" | "projects" | "certifications";
+export type BlockSection = "summary" | SectionKey;
 
-export interface MainBlockMeta {
+export interface BlockMeta {
   key: string;
-  section: MainSectionType;
+  section: BlockSection;
+  /** Set for sections that paginate one entry at a time. */
   itemId: string | null;
   isSectionStart: boolean;
 }
 
-function pushSectionMetas(metas: MainBlockMeta[], section: MainSectionOrderType, data: CvData): void {
-  const items: { id: string }[] =
-    section === "experience"
-      ? data.experience
-      : section === "education"
-        ? data.education
-        : section === "projects"
-          ? data.projects
-          : data.certifications;
+/** Sections whose entries are laid out one below the other and may split across pages. */
+const ENTRY_SECTIONS: SectionKey[] = ["experience", "education", "projects", "certifications"];
 
-  items.forEach((item, index) => {
-    metas.push({ key: `${section}-${item.id}`, section, itemId: item.id, isSectionStart: index === 0 });
-  });
+/** Sections rendered as a single compact block that never splits. */
+const ATOMIC_SECTIONS: SectionKey[] = ["skills", "softSkills", "languages", "interests"];
+
+function entriesOf(data: CvData, section: SectionKey): { id: string }[] {
+  switch (section) {
+    case "experience":
+      return data.experience;
+    case "education":
+      return data.education;
+    case "projects":
+      return data.projects;
+    case "certifications":
+      return data.certifications;
+    case "skills":
+      return data.skills;
+    case "softSkills":
+      return data.softSkills;
+    case "languages":
+      return data.languages;
+    case "interests":
+      return data.interests;
+  }
 }
 
-export function buildMainBlockMetas(data: CvData): MainBlockMeta[] {
-  const metas: MainBlockMeta[] = [];
+export function sectionHasContent(data: CvData, section: BlockSection): boolean {
+  if (section === "summary") return hasRichText(data.personalInfo.summary);
+  return entriesOf(data, section).length > 0;
+}
+
+export function buildBlockMetas(data: CvData, template: TemplateId): BlockMeta[] {
+  const metas: BlockMeta[] = [];
 
   if (hasRichText(data.personalInfo.summary)) {
     metas.push({ key: "summary", section: "summary", itemId: null, isSectionStart: true });
   }
 
-  data.mainOrder.forEach((section) => pushSectionMetas(metas, section, data));
+  mainFlowSections(template, data.sectionOrder).forEach((section) => {
+    const items = entriesOf(data, section);
+    if (items.length === 0) return;
+
+    if (ATOMIC_SECTIONS.includes(section)) {
+      metas.push({ key: section, section, itemId: null, isSectionStart: true });
+      return;
+    }
+
+    if (!ENTRY_SECTIONS.includes(section)) return;
+    items.forEach((item, index) => {
+      metas.push({ key: `${section}-${item.id}`, section, itemId: item.id, isSectionStart: index === 0 });
+    });
+  });
 
   return metas;
 }
 
-export function sectionTitle(section: MainSectionType, dictionary: Dictionary): string {
-  return dictionary.sections[section];
+/** ATS-safe templates use the canonical heading wording parsers look for;
+ *  the designed template keeps the friendlier product copy. */
+export function sectionTitle(section: BlockSection, dictionary: Dictionary, atsSafe: boolean): string {
+  return atsSafe ? dictionary.atsSections[section] : dictionary.sections[section];
 }

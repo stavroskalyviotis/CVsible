@@ -1,0 +1,76 @@
+.ats-ring {
+  --ats-color: var(--accent);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ats-ring svg {
+  position: absolute;
+  inset: 0;
+}
+
+.ats-ring-track {
+  fill: none;
+  stroke: rgba(28, 26, 31, 0.1);
+  stroke-width: 6;
+}
+
+.ats-ring-value {
+  fill: none;
+  stroke: var(--ats-color);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.ats-ring strong {
+  font-weight: 800;
+  color: var(--ats-color);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.ats-band-excellent {
+  --ats-color: #1d7a4b;
+}
+
+.ats-band-good {
+  --ats-color: #2f6db8;
+}
+
+.ats-band-fair {
+  --ats-color: #b3781a;
+}
+
+.ats-band-poor {
+  --ats-color: #b3413a;
+}
+
+.ats-chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  border-radius: 999px;
+  padding: 5px 14px 5px 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ats-chip-button:hover {
+  border-color: var(--ink-soft);
+}
+
+.ats-chip-button .ats-ring strong {
+  font-size: 0.7rem;
+}
+
+.ats-chip-label {
+  font-weight: 600;
+  color: var(--ink-soft);
+}

@@ -1,15 +1,28 @@
-import type { CvData } from "../types";
+import type { CvData, SectionKey } from "../types";
 import { createId } from "../utils/id";
 import { DEFAULT_THEME_COLOR } from "./themeColors";
 
+export const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "experience",
+  "education",
+  "projects",
+  "certifications",
+  "skills",
+  "softSkills",
+  "languages",
+  "interests",
+];
+
 export function createEmptyCvData(): CvData {
   return {
+    template: "atlas",
     themeColor: DEFAULT_THEME_COLOR,
     fontFamily: "sans",
     density: "comfortable",
     showPhoto: true,
     photo: null,
     photoPosition: { x: 50, y: 50 },
+    skillDisplay: "text",
     personalInfo: {
       fullName: "",
       jobTitle: "",
@@ -29,7 +42,6 @@ export function createEmptyCvData(): CvData {
     interests: [],
     certifications: [],
     projects: [],
-    sidebarOrder: ["skills", "softSkills", "languages", "interests"],
-    mainOrder: ["experience", "education", "projects", "certifications"],
+    sectionOrder: [...DEFAULT_SECTION_ORDER],
   };
 }

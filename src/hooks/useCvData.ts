@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { CvData, ContactItem, PersonalInfo } from "../types";
-import { createEmptyCvData } from "../data/defaultData";
+import type { CvData, ContactItem, PersonalInfo, SectionKey } from "../types";
+import { normalizeCvData } from "../data/normalize";
 import { loadCvData, saveCvData } from "../utils/storage";
 
 type ListKey =
@@ -13,6 +13,11 @@ type ListKey =
   | "interests"
   | "certifications"
   | "projects";
+
+const HISTORY_LIMIT = 50;
+// Rapid edits (keystrokes) collapse into one undo step; a pause this long
+// closes the step, the same way most text editors group typing bursts.
+const COALESCE_MS = 600;
 
 function reorderList<T extends { id: string }>(list: T[], sourceId: string, targetId: string): T[] {
   const sourceIndex = list.findIndex((entry) => entry.id === sourceId);
@@ -116,37 +121,90 @@ function makeContactHelpers(setData: Dispatch<SetStateAction<CvData>>) {
   };
 }
 
-function normalizeCvData(stored: Partial<CvData> | null): CvData {
-  const base = createEmptyCvData();
-  if (!stored) return base;
-  return {
-    ...base,
-    ...stored,
-    personalInfo: {
-      ...base.personalInfo,
-      ...stored.personalInfo,
-      contacts: Array.isArray(stored.personalInfo?.contacts)
-        ? stored.personalInfo.contacts
-        : base.personalInfo.contacts,
-    },
-    softSkills: Array.isArray(stored.softSkills) ? stored.softSkills : base.softSkills,
-    interests: Array.isArray(stored.interests) ? stored.interests : base.interests,
-    sidebarOrder: Array.isArray(stored.sidebarOrder) ? stored.sidebarOrder : base.sidebarOrder,
-    mainOrder: Array.isArray(stored.mainOrder) ? stored.mainOrder : base.mainOrder,
-  };
-}
-
 export function useCvData() {
   const [data, setData] = useState<CvData>(() => normalizeCvData(loadCvData<Partial<CvData>>()));
+  const [past, setPast] = useState<CvData[]>([]);
+  const [future, setFuture] = useState<CvData[]>([]);
+  const [hasPendingEdit, setHasPendingEdit] = useState(false);
+
+  // Refs only ever touched from effects/handlers, never read during render —
+  // they track state that doesn't need to trigger a re-render on its own.
+  const lastCommitted = useRef(data);
+  const pendingBefore = useRef<CvData | null>(null);
+  const timerRef = useRef<ReturnType<typeof window.setTimeout> | undefined>(undefined);
+  const skipNextEffect = useRef(false);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      lastCommitted.current = data;
       return;
     }
     saveCvData(data);
+
+    if (skipNextEffect.current) {
+      skipNextEffect.current = false;
+      lastCommitted.current = data;
+      return;
+    }
+
+    // A burst of rapid edits (keystrokes) collapses into one undo step: only
+    // the state from before the burst started gets queued as a checkpoint.
+    if (!pendingBefore.current) {
+      pendingBefore.current = lastCommitted.current;
+      setHasPendingEdit(true);
+    }
+    lastCommitted.current = data;
+    setFuture([]);
+
+    if (timerRef.current !== undefined) window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => {
+      timerRef.current = undefined;
+      if (pendingBefore.current) {
+        const before = pendingBefore.current;
+        pendingBefore.current = null;
+        setPast((prev) => [...prev.slice(-(HISTORY_LIMIT - 1)), before]);
+        setHasPendingEdit(false);
+      }
+    }, COALESCE_MS);
   }, [data]);
+
+  useEffect(
+    () => () => {
+      if (timerRef.current !== undefined) window.clearTimeout(timerRef.current);
+    },
+    [],
+  );
+
+  const undo = () => {
+    if (timerRef.current !== undefined) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    }
+    let target: CvData | null = null;
+    if (pendingBefore.current) {
+      target = pendingBefore.current;
+      pendingBefore.current = null;
+      setHasPendingEdit(false);
+    } else if (past.length > 0) {
+      target = past[past.length - 1];
+      setPast((prev) => prev.slice(0, -1));
+    }
+    if (!target) return;
+    skipNextEffect.current = true;
+    setFuture((prev) => [...prev, data].slice(-HISTORY_LIMIT));
+    setData(target);
+  };
+
+  const redo = () => {
+    if (future.length === 0) return;
+    const target = future[future.length - 1];
+    setFuture((prev) => prev.slice(0, -1));
+    skipNextEffect.current = true;
+    setPast((prev) => [...prev.slice(-(HISTORY_LIMIT - 1)), data]);
+    setData(target);
+  };
 
   const updatePersonalInfo = (patch: Partial<PersonalInfo>) =>
     setData((prev) => ({ ...prev, personalInfo: { ...prev.personalInfo, ...patch } }));
@@ -158,13 +216,13 @@ export function useCvData() {
   const setShowPhoto = (showPhoto: boolean) => setData((prev) => ({ ...prev, showPhoto }));
   const setFontFamily = (fontFamily: CvData["fontFamily"]) => setData((prev) => ({ ...prev, fontFamily }));
   const setDensity = (density: CvData["density"]) => setData((prev) => ({ ...prev, density }));
-  const replaceAll = (next: CvData) => setData(next);
+  const setTemplate = (template: CvData["template"]) => setData((prev) => ({ ...prev, template }));
+  const setSkillDisplay = (skillDisplay: CvData["skillDisplay"]) =>
+    setData((prev) => ({ ...prev, skillDisplay }));
+  const replaceAll = (next: CvData) => setData(normalizeCvData(next));
 
-  const reorderSidebarSection = (source: CvData["sidebarOrder"][number], target: CvData["sidebarOrder"][number]) =>
-    setData((prev) => ({ ...prev, sidebarOrder: reorderValues(prev.sidebarOrder, source, target) }));
-
-  const reorderMainSection = (source: CvData["mainOrder"][number], target: CvData["mainOrder"][number]) =>
-    setData((prev) => ({ ...prev, mainOrder: reorderValues(prev.mainOrder, source, target) }));
+  const reorderSection = (source: SectionKey, target: SectionKey) =>
+    setData((prev) => ({ ...prev, sectionOrder: reorderValues(prev.sectionOrder, source, target) }));
 
   return {
     data,
@@ -175,9 +233,14 @@ export function useCvData() {
     setShowPhoto,
     setFontFamily,
     setDensity,
-    reorderSidebarSection,
-    reorderMainSection,
+    setTemplate,
+    setSkillDisplay,
+    reorderSection,
     replaceAll,
+    undo,
+    redo,
+    canUndo: past.length > 0 || hasPendingEdit,
+    canRedo: future.length > 0,
     contacts: makeContactHelpers(setData),
     experience: makeListHelpers(setData, "experience"),
     education: makeListHelpers(setData, "education"),

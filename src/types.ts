@@ -98,13 +98,25 @@ export type Density = "compact" | "comfortable" | "spacious";
 export type SidebarSectionType = "skills" | "softSkills" | "languages" | "interests";
 export type MainSectionOrderType = "experience" | "education" | "projects" | "certifications";
 
+/** Every reorderable section of the CV, in one namespace. `summary` is always
+ *  first and is not part of the reorderable list. */
+export type SectionKey = SidebarSectionType | MainSectionOrderType;
+
+export type TemplateId = "aurora" | "meridian" | "atlas";
+
+/** How skill proficiency is rendered. Bars carry no meaning once a PDF is parsed,
+ *  so the default is a plain text label. */
+export type SkillDisplay = "none" | "text";
+
 export interface CvData {
+  template: TemplateId;
   themeColor: string;
   fontFamily: FontFamily;
   density: Density;
   showPhoto: boolean;
   photo: string | null;
   photoPosition: { x: number; y: number };
+  skillDisplay: SkillDisplay;
   personalInfo: PersonalInfo;
   experience: ExperienceItem[];
   education: EducationItem[];
@@ -114,6 +126,7 @@ export interface CvData {
   interests: InterestItem[];
   certifications: CertificationItem[];
   projects: ProjectItem[];
-  sidebarOrder: SidebarSectionType[];
-  mainOrder: MainSectionOrderType[];
+  /** Single ordered list of all sections. Sidebar templates split it by
+   *  which sections their sidebar can host; single-column templates use it as-is. */
+  sectionOrder: SectionKey[];
 }
