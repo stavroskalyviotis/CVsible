@@ -41,6 +41,8 @@ export interface Dictionary {
     featuresTitle: string;
     featuresSubtitle: string;
     features: { icon: string; title: string; body: string }[];
+    featuresMore: string;
+    featuresLess: string;
     scanBadge: string;
     scanTitle: string;
     scanBody: string;
@@ -499,11 +501,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           body: "Το PDF δεν είναι εικόνα. Κάθε λέξη είναι επιλέξιμη, αναζητήσιμη και αναγνώσιμη από τα ATS — και τα ελληνικά βγαίνουν σωστά.",
         },
         {
-          icon: "layout",
-          title: "Τρία πρότυπα, δύο ATS-safe",
-          body: "Aurora με έγχρωμη πλαϊνή στήλη, Meridian κλασικό μονόστηλο, Atlas μοντέρνο μονόστηλο. Αλλάζεις πρότυπο χωρίς να χάσεις τίποτα.",
-        },
-        {
           icon: "shield",
           title: "CVscan — έλεγχος ATS",
           body: "Ανέβασε οποιοδήποτε PDF, DOCX ή TXT, ακόμα κι αν δεν φτιάχτηκε εδώ, και δες τι ακριβώς διαβάζει το σύστημα και τι μπλοκάρει.",
@@ -512,6 +509,21 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           icon: "sparkles",
           title: "CVisor — βοηθός συγγραφής",
           body: "Δίνεις μια αγγελία και λίγες λέξεις-κλειδιά, και προτείνει διατυπώσεις. Δεν εφευρίσκει εμπειρία και εγκρίνεις τα πάντα.",
+        },
+        {
+          icon: "zap",
+          title: "CVfix — ίδια λόγια, σωστή μορφή",
+          body: "Ανεβάζεις το βιογραφικό σου και ο CVfix το ξαναχτίζει σε ATS-friendly δομή χωρίς να αλλάξει ούτε μία λέξη. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό.",
+        },
+        {
+          icon: "layout",
+          title: "Τρία πρότυπα, δύο ATS-safe",
+          body: "Aurora με έγχρωμη πλαϊνή στήλη, Meridian κλασικό μονόστηλο, Atlas μοντέρνο μονόστηλο. Αλλάζεις πρότυπο χωρίς να χάσεις τίποτα.",
+        },
+        {
+          icon: "zap",
+          title: "Δωρεάν, χωρίς λογαριασμό",
+          body: "Κανένα υδατογράφημα, κανένα κόστος. Τα δεδομένα σου μένουν στη συσκευή σου εκτός αν επιλέξεις να συνδεθείς.",
         },
         {
           icon: "eye",
@@ -534,11 +546,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           body: "Όλη η εφαρμογή και οι τίτλοι των ενοτήτων σε δύο γλώσσες, με τους καθιερωμένους όρους που αναγνωρίζουν τα ATS.",
         },
         {
-          icon: "zap",
-          title: "CVfix — ίδια λόγια, σωστή μορφή",
-          body: "Ανεβάζεις το βιογραφικό σου και ο CVfix το ξαναχτίζει σε ATS-friendly δομή χωρίς να αλλάξει ούτε μία λέξη. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό.",
-        },
-        {
           icon: "target",
           title: "Ταίριασμα με την αγγελία",
           body: "Επικολλάς την αγγελία και βλέπεις ποιοι όροι της εμφανίζονται στο βιογραφικό σου και ποιοι λείπουν, χωρίς keyword stuffing.",
@@ -548,14 +555,11 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           title: "Δες ό,τι βλέπει το ATS",
           body: "Ολόκληρο το κείμενο του αρχείου σου, στη σειρά που το διαβάζει ο parser. Αν εδώ είναι ανακατεμένο, ξέρεις γιατί δεν παίρνεις απαντήσεις.",
         },
-        {
-          icon: "zap",
-          title: "Δωρεάν, χωρίς λογαριασμό",
-          body: "Κανένα υδατογράφημα, κανένα κόστος. Τα δεδομένα σου μένουν στη συσκευή σου εκτός αν επιλέξεις να συνδεθείς.",
-        },
       ],
+      featuresMore: "Δες όλες τις λειτουργίες",
+      featuresLess: "Λιγότερα",
       scanBadge: "Ανεξάρτητο εργαλείο",
-      scanTitle: "Έχεις ήδη βιογραφικό; Δες αν περνάει τα ATS.",
+      scanTitle: "Έχεις ήδη βιογραφικό; Δες πόσο φιλικό είναι προς τα ATS.",
       scanBody:
         "Ανέβασέ το με drag & drop και ο CVscan σου δείχνει ακριβώς τι εξάγει ένα σύστημα πρόσληψης: όνομα, email, ημερομηνίες, ενότητες, αν έχει δύο στήλες, αν είναι εικόνα αντί για κείμενο — και όλο το κείμενο όπως το διαβάζει. Μετά, ο CVfix το ξαναχτίζει σωστά χωρίς να αλλάξει τα λόγια σου. Η ανάλυση γίνεται στη συσκευή σου.",
       scanCta: "Έλεγξε το βιογραφικό μου",
@@ -766,8 +770,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       subtitle:
         "Ανέβασε το βιογραφικό σου και δες ακριβώς τι διαβάζει ένα σύστημα ATS: τι εξάγει, τι δομή αναγνωρίζει και τι μπλοκάρει.",
       scoreOf: "στα 100",
-      verdictPass: "Περνάει τα ATS",
-      verdictFail: "Δεν περνάει τα ATS",
+      verdictPass: "Δομή φιλική προς ATS",
+      verdictFail: "Έχει σημεία που δυσκολεύουν τα ATS",
       bandExcellent: "Άριστο",
       bandGood: "Καλό",
       bandFair: "Μέτριο",
@@ -983,7 +987,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     cvfix: {
       badge: "CVfix",
       title: "Ίδια λόγια, σωστή μορφή",
-      body: "Ο CVfix δεν αλλάζει ούτε μία λέξη από όσα έγραψες. Ξεμπλέκει τη δομή, βάζει το περιεχόμενο στα σωστά πεδία και το ξαναβγάζει σε πρότυπο που περνάει τα ATS. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό σου αρχείο.",
+      body: "Ο CVfix δεν αλλάζει ούτε μία λέξη από όσα έγραψες. Ξεμπλέκει τη δομή, βάζει το περιεχόμενο στα σωστά πεδία και το ξαναβγάζει σε δομή φιλική προς ATS συστήματα. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό σου αρχείο.",
       button: "Διόρθωση μορφής με τον CVfix",
       running: "Ο CVfix δουλεύει…",
       runningRound: "Γύρος",
@@ -1122,11 +1126,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           body: "The PDF is not a picture. Every word is selectable, searchable and readable by an ATS — and Greek comes out correctly.",
         },
         {
-          icon: "layout",
-          title: "Three templates, two ATS-safe",
-          body: "Aurora with a coloured sidebar, Meridian a classic single column, Atlas a modern single column. Switch freely without losing anything.",
-        },
-        {
           icon: "shield",
           title: "CVscan — ATS check",
           body: "Upload any PDF, DOCX or TXT, even one built elsewhere, and see exactly what the system reads and what blocks it.",
@@ -1135,6 +1134,21 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           icon: "sparkles",
           title: "CVisor — writing assistant",
           body: "Give it a job ad and a few keywords and it drafts wording. It never invents experience, and you approve everything.",
+        },
+        {
+          icon: "zap",
+          title: "CVfix — same words, working format",
+          body: "Upload your CV and CVfix rebuilds it into an ATS-friendly structure without changing a single word. Every sentence is automatically verified against the original.",
+        },
+        {
+          icon: "layout",
+          title: "Three templates, two ATS-safe",
+          body: "Aurora with a coloured sidebar, Meridian a classic single column, Atlas a modern single column. Switch freely without losing anything.",
+        },
+        {
+          icon: "zap",
+          title: "Free, no account",
+          body: "No watermark, no cost. Your data stays on your device unless you choose to sign in.",
         },
         {
           icon: "eye",
@@ -1157,11 +1171,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           body: "The whole app and every section heading in two languages, using the standard wording parsers recognise.",
         },
         {
-          icon: "zap",
-          title: "CVfix — same words, working format",
-          body: "Upload your CV and CVfix rebuilds it into an ATS-friendly structure without changing a single word. Every sentence is automatically verified against the original.",
-        },
-        {
           icon: "target",
           title: "Match against the job ad",
           body: "Paste the ad and see which of its terms appear in your CV and which are missing, without keyword stuffing.",
@@ -1171,14 +1180,11 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           title: "See what the ATS sees",
           body: "The entire text of your file, in the order the parser reads it. If it is scrambled here, you know why you are not hearing back.",
         },
-        {
-          icon: "zap",
-          title: "Free, no account",
-          body: "No watermark, no cost. Your data stays on your device unless you choose to sign in.",
-        },
       ],
+      featuresMore: "See all features",
+      featuresLess: "Show less",
       scanBadge: "Standalone tool",
-      scanTitle: "Already have a CV? See whether it passes ATS.",
+      scanTitle: "Already have a CV? See how ATS-friendly it is.",
       scanBody:
         "Drag and drop it in and CVscan shows exactly what a hiring system extracts: name, email, dates, sections, whether it has two columns, whether it is an image instead of text — plus the full text as the parser reads it. Then CVfix rebuilds it properly without changing your words. The analysis runs on your device.",
       scanCta: "Check my CV",
@@ -1388,8 +1394,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       subtitle:
         "Upload your CV and see exactly what an applicant tracking system reads: what it extracts, what structure it recognises and what blocks it.",
       scoreOf: "out of 100",
-      verdictPass: "Passes ATS",
-      verdictFail: "Does not pass ATS",
+      verdictPass: "ATS-friendly structure",
+      verdictFail: "Has ATS-unfriendly issues",
       bandExcellent: "Excellent",
       bandGood: "Good",
       bandFair: "Fair",
@@ -1603,7 +1609,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     cvfix: {
       badge: "CVfix",
       title: "Same words, working format",
-      body: "CVfix does not change a single word you wrote. It untangles the structure, puts your content into the right fields and rebuilds it in a template that passes ATS. Every sentence is automatically verified to appear verbatim in your original file.",
+      body: "CVfix does not change a single word you wrote. It untangles the structure, puts your content into the right fields and rebuilds it in an ATS-friendly structure. Every sentence is automatically verified to appear verbatim in your original file.",
       button: "Fix formatting with CVfix",
       running: "CVfix is working…",
       runningRound: "Round",

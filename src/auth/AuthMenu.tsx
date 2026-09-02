@@ -36,6 +36,7 @@ export function AuthMenu({
         type="button"
         className="auth-signin-button"
         disabled={isSigningIn}
+        aria-label={isSigningIn ? dictionary.auth.signingIn : dictionary.auth.signIn}
         onClick={() => {
           setIsSigningIn(true);
           void signInWithGoogle();
@@ -44,7 +45,9 @@ export function AuthMenu({
         <span className="auth-google-mark" aria-hidden="true">
           G
         </span>
-        {isSigningIn ? dictionary.auth.signingIn : dictionary.auth.signIn}
+        <span className="auth-signin-label">
+          {isSigningIn ? dictionary.auth.signingIn : dictionary.auth.signIn}
+        </span>
       </button>
     );
   }

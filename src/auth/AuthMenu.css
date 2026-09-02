@@ -106,3 +106,16 @@
 .auth-menu-pop button[role="menuitem"]:hover {
   background: var(--paper);
 }
+
+/* On narrow phones, the header row (brand + nav burger + lang switch + this
+   button) is tight enough to force horizontal scrolling — drop the label and
+   keep just the Google mark, same target, no more overflow. */
+@media (max-width: 560px) {
+  .auth-signin-button {
+    padding: 7px;
+  }
+
+  .auth-signin-label {
+    display: none;
+  }
+}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
 import type { Route } from "../hooks/useHashRoute";
@@ -48,6 +49,7 @@ export function LandingPage({
 }) {
   const { landing } = dictionary;
   const mock = MOCK_CONTENT[language];
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
 
   return (
     <div className="landing">
@@ -226,7 +228,7 @@ export function LandingPage({
           <p>{landing.featuresSubtitle}</p>
         </div>
         <div className="landing-features-grid">
-          {landing.features.map((feature) => (
+          {(showAllFeatures ? landing.features : landing.features.slice(0, 6)).map((feature) => (
             <article key={feature.title}>
               <span className="feature-icon" aria-hidden="true">
                 <Icon name={feature.icon as IconName} size={18} />
@@ -236,6 +238,16 @@ export function LandingPage({
             </article>
           ))}
         </div>
+        {landing.features.length > 6 && (
+          <button
+            type="button"
+            className="landing-features-toggle"
+            onClick={() => setShowAllFeatures((value) => !value)}
+          >
+            {showAllFeatures ? landing.featuresLess : landing.featuresMore}
+            <Icon name={showAllFeatures ? "chevron-up" : "chevron-down"} size={15} />
+          </button>
+        )}
       </section>
 
       <section className="landing-final-cta">

@@ -562,6 +562,25 @@
   gap: 18px;
 }
 
+.landing-features-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 24px auto 0;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.landing-features-toggle:hover {
+  background: var(--paper);
+}
+
 .landing-features article {
   background: var(--paper-raised);
   border: 1px solid var(--line);
