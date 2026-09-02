@@ -129,9 +129,10 @@ npm run test:e2e       # Run end-to-end tests (Playwright, needs `npm run dev` o
 ## Testing
 
 - **Unit tests** (Vitest) cover the deterministic, correctness-critical logic: the CVscan ATS analyser, CVisor/CVfix's grounding/verbatim/structure checks (the anti-fabrication guarantees described above), CV data normalization, undo/redo, PDF/JSON filename building, and pagination formatting. Run with `npm test`.
-- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, PDF export, JSON export/import round-trip), and CVscan (file upload, scoring, keyword matching) — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
+- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, PDF export, JSON export/import round-trip, rich text, photo upload, drag-reorder), CVscan (file upload, scoring, keyword matching), My CVs / the public share page (with Supabase mocked at the network boundary — no real Google login needed), and a WCAG 2.0/2.1 A/AA accessibility audit of the main pages via axe-core — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
 - Both suites are TypeScript-checked as part of `npm run build` (see `tsconfig.e2e.json`).
 - The AI-backed endpoints (CVisor/CVfix) are exercised indirectly: their deterministic server-side checks (`api/_lib/*`) are unit-tested directly, while the live model loop is best verified manually via `scripts/try-agent.mjs` against `vercel dev`, since it calls the real Anthropic API.
+- `npm run test:coverage`'s number only reflects the Vitest suite; it doesn't (and can't) credit code that's only exercised through the Playwright E2E suite, which runs in a separate real browser process outside Vitest's instrumentation. Most UI components read as 0% there despite being covered end-to-end — that's expected, not a gap.
 
 ## Project structure
 
