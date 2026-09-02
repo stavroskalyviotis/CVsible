@@ -29,3 +29,10 @@ dist-ssr
 
 # Local verification output (screenshots, generated PDFs)
 .pdf-check/
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

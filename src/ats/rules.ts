@@ -38,6 +38,14 @@ const STOPWORDS_EL = new Set([
   "όλα", "όλες", "όλους", "αυτό", "αυτή", "αυτά", "δεν", "αν", "ή", "τι", "ενώ", "επίσης",
 ]);
 
+/** Strips Greek tonos/dialytika so accent-dropped input (common in all-caps
+ *  job ad headers) still matches the accented stopword list below. */
+function stripGreekTonos(word: string): string {
+  return word.normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+const STOPWORDS_EL_NO_TONOS = new Set([...STOPWORDS_EL].map(stripGreekTonos));
+
 export function isStopword(word: string): boolean {
-  return STOPWORDS_EN.has(word) || STOPWORDS_EL.has(word);
+  return STOPWORDS_EN.has(word) || STOPWORDS_EL.has(word) || STOPWORDS_EL_NO_TONOS.has(stripGreekTonos(word));
 }

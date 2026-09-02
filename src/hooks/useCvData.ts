@@ -133,14 +133,16 @@ export function useCvData() {
   const pendingBefore = useRef<CvData | null>(null);
   const timerRef = useRef<ReturnType<typeof window.setTimeout> | undefined>(undefined);
   const skipNextEffect = useRef(false);
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      lastCommitted.current = data;
-      return;
-    }
+    // Nothing actually changed since the last commit: either this is the
+    // very first mount (lastCommitted was seeded with the initial data), or
+    // React StrictMode is re-running this effect against the same data as
+    // part of its dev-only mount/cleanup/remount simulation. A ref-based
+    // "is this the first run" flag doesn't survive that simulated remount,
+    // so compare the data itself instead of trusting a run counter.
+    if (data === lastCommitted.current) return;
+
     saveCvData(data);
 
     if (skipNextEffect.current) {

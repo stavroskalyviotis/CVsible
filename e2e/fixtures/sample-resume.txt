@@ -1,0 +1,30 @@
+Jane Smith
+jane.smith@example.com | +30 210 1234567 | linkedin.com/in/janesmith
+
+Professional Summary
+Product-minded frontend engineer with six years of experience shipping accessible,
+high-performance interfaces for consumer products used by millions of people.
+
+Experience
+Senior Frontend Engineer, Acme Digital — 03/2022 - present
+- Delivered a checkout redesign that increased conversion by 18%
+- Led the migration of 40 shared components to a new design system
+- Mentored four junior engineers and ran the frontend guild
+
+Frontend Developer, Nova Labs — 09/2019 - 02/2022
+- Built the customer portal used by 30000 people every month
+- Reduced production bundle size by 25% through code-splitting
+- Introduced automated visual regression testing across the product
+
+Education
+MSc Computer Science, National Technical University — 09/2017 - 06/2019
+BSc Computer Science, University of Athens — 09/2013 - 06/2017
+
+Skills
+React, TypeScript, Node.js, GraphQL, Testing, CSS, Accessibility, Performance, Vite, Playwright
+
+Languages
+Greek (Native), English (Fluent)
+
+Certifications
+AWS Certified Developer, Amazon, 05/2023

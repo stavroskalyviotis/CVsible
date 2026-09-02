@@ -116,11 +116,22 @@ If you want Google sign-in to work, also run `supabase/schema.sql` once in the S
 ## Available scripts
 
 ```bash
-npm run dev      # Start the development server (frontend only, see above)
-npm run build    # Create a production build
-npm run lint     # Run ESLint
-npm run preview  # Preview the production build locally
+npm run dev            # Start the development server (frontend only, see above)
+npm run build          # Create a production build
+npm run lint           # Run ESLint
+npm run preview        # Preview the production build locally
+npm test               # Run unit tests (Vitest)
+npm run test:watch     # Unit tests in watch mode
+npm run test:coverage  # Unit tests with a coverage report
+npm run test:e2e       # Run end-to-end tests (Playwright, needs `npm run dev` or starts its own server)
 ```
+
+## Testing
+
+- **Unit tests** (Vitest) cover the deterministic, correctness-critical logic: the CVscan ATS analyser, CVisor/CVfix's grounding/verbatim/structure checks (the anti-fabrication guarantees described above), CV data normalization, undo/redo, PDF/JSON filename building, and pagination formatting. Run with `npm test`.
+- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, PDF export, JSON export/import round-trip), and CVscan (file upload, scoring, keyword matching) — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
+- Both suites are TypeScript-checked as part of `npm run build` (see `tsconfig.e2e.json`).
+- The AI-backed endpoints (CVisor/CVfix) are exercised indirectly: their deterministic server-side checks (`api/_lib/*`) are unit-tested directly, while the live model loop is best verified manually via `scripts/try-agent.mjs` against `vercel dev`, since it calls the real Anthropic API.
 
 ## Project structure
 
@@ -133,6 +144,7 @@ CVsible/
 │   ├── cvfix.ts             # CVfix: reformat without rewording
 │   ├── cvisor-suggest.ts    # Improve the wording of a single section
 │   └── delete-account.ts    # Permanently deletes a signed-in user's account
+├── e2e/                     # Playwright end-to-end tests (run against a live dev server)
 ├── public/fonts/            # Subsetted Latin+Greek webfonts used by the preview and PDF
 ├── scripts/                 # Font-subsetting pipeline and local verification tooling
 ├── supabase/schema.sql      # Cloud storage schema — run once in the Supabase SQL Editor
@@ -169,7 +181,7 @@ This is why the exported PDF's text layer matches the on-screen render 1:1 and i
 - [ ] Custom free-text CV sections
 - [ ] Collapsible builder panel for a full-screen preview on tablets
 - [ ] Automated accessibility tests
-- [ ] Unit and end-to-end tests
+- [x] Unit and end-to-end tests
 
 ## Author
 
