@@ -62,3 +62,13 @@
   background: none;
   padding: 0;
 }
+
+.photo-upload-note {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}

@@ -165,7 +165,17 @@ export async function mockCvsRestApi(page: Page, table: FakeCvTable): Promise<vo
         const patch = request.postDataJSON() as Partial<CvRow>;
         Object.assign(row, patch, { updated_at: new Date().toISOString() });
       }
-      await route.fulfill({ status: 204, body: "" });
+      // updateCvData() chains .select() (Prefer: return=representation) so it can
+      // detect a stale/deleted id from an empty result; other callers (rename,
+      // history, publish) don't chain .select() and expect the plain 204 they'd
+      // get from real PostgREST's default Prefer: return=minimal.
+      const preferHeader = await request.headerValue("prefer");
+      const wantsRepresentation = (preferHeader ?? "").includes("return=representation");
+      if (wantsRepresentation) {
+        await route.fulfill({ status: 200, json: row ? [row] : [] });
+      } else {
+        await route.fulfill({ status: 204, body: "" });
+      }
       return;
     }
 

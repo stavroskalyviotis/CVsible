@@ -1,9 +1,11 @@
 import type { Dictionary } from "../../i18n/translations";
 import type { SkillItem } from "../../types";
 import { createId } from "../../utils/id";
+import { Icon } from "../Icon";
 import { AddButton, EmptyHint } from "../ui/AccordionSection";
 import { EntryCard } from "../ui/EntryCard";
 import { RangeField, TextField } from "../ui/FormField";
+import "./SkillsForm.css";
 
 type SkillActions = {
   add: (item: SkillItem) => void;
@@ -13,20 +15,47 @@ type SkillActions = {
   reorder: (sourceId: string, targetId: string) => void;
 };
 
+function capitalize(word: string): string {
+  return word.charAt(0).toLocaleUpperCase("el") + word.slice(1);
+}
+
 export function SkillsForm({
   items,
   actions,
   dictionary,
+  suggestions = [],
 }: {
   items: SkillItem[];
   actions: SkillActions;
   dictionary: Dictionary;
+  /** Job-ad keywords to offer as one-tap additions, shown only while the
+   *  user hasn't added any skill of their own yet. */
+  suggestions?: string[];
 }) {
   const { fields, placeholders, actions: actionLabels } = dictionary;
 
   return (
     <>
       {items.length === 0 && <EmptyHint>{dictionary.emptyStates.skills}</EmptyHint>}
+
+      {items.length === 0 && suggestions.length > 0 && (
+        <div className="skill-suggestions">
+          <p className="skill-suggestions-label">{dictionary.skillSuggestions.label}</p>
+          <div className="skill-suggestions-row">
+            {suggestions.map((word) => (
+              <button
+                key={word}
+                type="button"
+                className="skill-suggestion-chip"
+                onClick={() => actions.add({ id: createId(), name: capitalize(word), level: 70 })}
+              >
+                <Icon name="plus" size={12} />
+                {capitalize(word)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {items.map((item, index) => (
         <EntryCard

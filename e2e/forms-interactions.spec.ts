@@ -121,4 +121,38 @@ test.describe("Skills form", () => {
     await expect(page.locator('input[type="range"]')).toHaveValue("70");
     await expect(page.locator(".builder-preview")).toContainText("Playwright");
   });
+
+  test("with an empty skills list and a job ad set, suggests matching skills to add with one tap", async ({
+    page,
+  }) => {
+    await page.goto("/#/builder");
+    await page.evaluate(() => {
+      localStorage.setItem("cvsible:cvisor-job", "Senior React Developer with Python and Kubernetes experience");
+    });
+    await page.reload();
+    await page.locator(".accordion-header", { hasText: /^skills$|^δεξιότητες$/i }).click();
+
+    const chip = page.locator(".skill-suggestion-chip", { hasText: /react/i });
+    await expect(chip).toBeVisible();
+    await chip.click();
+
+    await expect(page.locator(".entry-card")).toHaveCount(1);
+    await expect(page.getByPlaceholder(/e\.g\. figma|π\.χ\. figma/i)).toHaveValue("React");
+    // Once a skill exists, the suggestions are no longer useful clutter.
+    await expect(page.locator(".skill-suggestions")).toHaveCount(0);
+  });
+});
+
+test.describe("Template photo support", () => {
+  test("Meridian shows a note instead of the photo uploader", async ({ page }) => {
+    await page.goto("/#/builder");
+    await page.locator(".accordion-header", { hasText: /appearance|εμφάνιση/i }).click();
+    await page.locator(".template-card", { hasText: /meridian/i }).click();
+
+    await page.locator(".accordion-header", { hasText: /personal|προσωπικ/i }).click();
+    await page.getByLabel(/show photo|εμφάνιση φωτογραφίας/i).check();
+
+    await expect(page.locator(".photo-upload-note")).toContainText(/does not show a photo|δεν εμφανίζει φωτογραφία/i);
+    await expect(page.locator(".photo-upload")).toHaveCount(0);
+  });
 });

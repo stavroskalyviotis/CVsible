@@ -61,12 +61,20 @@ export async function exportPagesToPdf(pageElements: HTMLElement[], options: Pdf
   pdf.save(options.filename);
 }
 
-export function buildPdfFilename(fullName: string): string {
-  const slug = fullName
+function slugifyForFilename(value: string): string {
+  return value
     .trim()
     .normalize("NFD")
     .replace(COMBINING_DIACRITICS, "")
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return `CVsible-${slug || "resume"}.pdf`;
+}
+
+/** Builds "CVsible-Name-Title.pdf" from the CV's own name and job title, so
+ *  a downloaded file is self-identifying without the person renaming it. */
+export function buildPdfFilename(fullName: string, jobTitle = ""): string {
+  const nameSlug = slugifyForFilename(fullName) || "resume";
+  const titleSlug = slugifyForFilename(jobTitle);
+  const parts = ["CVsible", nameSlug, titleSlug].filter(Boolean);
+  return `${parts.join("-")}.pdf`;
 }

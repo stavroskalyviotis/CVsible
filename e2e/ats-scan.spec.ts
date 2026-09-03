@@ -47,4 +47,30 @@ test.describe("CVscan (ATS check)", () => {
     await page.locator(".scan-change").click();
     await expect(page.locator(".scan-drop")).toBeVisible();
   });
+
+  test("a builder CV with warnings offers a CVisor CTA (not CVfix) and opens CVisor", async ({ page }) => {
+    await page.goto("/#/builder");
+    // Personal info is the section open by default — no need to toggle it.
+    await page.getByLabel(/full name|ονοματεπώνυμο/i).fill("Jane Smith");
+    await page.locator(".accordion-header", { hasText: /professional summary|επαγγελματικό προφίλ/i }).click();
+    await page.locator(".rich-text-input").click();
+    await page.keyboard.type(
+      "Experienced engineer with a strong background in building scalable web applications.",
+    );
+
+    await page.locator(".ats-chip-button").click();
+    await expect(page).toHaveURL(/#\/ats/);
+    await page.getByRole("button", { name: /check the cv i.m building|έλεγξε το βιογραφικό που φτιάχνω/i }).click();
+    await expect(page.locator(".scan-verdict")).toBeVisible();
+
+    // Restructuring (CVfix) makes no sense for a CV that's already structured
+    // in the builder — CVisor (content suggestions) is the correct CTA here.
+    await expect(page.locator(".cvfix-card")).toHaveCount(0);
+    const cta = page.locator(".scan-cta", { hasText: /cvisor/i });
+    await expect(cta).toBeVisible();
+
+    await cta.getByRole("button").click();
+    await expect(page).toHaveURL(/#\/builder/);
+    await expect(page.locator(".cvisor-overlay")).toBeVisible();
+  });
 });

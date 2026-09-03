@@ -17,6 +17,7 @@ export function PersonalInfoForm({
   photo,
   photoPosition,
   showPhoto,
+  photoSupported = true,
   onChange,
   onPhotoChange,
   onPhotoPositionChange,
@@ -28,6 +29,9 @@ export function PersonalInfoForm({
   photo: string | null;
   photoPosition: { x: number; y: number };
   showPhoto: boolean;
+  /** False for templates (e.g. Meridian) that never render a photo, so we can
+   *  explain that instead of showing an upload widget with no visible effect. */
+  photoSupported?: boolean;
   onChange: (patch: Partial<PersonalInfo>) => void;
   onPhotoChange: (photo: string | null) => void;
   onPhotoPositionChange: (position: { x: number; y: number }) => void;
@@ -41,7 +45,9 @@ export function PersonalInfoForm({
     <>
       <CheckboxField label={fields.showPhoto} checked={showPhoto} onChange={onShowPhotoChange} />
 
-      {showPhoto && (
+      {showPhoto && !photoSupported && <p className="photo-upload-note">{dictionary.templates.photoUnsupported}</p>}
+
+      {showPhoto && photoSupported && (
         <PhotoUpload
           photo={photo}
           position={photoPosition}

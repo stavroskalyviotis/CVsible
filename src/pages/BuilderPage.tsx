@@ -20,11 +20,13 @@ import { DesignForm } from "../components/forms/DesignForm";
 import { SimpleNameListForm } from "../components/forms/SimpleNameListForm";
 import { SectionOrderList } from "../components/forms/SectionOrderList";
 import { createEmptyCvData } from "../data/defaultData";
+import { getTemplate } from "../templates/registry";
 import { CvisorPanel } from "../cvisor/CvisorPanel";
 import { applyDraft } from "../cvisor/agent";
 import type { CvDraft } from "../cvisor/agent";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { AtsScoreChip } from "../ats/AtsScoreChip";
+import { extractJobAdKeywords } from "../ats/analyze";
 import { analyzeResumeText } from "../ats/analyzeText";
 import { cvToExtractedResume } from "../ats/cvToResume";
 import { downloadCvJson, readCvJson } from "../utils/cvFile";
@@ -99,6 +101,13 @@ export function BuilderPage({
   );
   const handlePageCountChange = useCallback((count: number) => setPageCount(count), []);
 
+  // Only offered while the Skills section is still empty — once the user has
+  // added anything of their own, the suggestions would just be clutter.
+  const suggestedSkills = useMemo(() => {
+    if (cv.data.skills.length > 0 || !jobAd.trim()) return [];
+    return extractJobAdKeywords(jobAd, 8);
+  }, [cv.data.skills.length, jobAd]);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const meta = event.ctrlKey || event.metaKey;
@@ -163,12 +172,25 @@ export function BuilderPage({
   const handleSaveToCloud = async () => {
     if (!user) return;
     setIsMenuOpen(false);
-    const existingId = getCurrentCloudId();
+    let existingId = getCurrentCloudId();
     setIsSavingToCloud(true);
     try {
       if (existingId) {
-        await updateCvData(existingId, cv.data);
-      } else {
+        try {
+          await updateCvData(existingId, cv.data);
+        } catch (error) {
+          // The cloud id we had on file no longer resolves to a real, accessible
+          // row (deleted elsewhere, or from a stale/previous session) — forget it
+          // and fall through to creating a fresh CV instead of silently no-oping.
+          if (error instanceof CloudCvError && error.code === "not_found") {
+            setCurrentCloudId(null);
+            existingId = null;
+          } else {
+            throw error;
+          }
+        }
+      }
+      if (!existingId) {
         const name = window.prompt(dictionary.nav.saveToCloudPromptTitle, cv.data.personalInfo.fullName || "");
         if (name === null) return;
         const created = await createCv(user.id, name.trim() || dictionary.myCvsPage.untitled, cv.data);
@@ -355,6 +377,7 @@ export function BuilderPage({
               photo={cv.data.photo}
               photoPosition={cv.data.photoPosition}
               showPhoto={cv.data.showPhoto}
+              photoSupported={getTemplate(cv.data.template).photoSupport !== "none"}
               onChange={cv.updatePersonalInfo}
               onPhotoChange={cv.setPhoto}
               onPhotoPositionChange={cv.setPhotoPosition}
@@ -414,7 +437,12 @@ export function BuilderPage({
             open={openSection === "skills"}
             onToggle={() => toggleSection("skills")}
           >
-            <SkillsForm items={cv.data.skills} actions={cv.skills} dictionary={dictionary} />
+            <SkillsForm
+              items={cv.data.skills}
+              actions={cv.skills}
+              dictionary={dictionary}
+              suggestions={suggestedSkills}
+            />
           </AccordionSection>
 
           <AccordionSection

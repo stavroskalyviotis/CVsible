@@ -303,6 +303,9 @@ export interface Dictionary {
     cvfixTitle: string;
     cvfixBody: string;
     cvfixButton: string;
+    warningsCtaTitle: string;
+    warningsCtaBody: string;
+    warningsCtaButton: string;
     buildTitle: string;
     buildBody: string;
     buildButton: string;
@@ -387,6 +390,9 @@ export interface Dictionary {
     certifications: string;
     projects: string;
     contacts: string;
+  };
+  skillSuggestions: {
+    label: string;
   };
   auth: {
     signIn: string;
@@ -836,6 +842,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "Ο CVfix κρατάει τα λόγια σου ακριβώς όπως τα έγραψες και αλλάζει μόνο τη δομή και τη μορφοποίηση, ώστε το αρχείο να περνάει καθαρά.",
       cvfixButton: "Διόρθωση μορφής με τον CVfix",
+      warningsCtaTitle: "{v} προειδοποιήσεις μπορούν να διορθωθούν",
+      warningsCtaBody:
+        "Το σκορ είναι ήδη καλό, αλλά ο CVisor μπορεί να προτείνει βελτιώσεις για τα σημεία παρακάτω, βασισμένες στην αγγελία εργασίας.",
+      warningsCtaButton: "Άνοιγμα CVisor",
       buildTitle: "Ή φτιάξ' το από την αρχή",
       buildBody: "Ο builder του CVsible βγάζει PDF που περνάει εξ ορισμού κάθε έλεγχο αυτής της σελίδας.",
       buildButton: "Άνοιγμα builder",
@@ -1015,6 +1025,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       certifications: "Δεν έχεις προσθέσει ακόμα πιστοποιήσεις.",
       projects: "Δεν έχεις προσθέσει ακόμα έργα.",
       contacts: "Δεν έχεις προσθέσει ακόμα στοιχεία επικοινωνίας.",
+    },
+    skillSuggestions: {
+      label: "Προτεινόμενες δεξιότητες από την αγγελία εργασίας — πάτησε για προσθήκη:",
     },
     auth: {
       signIn: "Σύνδεση με Google",
@@ -1461,6 +1474,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "CVfix keeps your wording exactly as you wrote it and changes only the structure and formatting, so the file comes through cleanly.",
       cvfixButton: "Fix formatting with CVfix",
+      warningsCtaTitle: "{v} warnings you can fix",
+      warningsCtaBody:
+        "The score is already good, but CVisor can suggest improvements for the points below, based on the job ad.",
+      warningsCtaButton: "Open CVisor",
       buildTitle: "Or build it from scratch",
       buildBody: "The CVsible builder produces a PDF that passes every check on this page by default.",
       buildButton: "Open the builder",
@@ -1638,6 +1655,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       certifications: "You haven't added any certifications yet.",
       projects: "You haven't added any projects yet.",
       contacts: "You haven't added any contact links yet.",
+    },
+    skillSuggestions: {
+      label: "Suggested skills from the job ad — tap to add:",
     },
     auth: {
       signIn: "Sign in with Google",

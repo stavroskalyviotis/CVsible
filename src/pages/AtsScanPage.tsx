@@ -117,11 +117,13 @@ export function AtsScanPage({
   language,
   onLanguageChange,
   navigate,
+  onOpenCvisor,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   navigate: (route: Exclude<Route, "public-cv">) => void;
+  onOpenCvisor: () => void;
 }) {
   const [uploaded, setUploaded] = useState<ExtractedResume | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -477,6 +479,27 @@ export function AtsScanPage({
                 language={language}
                 onOpenBuilder={() => navigate("builder")}
               />
+            )}
+
+            {/* CVfix restructures raw text — not useful once the source is
+                already the builder's own structured CV. CVisor is the right
+                tool there instead: point to it whenever anything could still
+                be improved, even while the overall score already reads "good". */}
+            {resume.kind === "builder" && analysis.checks.some((check) => check.status === "warn") && (
+              <section className="scan-cta">
+                <div>
+                  <h2>
+                    {format(
+                      dictionary.ats.warningsCtaTitle,
+                      analysis.checks.filter((check) => check.status === "warn").length,
+                    )}
+                  </h2>
+                  <p>{dictionary.ats.warningsCtaBody}</p>
+                </div>
+                <button type="button" className="scan-primary" onClick={onOpenCvisor}>
+                  {dictionary.ats.warningsCtaButton}
+                </button>
+              </section>
             )}
 
             <section className="scan-cta">

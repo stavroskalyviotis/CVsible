@@ -94,8 +94,9 @@ export async function updateCvHistory(id: string, history: ApplicationEntry[]): 
 
 export async function updateCvData(id: string, data: CvData): Promise<void> {
   const client = requireClient();
-  const { error } = await client.from("cvs").update({ data }).eq("id", id);
+  const { data: row, error } = await client.from("cvs").update({ data }).eq("id", id).select("id").maybeSingle();
   if (error) throw new CloudCvError("unknown", error.message);
+  if (!row) throw new CloudCvError("not_found");
 }
 
 export async function renameCv(id: string, name: string): Promise<void> {

@@ -52,7 +52,7 @@ export function CvPreview({
         try {
           const elements = printPageRefs.current.filter((el): el is HTMLDivElement => el !== null);
           await exportPagesToPdf(elements, {
-            filename: buildPdfFilename(data.personalInfo.fullName),
+            filename: buildPdfFilename(data.personalInfo.fullName, data.personalInfo.jobTitle),
             fontFamily: data.fontFamily,
             fullName: data.personalInfo.fullName,
             jobTitle: data.personalInfo.jobTitle,

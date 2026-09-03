@@ -39,6 +39,10 @@ function AppShell() {
         language={language}
         onLanguageChange={setLanguage}
         navigate={navigate}
+        onOpenCvisor={() => {
+          setAutoOpenCvisor(true);
+          navigate("builder");
+        }}
       />
     );
   }

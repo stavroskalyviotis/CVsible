@@ -127,7 +127,7 @@ export function cvToExtractedResume(
 
   return {
     kind: "builder",
-    fileName: buildPdfFilename(name),
+    fileName: buildPdfFilename(name, data.personalInfo.jobTitle),
     fileSize: 0,
     pageCount: Math.max(1, pageCount),
     text,
