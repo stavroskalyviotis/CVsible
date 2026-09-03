@@ -99,10 +99,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const rateLimit = previous
-    ? { allowed: true, remaining: CVFIX_DAILY_LIMIT, limit: CVFIX_DAILY_LIMIT }
+    ? { allowed: true, remaining: CVFIX_DAILY_LIMIT, limit: CVFIX_DAILY_LIMIT, resetInSeconds: 0 }
     : await checkDailyLimit("cvfix", await resolveIdentifier(req), CVFIX_DAILY_LIMIT);
   if (!rateLimit.allowed) {
-    res.status(429).json({ error: "rate_limited", limit: rateLimit.limit });
+    res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;
   }
 

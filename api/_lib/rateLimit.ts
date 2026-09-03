@@ -16,6 +16,9 @@ export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   limit: number;
+  /** Seconds until the bucket resets. 0 when not meaningful (allowed, or
+   *  rate limiting isn't active). */
+  resetInSeconds: number;
 }
 
 let cachedUnlimitedIps: Set<string> | undefined;
@@ -33,12 +36,12 @@ function getUnlimitedIps(): Set<string> {
 
 export async function checkDailyLimit(bucket: string, identifier: string, limit: number): Promise<RateLimitResult> {
   if (getUnlimitedIps().has(identifier)) {
-    return { allowed: true, remaining: limit, limit };
+    return { allowed: true, remaining: limit, limit, resetInSeconds: 0 };
   }
   const redis = getClient();
   if (!redis) {
     // No Redis configured yet — fail open rather than blocking the feature entirely.
-    return { allowed: true, remaining: limit, limit };
+    return { allowed: true, remaining: limit, limit, resetInSeconds: 0 };
   }
   try {
     const key = `cvisor:${bucket}:${identifier}`;
@@ -46,11 +49,15 @@ export async function checkDailyLimit(bucket: string, identifier: string, limit:
     if (count === 1) {
       await redis.expire(key, RATE_LIMIT_TTL_SECONDS);
     }
-    return { allowed: count <= limit, remaining: Math.max(0, limit - count), limit };
+    const allowed = count <= limit;
+    // Only worth the extra round trip once the caller actually needs a
+    // countdown to show — the happy path never asks the key its TTL.
+    const resetInSeconds = allowed ? 0 : Math.max(0, await redis.ttl(key));
+    return { allowed, remaining: Math.max(0, limit - count), limit, resetInSeconds };
   } catch (error) {
     // Rate limiting must never take the whole feature down — fail open and log for visibility.
     console.error("cvisor rate limit check failed", error);
-    return { allowed: true, remaining: limit, limit };
+    return { allowed: true, remaining: limit, limit, resetInSeconds: 0 };
   }
 }
 

@@ -13,9 +13,12 @@ export type CvisorErrorCode =
 
 export class CvisorApiError extends Error {
   code: CvisorErrorCode;
-  constructor(code: CvisorErrorCode) {
+  /** Seconds until the daily limit resets, when `code === "rate_limited"`. */
+  resetInSeconds?: number;
+  constructor(code: CvisorErrorCode, resetInSeconds?: number) {
     super(code);
     this.code = code;
+    this.resetInSeconds = resetInSeconds;
   }
 }
 
@@ -45,7 +48,11 @@ export async function postJson<T>(url: string, body: unknown): Promise<T> {
       payload && typeof payload === "object" && "error" in payload
         ? ((payload as { error: unknown }).error as CvisorErrorCode)
         : "server_error";
-    throw new CvisorApiError(code);
+    const resetInSeconds =
+      payload && typeof payload === "object" && "resetInSeconds" in payload
+        ? ((payload as { resetInSeconds: unknown }).resetInSeconds as number)
+        : undefined;
+    throw new CvisorApiError(code, resetInSeconds);
   }
 
   return (await response.json()) as T;

@@ -329,6 +329,8 @@ export interface Dictionary {
     errorMissingFields: string;
     errorTooLong: string;
     errorRateLimited: string;
+    errorRateLimitedInHours: string;
+    errorRateLimitedInOneHour: string;
     errorRefused: string;
     errorGeneric: string;
     title: string;
@@ -954,7 +956,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       generating: "Δουλεύει…",
       errorMissingFields: "Συμπλήρωσε τα στοιχεία σου πριν συνεχίσεις.",
       errorTooLong: "Το κείμενο είναι πολύ μεγάλο. Συντόμευσέ το λίγο.",
-      errorRateLimited: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά αύριο.",
+      errorRateLimited: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά αργότερα.",
+      errorRateLimitedInHours: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά σε {v} ώρες.",
+      errorRateLimitedInOneHour: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά σε 1 ώρα.",
       errorRefused: "Ο CVisor δεν μπόρεσε να επεξεργαστεί αυτό το κείμενο.",
       errorGeneric: "Κάτι πήγε στραβά. Δοκίμασε ξανά.",
       title: "CVisor",
@@ -1586,7 +1590,9 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       generating: "Working…",
       errorMissingFields: "Fill in your details before continuing.",
       errorTooLong: "That text is too long. Trim it a little.",
-      errorRateLimited: "You have hit today's usage limit. Try again tomorrow.",
+      errorRateLimited: "You have hit today's usage limit. Try again later.",
+      errorRateLimitedInHours: "You have hit today's usage limit. Try again in {v} hours.",
+      errorRateLimitedInOneHour: "You have hit today's usage limit. Try again in 1 hour.",
       errorRefused: "CVisor could not process that text.",
       errorGeneric: "Something went wrong. Try again.",
       title: "CVisor",

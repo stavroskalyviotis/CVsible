@@ -9,7 +9,7 @@ export function mapCvisorErrorMessage(error: unknown, dictionary: Dictionary): s
       case "text_too_long":
         return dictionary.cvisor.errorTooLong;
       case "rate_limited":
-        return dictionary.cvisor.errorRateLimited;
+        return rateLimitedMessage(error.resetInSeconds, dictionary);
       case "refused":
         return dictionary.cvisor.errorRefused;
       default:
@@ -17,4 +17,13 @@ export function mapCvisorErrorMessage(error: unknown, dictionary: Dictionary): s
     }
   }
   return dictionary.cvisor.errorGeneric;
+}
+
+/** Reports the real time left on the bucket rather than a flat "tomorrow" —
+ *  the number shrinks the closer the reader is to being able to try again. */
+function rateLimitedMessage(resetInSeconds: number | undefined, dictionary: Dictionary): string {
+  if (!resetInSeconds || resetInSeconds <= 0) return dictionary.cvisor.errorRateLimited;
+  const hours = Math.max(1, Math.ceil(resetInSeconds / 3600));
+  if (hours === 1) return dictionary.cvisor.errorRateLimitedInOneHour;
+  return dictionary.cvisor.errorRateLimitedInHours.replace("{v}", String(hours));
 }

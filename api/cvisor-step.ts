@@ -79,10 +79,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only the opening step spends quota; the refinement rounds of one CV are
   // part of the same piece of work.
   const rateLimit = previous
-    ? { allowed: true, remaining: AGENT_DAILY_LIMIT, limit: AGENT_DAILY_LIMIT }
+    ? { allowed: true, remaining: AGENT_DAILY_LIMIT, limit: AGENT_DAILY_LIMIT, resetInSeconds: 0 }
     : await checkDailyLimit("agent", await resolveIdentifier(req), AGENT_DAILY_LIMIT);
   if (!rateLimit.allowed) {
-    res.status(429).json({ error: "rate_limited", limit: rateLimit.limit });
+    res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;
   }
 
