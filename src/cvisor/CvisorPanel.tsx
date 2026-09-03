@@ -84,7 +84,8 @@ export function CvisorPanel({
   if (!open) return null;
 
   const run = async () => {
-    if (!background.trim()) {
+    const usingExisting = includeExisting && hasExisting;
+    if (!background.trim() && !usingExisting) {
       setError(copy.emptyBackground);
       return;
     }
@@ -94,7 +95,7 @@ export function CvisorPanel({
       const response = await runCvisorAgent({
         jobAd,
         background,
-        existingCv: includeExisting && hasExisting ? existingCvText : "",
+        existingCv: usingExisting ? existingCvText : "",
         language,
       });
       setResult(response);

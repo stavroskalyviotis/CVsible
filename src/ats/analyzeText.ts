@@ -8,6 +8,11 @@ import { ACTION_VERBS_EL, ACTION_VERBS_EN } from "./rules";
 const WEIGHT_CRITICAL = 3;
 const WEIGHT_IMPORTANT = 2;
 const WEIGHT_MINOR = 1;
+// A CV that never mentions the role or its core terms won't survive a real
+// ATS keyword filter no matter how clean its formatting is — weighted well
+// above every structural check so a bad match visibly drags the score down
+// instead of hiding behind a near-perfect formatting score.
+const WEIGHT_KEYWORDS = 9;
 
 function startsWithActionVerb(line: string): boolean {
   const first = normalize(line.replace(/^\s*([•▪◦‣·*+–—-])\s+/, "")).split(" ")[0];
@@ -173,7 +178,7 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
       check(
         "keywords",
         keywords.ratio >= 0.6 ? "pass" : keywords.ratio >= 0.3 ? "warn" : "fail",
-        WEIGHT_CRITICAL,
+        WEIGHT_KEYWORDS,
         Math.round(keywords.ratio * 100),
       ),
     );

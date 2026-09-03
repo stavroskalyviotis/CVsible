@@ -68,7 +68,7 @@ export function buildDraftUserMessage(jobAd: string, background: string, existin
   const parts = [`# TARGET
 
 ${jobAd || "(none given — write a strong general-purpose CV for this candidate)"}`];
-  parts.push(`# CANDIDATE TEXT
+  if (background.trim()) parts.push(`# CANDIDATE TEXT
 
 ${background}`);
   if (existingCv.trim()) parts.push(`# EXISTING CV
@@ -88,7 +88,7 @@ export function buildRefineUserMessage(
   const parts = [`# TARGET
 
 ${jobAd || "(none given)"}`];
-  parts.push(`# CANDIDATE TEXT
+  if (background.trim()) parts.push(`# CANDIDATE TEXT
 
 ${background}`);
   if (existingCv.trim()) parts.push(`# EXISTING CV

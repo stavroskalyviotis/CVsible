@@ -67,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const existingCv = typeof body.existingCv === "string" ? body.existingCv.trim() : "";
   const previous = body.draft && typeof body.draft === "object" ? (body.draft as CvDraft) : null;
 
-  if (!background) {
+  if (!background && !existingCv) {
     res.status(400).json({ error: "missing_fields" });
     return;
   }
