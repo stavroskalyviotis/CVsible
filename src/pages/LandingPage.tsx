@@ -7,6 +7,7 @@ import type { IconName } from "../components/Icon";
 import { SiteHeader } from "../components/SiteHeader";
 import { buildSiteNav } from "../components/siteNav";
 import { AuthMenu } from "../auth/AuthMenu";
+import { SUPPORT_URL } from "../lib/support";
 import "./LandingPage.css";
 
 const MOCK_CONTENT = {
@@ -261,6 +262,17 @@ export function LandingPage({
 
       <footer className="landing-footer">
         <p>{landing.footerNote}</p>
+        <p className="landing-support">
+          <a
+            href={SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing-support-link"
+          >
+            <Icon name="coffee" size={14} />
+            {dictionary.support.footerLink}
+          </a>
+        </p>
         <p className="landing-credit">
           {landing.madeBy}{" "}
           <a href="https://www.linkedin.com/in/stavros-kalyviotis/" target="_blank" rel="noopener noreferrer">

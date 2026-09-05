@@ -41,7 +41,8 @@ export type IconName =
   | "link"
   | "copy"
   | "undo"
-  | "redo";
+  | "redo"
+  | "coffee";
 
 const paths: Record<IconName, string> = {
   mail: "M3 6h18v12H3z M3 6l9 7 9-7",
@@ -91,6 +92,7 @@ const paths: Record<IconName, string> = {
   copy: "M8 8h11v11H8z M5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1",
   undo: "M3 10h11a5 5 0 0 1 0 10h-3 M3 10l4.5-4.5 M3 10l4.5 4.5",
   redo: "M21 10H10a5 5 0 0 0 0 10h3 M21 10l-4.5-4.5 M21 10l-4.5 4.5",
+  coffee: "M18 8h1a4 4 0 0 1 0 8h-1 M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z M6 1v3 M10 1v3 M14 1v3",
 };
 
 export function Icon({

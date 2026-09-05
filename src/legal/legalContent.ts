@@ -83,6 +83,13 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         ],
       },
       {
+        heading: "Στήριξη μέσω Buy Me a Coffee",
+        body: [
+          "Το κουμπί/σύνδεσμος «Στήριξε το CVsible» σε οδηγεί σε εξωτερική σελίδα (buymeacoffee.com), εκτός του CVsible. Δεν στέλνουμε εμείς κανένα δικό σου δεδομένο εκεί — απλώς ανοίγει ο σύνδεσμος σε νέα καρτέλα.",
+          "Οποιαδήποτε πληρωμή/δωρεά εκεί γίνεται γίνεται απευθείας μέσω του Buy Me a Coffee, το οποίο έχει τη δική του πολιτική απορρήτου και όρους. Εμείς δεν βλέπουμε στοιχεία κάρτας ή πληρωμής.",
+        ],
+      },
+      {
         heading: "Ανήλικοι",
         body: ["Το CVsible δεν απευθύνεται σε παιδιά κάτω των 16 ετών."],
       },
@@ -161,6 +168,13 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         ],
       },
       {
+        heading: "Support via Buy Me a Coffee",
+        body: [
+          "The \"Support CVsible\" link/button takes you to an external site (buymeacoffee.com), outside CVsible. We don't send any of your data there ourselves — it just opens the link in a new tab.",
+          "Any payment or donation made there happens directly through Buy Me a Coffee, which has its own privacy policy and terms. We never see your card or payment details.",
+        ],
+      },
+      {
         heading: "Children",
         body: ["CVsible is not directed at children under 16."],
       },
@@ -182,6 +196,13 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         body: [
           "Το CVsible είναι δωρεάν εργαλείο δημιουργίας βιογραφικών, ελέγχου ATS-συμβατότητας, και AI-βοηθός κειμένου. Παρέχεται «ως έχει», χωρίς εγγύηση διαθεσιμότητας ή καταλληλότητας για συγκεκριμένο σκοπό.",
           "Σήμερα όλες οι λειτουργίες είναι δωρεάν. Στο μέλλον ενδέχεται να προστεθούν πληρωμένα πλάνα ή όρια χρήσης, κυρίως γύρω από τις λειτουργίες τεχνητής νοημοσύνης — αν συμβεί, θα ενημερωθείς καθαρά πριν χρεωθείς οτιδήποτε, και θα ενημερωθούν οι παρόντες όροι αναλόγως.",
+        ],
+      },
+      {
+        heading: "Στήριξη / δωρεές",
+        body: [
+          "Το CVsible παραμένει δωρεάν και πλήρως λειτουργικό χωρίς καμία δωρεά. Ο σύνδεσμος «Στήριξε το CVsible» οδηγεί σε τρίτη πλατφόρμα (Buy Me a Coffee) και είναι εντελώς προαιρετικός.",
+          "Μια δωρεά δεν ξεκλειδώνει, δεν αλλάζει, και δεν επηρεάζει καμία λειτουργία του CVsible — δεν είναι πληρωμή για υπηρεσία. Οι δωρεές δεν επιστρέφονται και διέπονται από τους όρους του Buy Me a Coffee, όχι τους δικούς μας.",
         ],
       },
       {
@@ -244,6 +265,13 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         body: [
           "CVsible is a free resume builder, ATS-compatibility checker, and AI writing assistant. It's provided \"as is\", with no guarantee of availability or fitness for a particular purpose.",
           "Everything is free today. In the future we may introduce paid plans or usage limits, mainly around the AI features — if that happens, you'll be clearly notified before you're ever charged, and these terms will be updated accordingly.",
+        ],
+      },
+      {
+        heading: "Support / donations",
+        body: [
+          "CVsible stays free and fully functional without any donation. The \"Support CVsible\" link takes you to a third-party platform (Buy Me a Coffee) and is entirely optional.",
+          "A donation doesn't unlock, change, or affect any CVsible feature — it isn't a payment for a service. Donations are non-refundable and governed by Buy Me a Coffee's terms, not ours.",
         ],
       },
       {

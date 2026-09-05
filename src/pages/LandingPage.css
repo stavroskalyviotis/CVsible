@@ -629,6 +629,29 @@
   gap: 6px;
 }
 
+.landing-support {
+  margin: 4px 0;
+}
+
+.landing-support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.landing-support-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .landing-credit {
   font-size: 0.76rem;
   color: var(--ink-soft);

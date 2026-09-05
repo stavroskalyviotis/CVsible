@@ -463,6 +463,14 @@ export interface Dictionary {
     cta: string;
     download: string;
   };
+  support: {
+    footerLink: string;
+    badgeLabel: string;
+    toastTitle: string;
+    toastBody: string;
+    toastCta: string;
+    toastDismiss: string;
+  };
 }
 
 export const dictionaries: Record<LanguageCode, Dictionary> = {
@@ -1104,6 +1112,14 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cta: "Φτιάξε το δικό σου δωρεάν στο CVsible",
       download: "Λήψη PDF",
     },
+    support: {
+      footerLink: "Στήριξε το CVsible ☕",
+      badgeLabel: "Στήριξε το CVsible",
+      toastTitle: "Το βιογραφικό σου είναι έτοιμο! 🎉",
+      toastBody: "Αν σου φάνηκε χρήσιμο το CVsible, μπορείς να {cta} — μας βοηθάει να το κρατάμε δωρεάν για όλους.",
+      toastCta: "κεράσεις έναν καφέ ☕",
+      toastDismiss: "Κλείσιμο",
+    },
   },
   en: {
     locale: "en",
@@ -1739,6 +1755,14 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       loading: "Loading CV…",
       cta: "Build your own for free on CVsible",
       download: "Download PDF",
+    },
+    support: {
+      footerLink: "Support CVsible ☕",
+      badgeLabel: "Support CVsible",
+      toastTitle: "Your CV is ready! 🎉",
+      toastBody: "If CVsible was useful to you, you can {cta} — it helps us keep it free for everyone.",
+      toastCta: "buy us a coffee ☕",
+      toastDismiss: "Dismiss",
     },
   },
 };

@@ -49,6 +49,7 @@ The interface is available in **Greek and English**.
 - Fully responsive, mobile-friendly layout
 - Greek and English interface and PDF output
 - No sign-up required for the core builder, no watermark, no cost
+- Optional, unobtrusive "Support CVsible" link (Buy Me a Coffee) — a voluntary tip, never required and never gates any feature
 
 ## Privacy
 
@@ -59,6 +60,7 @@ Full details live on the in-app [Privacy Policy](https://cvsible.vercel.app/#/pr
 - CVscan's analysis of an uploaded file runs entirely client-side; the file itself is never uploaded anywhere.
 - If you sign in, Supabase handles Google authentication and stores your saved CVs, protected by Postgres Row Level Security so only your account can read or write them.
 - [Vercel Web Analytics](https://vercel.com/docs/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights) provide anonymous, cookie-free aggregate usage data. Both are inactive during local development.
+- The "Support CVsible" link points to an external Buy Me a Coffee page; clicking it just opens that page in a new tab — no data is sent to it from CVsible.
 
 ## Tech stack
 
