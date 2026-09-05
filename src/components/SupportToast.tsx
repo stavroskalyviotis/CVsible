@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import type { Dictionary } from "../i18n/translations";
 import { SUPPORT_URL } from "../lib/support";
 import { Icon } from "./Icon";
+import { SupportQr } from "./SupportQr";
 import "./SupportToast.css";
 
 const AUTO_DISMISS_MS = 12000;
@@ -31,13 +32,26 @@ export function SupportToast({
         <Icon name="x" size={14} />
       </button>
       <p className="support-toast-title">{dictionary.support.toastTitle}</p>
-      <p className="support-toast-body">
-        {before}
-        <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" onClick={onDismiss}>
-          {dictionary.support.toastCta}
+      <div className="support-toast-row">
+        <p className="support-toast-body">
+          {before}
+          <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" onClick={onDismiss}>
+            {dictionary.support.toastCta}
+          </a>
+          {after}
+        </p>
+        <a
+          href={SUPPORT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="support-toast-qr"
+          onClick={onDismiss}
+          title={dictionary.support.qrHint}
+        >
+          <SupportQr size={72} />
         </a>
-        {after}
-      </p>
+      </div>
+      <p className="support-toast-qr-hint">{dictionary.support.qrHint}</p>
     </div>
   );
 }

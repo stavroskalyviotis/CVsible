@@ -470,6 +470,7 @@ export interface Dictionary {
     toastBody: string;
     toastCta: string;
     toastDismiss: string;
+    qrHint: string;
   };
 }
 
@@ -1119,6 +1120,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       toastBody: "Αν σου φάνηκε χρήσιμο το CVsible, μπορείς να {cta} — μας βοηθάει να το κρατάμε δωρεάν για όλους.",
       toastCta: "κεράσεις έναν καφέ ☕",
       toastDismiss: "Κλείσιμο",
+      qrHint: "Ή σκάναρε για να πληρώσεις από το κινητό",
     },
   },
   en: {
@@ -1763,6 +1765,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       toastBody: "If CVsible was useful to you, you can {cta} — it helps us keep it free for everyone.",
       toastCta: "buy us a coffee ☕",
       toastDismiss: "Dismiss",
+      qrHint: "Or scan to pay from your phone",
     },
   },
 };

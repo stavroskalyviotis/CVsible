@@ -3,7 +3,7 @@
   right: 16px;
   bottom: 16px;
   z-index: 90;
-  width: min(340px, calc(100vw - 32px));
+  width: min(360px, calc(100vw - 32px));
   padding: 16px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line-strong);
@@ -50,8 +50,15 @@
   color: var(--ink);
 }
 
+.support-toast-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .support-toast-body {
   margin: 0;
+  flex: 1;
   font-size: 13px;
   line-height: 1.5;
   color: var(--ink-soft);
@@ -65,4 +72,22 @@
 
 .support-toast-body a:hover {
   text-decoration: underline;
+}
+
+.support-toast-qr {
+  flex-shrink: 0;
+  display: block;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  line-height: 0;
+}
+
+.support-toast-qr-hint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--ink-soft);
+  opacity: 0.75;
+  text-align: right;
 }
