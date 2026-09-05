@@ -14,12 +14,12 @@
   <rect x="500" y="120" width="36" height="36" rx="10" fill="#1c1a1f"/>
   <text x="551" y="147" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#1c1a1f">CVsible</text>
 
-  <text x="500" y="240" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#1c1a1f">Φτιάξε το βιογραφικό σου</text>
-  <text x="500" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#a9435a">σε λίγα λεπτά</text>
+  <text x="500" y="240" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#1c1a1f">Build your resume</text>
+  <text x="500" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#a9435a">in minutes</text>
 
-  <text x="500" y="370" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">Ζωντανή προεπισκόπηση, πλήρης προσαρμογή χρώματος,</text>
-  <text x="500" y="405" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">λήψη σε PDF. Χωρίς λογαριασμό, 100% δωρεάν.</text>
+  <text x="500" y="370" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">Live preview, full color customization,</text>
+  <text x="500" y="405" font-family="Segoe UI, Arial, sans-serif" font-size="26" fill="#55505c">download as PDF. No account, 100% free.</text>
 
   <rect x="500" y="450" width="220" height="58" rx="29" fill="#1c1a1f"/>
-  <text x="536" y="486" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#ffffff">Ξεκίνα τώρα →</text>
+  <text x="536" y="486" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#ffffff">Get started →</text>
 </svg>
