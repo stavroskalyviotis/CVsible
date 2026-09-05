@@ -49,6 +49,36 @@ test.describe("CVscan (ATS check)", () => {
   });
 
   test("a builder CV with warnings offers a CVisor CTA (not CVfix) and opens CVisor", async ({ page }) => {
+    // The CVisor CTA only shows once every "fail"-level check is cleared (a
+    // real fail next to it would read as a contradiction) while some "warn"
+    // checks remain — e.g. no education/skills section. Email, phone and one
+    // dated, bulleted experience entry are seeded directly since driving the
+    // custom month/year picker through the UI adds nothing this test needs.
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "cvsible:cv-data",
+        JSON.stringify({
+          personalInfo: {
+            contacts: [
+              { id: "c1", type: "email", value: "jane.smith@example.com", label: "" },
+              { id: "c2", type: "phone", value: "+30 690 000 0000", label: "" },
+            ],
+          },
+          experience: [
+            {
+              id: "e1",
+              role: "Software Engineer",
+              company: "Acme Corp",
+              location: "",
+              startDate: "2022-01",
+              endDate: "2023-06",
+              current: false,
+              description: "<ul><li>Built and shipped features used by thousands of users.</li></ul>",
+            },
+          ],
+        }),
+      );
+    });
     await page.goto("/#/builder");
     // Personal info is the section open by default — no need to toggle it.
     await page.getByLabel(/full name|ονοματεπώνυμο/i).fill("Jane Smith");
