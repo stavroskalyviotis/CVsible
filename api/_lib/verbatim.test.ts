@@ -80,7 +80,7 @@ describe("findVerbatimIssues", () => {
     expect(issues).toEqual([]);
   });
 
-  it("does not check non-prose fields like company/role/institution", () => {
+  it("flags a label field (role/company) that does not appear in the source at all", () => {
     const issues = findVerbatimIssues(
       draft({
         experience: [
@@ -91,6 +91,49 @@ describe("findVerbatimIssues", () => {
             startDate: "",
             endDate: "",
             current: false,
+            bullets: [],
+          },
+        ],
+      }),
+      SOURCE,
+    );
+    expect(issues.map((issue) => issue.field).sort()).toEqual([
+      "experience[0].company",
+      "experience[0].role",
+    ]);
+  });
+
+  it("accepts a short label field copied verbatim from the source", () => {
+    const issues = findVerbatimIssues(
+      draft({
+        experience: [
+          {
+            role: "Σερβιτόρος",
+            company: "Blue Cafe",
+            location: "",
+            startDate: "",
+            endDate: "",
+            current: false,
+            bullets: [],
+          },
+        ],
+      }),
+      SOURCE,
+    );
+    expect(issues).toEqual([]);
+  });
+
+  it("does not require dates to appear verbatim, since reformatting them is required", () => {
+    const issues = findVerbatimIssues(
+      draft({
+        experience: [
+          {
+            role: "Σερβιτόρος",
+            company: "Blue Cafe",
+            location: "",
+            startDate: "2021-01",
+            endDate: "",
+            current: true,
             bullets: [],
           },
         ],

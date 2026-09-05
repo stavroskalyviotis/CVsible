@@ -485,7 +485,9 @@ export function AtsScanPage({
                 already the builder's own structured CV. CVisor is the right
                 tool there instead: point to it whenever anything could still
                 be improved, even while the overall score already reads "good". */}
-            {resume.kind === "builder" && analysis.checks.some((check) => check.status === "warn") && (
+            {resume.kind === "builder" &&
+              analysis.checks.every((check) => check.status !== "fail") &&
+              analysis.checks.some((check) => check.status === "warn") && (
               <section className="scan-cta">
                 <div>
                   <h2>

@@ -179,6 +179,34 @@ async function extractPdf(file: File): Promise<ExtractedResume> {
 }
 
 const XML_TAG = /<[^>]+>/g;
+const XML_ENTITY = /&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi;
+
+/** DOCX text is XML, so entities survive tag-stripping as literal escapes
+ *  (an "&" written by the author comes through the zip as "&amp;") unless
+ *  they're decoded back afterwards. */
+function decodeXmlEntities(value: string): string {
+  return value.replace(XML_ENTITY, (match, entity: string) => {
+    if (entity[0] === "#") {
+      const codePoint =
+        entity[1]?.toLowerCase() === "x" ? parseInt(entity.slice(2), 16) : parseInt(entity.slice(1), 10);
+      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+    }
+    switch (entity.toLowerCase()) {
+      case "amp":
+        return "&";
+      case "lt":
+        return "<";
+      case "gt":
+        return ">";
+      case "quot":
+        return '"';
+      case "apos":
+        return "'";
+      default:
+        return match;
+    }
+  });
+}
 
 async function extractDocx(file: File): Promise<ExtractedResume> {
   const buffer = new Uint8Array(await file.arrayBuffer());
@@ -200,7 +228,7 @@ async function extractDocx(file: File): Promise<ExtractedResume> {
     .replace(/<w:tab\s*\/?>/g, " ")
     .replace(XML_TAG, "")
     .split("\n")
-    .map((line) => line.replace(/\s+/g, " ").trim())
+    .map((line) => decodeXmlEntities(line).replace(/\s+/g, " ").trim())
     .filter(Boolean);
 
   const text = lines.join("\n");
