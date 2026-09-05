@@ -466,11 +466,12 @@ export interface Dictionary {
   support: {
     footerLink: string;
     badgeLabel: string;
-    toastTitle: string;
-    toastBody: string;
-    toastCta: string;
-    toastDismiss: string;
+    modalTitle: string;
+    modalBody: string;
+    modalClose: string;
     qrHint: string;
+    primaryButton: string;
+    secondaryButton: string;
   };
 }
 
@@ -1116,11 +1117,12 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     support: {
       footerLink: "Στήριξε το CVsible ☕",
       badgeLabel: "Στήριξε το CVsible",
-      toastTitle: "Το βιογραφικό σου είναι έτοιμο! 🎉",
-      toastBody: "Αν σου φάνηκε χρήσιμο το CVsible, μπορείς να {cta} — μας βοηθάει να το κρατάμε δωρεάν για όλους.",
-      toastCta: "κεράσεις έναν καφέ ☕",
-      toastDismiss: "Κλείσιμο",
-      qrHint: "Ή σκάναρε για να πληρώσεις από το κινητό",
+      modalTitle: "Το βιογραφικό σου είναι έτοιμο! 🎉",
+      modalBody: "Αν σου φάνηκε χρήσιμο το CVsible, μια μικρή στήριξη μας βοηθάει να το κρατάμε δωρεάν για όλους.",
+      modalClose: "Κλείσιμο",
+      qrHint: "Σκάναρε για να πληρώσεις από το κινητό",
+      primaryButton: "Κέρασέ μας έναν καφέ ☕",
+      secondaryButton: "Ίσως μετά την πρώτη δουλειά 😉",
     },
   },
   en: {
@@ -1761,11 +1763,12 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     support: {
       footerLink: "Support CVsible ☕",
       badgeLabel: "Support CVsible",
-      toastTitle: "Your CV is ready! 🎉",
-      toastBody: "If CVsible was useful to you, you can {cta} — it helps us keep it free for everyone.",
-      toastCta: "buy us a coffee ☕",
-      toastDismiss: "Dismiss",
-      qrHint: "Or scan to pay from your phone",
+      modalTitle: "Your CV is ready! 🎉",
+      modalBody: "If CVsible was useful to you, a small tip helps us keep it free for everyone.",
+      modalClose: "Close",
+      qrHint: "Scan to pay from your phone",
+      primaryButton: "Buy us a coffee ☕",
+      secondaryButton: "Maybe after I land the job 😉",
     },
   },
 };

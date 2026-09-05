@@ -8,7 +8,7 @@ import type { CvPreviewHandle } from "../components/CvPreview";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { fetchPublicCv } from "../cloud/cvStore";
 import { normalizeCvData } from "../data/normalize";
-import { SupportToast } from "../components/SupportToast";
+import { SupportModal } from "../components/SupportModal";
 import "./PublicCvPage.css";
 
 type LoadState = "loading" | "ready" | "not-found" | "error";
@@ -26,7 +26,7 @@ export function PublicCvPage({
   const [state, setState] = useState<LoadState>("loading");
   const [data, setData] = useState<CvData | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [showSupportToast, setShowSupportToast] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
   const { containerRef, scale } = usePreviewScale();
   const previewRef = useRef<CvPreviewHandle>(null);
 
@@ -54,7 +54,7 @@ export function PublicCvPage({
     setIsDownloading(true);
     try {
       await previewRef.current?.exportPdf();
-      setShowSupportToast(true);
+      setShowSupportModal(true);
     } finally {
       setIsDownloading(false);
     }
@@ -94,8 +94,8 @@ export function PublicCvPage({
         </>
       )}
 
-      {showSupportToast && (
-        <SupportToast dictionary={dictionary} onDismiss={() => setShowSupportToast(false)} />
+      {showSupportModal && (
+        <SupportModal dictionary={dictionary} onDismiss={() => setShowSupportModal(false)} />
       )}
     </div>
   );

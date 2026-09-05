@@ -20,21 +20,32 @@ export function SupportQr({ size = 76 }: { size?: number }) {
   }, []);
 
   const count = cells.length;
+  const quietZone = 4;
+  const total = count + quietZone * 2;
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox={`0 0 ${count} ${count}`}
+      viewBox={`0 0 ${total} ${total}`}
       shapeRendering="crispEdges"
       role="img"
       aria-label="QR code"
     >
-      <rect width={count} height={count} fill="#ffffff" />
+      <rect width={total} height={total} fill="#ffffff" />
       {cells.map((line, row) =>
         line.map(
           (isDark, col) =>
-            isDark && <rect key={`${row}-${col}`} x={col} y={row} width={1} height={1} fill="#1c1a1f" />
+            isDark && (
+              <rect
+                key={`${row}-${col}`}
+                x={col + quietZone}
+                y={row + quietZone}
+                width={1}
+                height={1}
+                fill="#1c1a1f"
+              />
+            )
         )
       )}
     </svg>

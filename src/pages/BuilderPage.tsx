@@ -36,7 +36,7 @@ import { useAuth } from "../auth/useAuth";
 import { isCloudConfigured } from "../lib/supabaseClient";
 import { CloudCvError, createCv, updateCvData } from "../cloud/cvStore";
 import { SupportBadge } from "../components/SupportBadge";
-import { SupportToast } from "../components/SupportToast";
+import { SupportModal } from "../components/SupportModal";
 import "./BuilderPage.css";
 
 type SectionId =
@@ -89,7 +89,7 @@ export function BuilderPage({
   const [isCvisorOpen, setIsCvisorOpen] = useState(autoOpenCvisor);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSavingToCloud, setIsSavingToCloud] = useState(false);
-  const [showSupportToast, setShowSupportToast] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
   const [pageCount, setPageCount] = useState(1);
   const [jobAd, setJobAd] = useCvisorJobAd();
   const previewRef = useRef<CvPreviewHandle>(null);
@@ -165,7 +165,7 @@ export function BuilderPage({
     setIsDownloading(true);
     try {
       await previewRef.current?.exportPdf();
-      setShowSupportToast(true);
+      setShowSupportModal(true);
     } catch {
       window.alert(dictionary.nav.downloadError);
     } finally {
@@ -586,8 +586,8 @@ export function BuilderPage({
       />
 
       <SupportBadge dictionary={dictionary} />
-      {showSupportToast && (
-        <SupportToast dictionary={dictionary} onDismiss={() => setShowSupportToast(false)} />
+      {showSupportModal && (
+        <SupportModal dictionary={dictionary} onDismiss={() => setShowSupportModal(false)} />
       )}
     </div>
   );
