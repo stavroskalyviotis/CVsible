@@ -25,6 +25,7 @@ import {
   LANGUAGE_LEVELS,
   MAX_BACKGROUND_CHARS,
   MAX_JOB_AD_CHARS,
+  MAX_ROUNDS_PER_CV,
 } from "./_lib/constants.js";
 
 /** One model turn per request.
@@ -76,11 +77,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Only the opening step spends quota; the refinement rounds of one CV are
-  // part of the same piece of work.
-  const rateLimit = previous
-    ? { allowed: true, remaining: AGENT_DAILY_LIMIT, limit: AGENT_DAILY_LIMIT, resetInSeconds: 0 }
-    : await checkDailyLimit("agent", await resolveIdentifier(req), AGENT_DAILY_LIMIT);
+  // Every round of a run — not just the opening one — is charged here. A
+  // client-supplied `draft` is not proof of a prior legitimate call, so it
+  // must never skip this check; the multiplier just keeps a single CV's
+  // refinement rounds from crowding out its own daily budget.
+  const rateLimit = await checkDailyLimit(
+    "agent",
+    await resolveIdentifier(req),
+    AGENT_DAILY_LIMIT * MAX_ROUNDS_PER_CV,
+  );
   if (!rateLimit.allowed) {
     res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;

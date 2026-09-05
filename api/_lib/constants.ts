@@ -18,6 +18,12 @@ export const MAX_RESUME_TEXT_CHARS = 20000;
 
 export const AGENT_DAILY_LIMIT = 5;
 export const SUGGEST_DAILY_LIMIT = 20;
+
+// Mirrors MAX_ROUNDS in src/cvisor/agent.ts. Every step of a CVfix/CVisor run
+// — not just the opening one — is charged against the daily limit below, so
+// the true per-identifier ceiling is DAILY_LIMIT * MAX_ROUNDS_PER_CV calls; a
+// caller cannot get unlimited free calls by fabricating a "draft" field.
+export const MAX_ROUNDS_PER_CV = 4;
 export const RATE_LIMIT_TTL_SECONDS = 26 * 60 * 60;
 
 export const MAX_JOB_AD_CHARS = 6000;

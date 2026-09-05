@@ -28,6 +28,11 @@ describe("sanitizeRichText", () => {
     expect(sanitizeRichText('<div><font color="evil"><b>nested</b></font></div>')).toBe("<div><b>nested</b></div>");
   });
 
+  it("strips event handler attributes from an allowed tag nested inside a disallowed one", () => {
+    const out = sanitizeRichText('<div><font color="evil"><b onclick="alert(1)">nested</b></font></div>');
+    expect(out).toBe("<div><b>nested</b></div>");
+  });
+
   it("neutralises an <iframe> by parsing its contents as inert text rather than markup", () => {
     // <iframe> switches the HTML tokenizer to RAWTEXT mode, so its payload can
     // never be parsed back into live elements/scripts — it comes out as escaped text.

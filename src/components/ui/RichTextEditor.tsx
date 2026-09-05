@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import type { Dictionary } from "../../i18n/translations";
+import { sanitizeRichText } from "../../utils/richText";
 import "./RichTextEditor.css";
 
 interface ActiveFormats {
@@ -43,8 +44,11 @@ export function RichTextEditor({
     // Skip while the user is actively typing in this editor, so we don't clobber the
     // caret position with an echo of the value it just produced.
     if (document.activeElement === editor) return;
-    if (editor.innerHTML !== value) {
-      editor.innerHTML = value;
+    // Loaded value may come from an imported file or a shared cloud CV, so it
+    // must be sanitized before it can execute as live DOM.
+    const safeValue = sanitizeRichText(value);
+    if (editor.innerHTML !== safeValue) {
+      editor.innerHTML = safeValue;
     }
   }, [value]);
 

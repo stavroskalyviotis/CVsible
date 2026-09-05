@@ -3,7 +3,7 @@ import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
 import type { ParsedFields } from "../ats/parse";
 import { Icon } from "../components/Icon";
-import { saveCvData } from "../utils/storage";
+import { saveCvData, setCurrentCloudId } from "../utils/storage";
 import { runCvFix } from "./agent";
 import type { CvFixResult } from "./agent";
 import { mapCvisorErrorMessage } from "./errors";
@@ -51,6 +51,7 @@ export function CvFixCard({
   const openInBuilder = () => {
     if (!result) return;
     saveCvData(draftToCvData(result.draft, fields));
+    setCurrentCloudId(null);
     onOpenBuilder();
   };
 

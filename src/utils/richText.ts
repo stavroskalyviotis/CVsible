@@ -27,6 +27,10 @@ function cleanNode(node: Node): void {
   Array.from(node.childNodes).forEach((child) => {
     if (child.nodeType === Node.ELEMENT_NODE) {
       const element = child as HTMLElement;
+      // Clean descendants before deciding this element's own fate: an unwrapped
+      // disallowed element promotes its children into the parent, and those
+      // children must already be safe by the time that happens.
+      cleanNode(element);
       if (!ALLOWED_TAGS.has(element.tagName)) {
         while (element.firstChild) element.parentNode?.insertBefore(element.firstChild, element);
         element.parentNode?.removeChild(element);
@@ -35,7 +39,6 @@ function cleanNode(node: Node): void {
       const safeStyle = element.hasAttribute("style") ? sanitizeStyle(element.getAttribute("style") ?? "") : "";
       Array.from(element.attributes).forEach((attr) => element.removeAttribute(attr.name));
       if (safeStyle) element.setAttribute("style", safeStyle);
-      cleanNode(element);
     } else if (child.nodeType !== Node.TEXT_NODE) {
       child.parentNode?.removeChild(child);
     }

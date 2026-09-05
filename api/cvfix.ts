@@ -14,6 +14,7 @@ import {
   CVFIX_MODEL,
   LANGUAGE_LEVELS,
   MAX_RESUME_TEXT_CHARS,
+  MAX_ROUNDS_PER_CV,
 } from "./_lib/constants.js";
 
 export const config = { maxDuration: 60 };
@@ -98,9 +99,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const rateLimit = previous
-    ? { allowed: true, remaining: CVFIX_DAILY_LIMIT, limit: CVFIX_DAILY_LIMIT, resetInSeconds: 0 }
-    : await checkDailyLimit("cvfix", await resolveIdentifier(req), CVFIX_DAILY_LIMIT);
+  // Every round of a run — not just the opening one — is charged here. A
+  // client-supplied `draft` is not proof of a prior legitimate call, so it
+  // must never skip this check; the multiplier just keeps a single CV's
+  // refinement rounds from crowding out its own daily budget.
+  const rateLimit = await checkDailyLimit(
+    "cvfix",
+    await resolveIdentifier(req),
+    CVFIX_DAILY_LIMIT * MAX_ROUNDS_PER_CV,
+  );
   if (!rateLimit.allowed) {
     res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;
