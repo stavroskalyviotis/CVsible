@@ -19,6 +19,12 @@ export interface RateLimitResult {
   /** Seconds until the bucket resets. 0 when not meaningful (allowed, or
    *  rate limiting isn't active). */
   resetInSeconds: number;
+  /** True when `allowed: false` because the limit itself couldn't be
+   *  checked (Redis unset or unreachable) rather than because the caller
+   *  actually used up their quota. The caller must refuse the request in
+   *  this case too — this is a paid AI feature, and "can't verify the
+   *  budget" must not be treated the same as "budget is fine". */
+  unavailable?: boolean;
 }
 
 let cachedUnlimitedIps: Set<string> | undefined;
@@ -40,8 +46,9 @@ export async function checkDailyLimit(bucket: string, identifier: string, limit:
   }
   const redis = getClient();
   if (!redis) {
-    // No Redis configured yet — fail open rather than blocking the feature entirely.
-    return { allowed: true, remaining: limit, limit, resetInSeconds: 0 };
+    // No Redis configured — fail closed. This is a paid AI feature; an
+    // unenforceable limit is a cost bug, not an availability nicety.
+    return { allowed: false, remaining: 0, limit, resetInSeconds: 0, unavailable: true };
   }
   try {
     const key = `cvisor:${bucket}:${identifier}`;
@@ -55,9 +62,10 @@ export async function checkDailyLimit(bucket: string, identifier: string, limit:
     const resetInSeconds = allowed ? 0 : Math.max(0, await redis.ttl(key));
     return { allowed, remaining: Math.max(0, limit - count), limit, resetInSeconds };
   } catch (error) {
-    // Rate limiting must never take the whole feature down — fail open and log for visibility.
+    // Redis is unreachable, so the limit can't be enforced — fail closed
+    // and log for visibility, rather than letting quota go unchecked.
     console.error("cvisor rate limit check failed", error);
-    return { allowed: true, remaining: limit, limit, resetInSeconds: 0 };
+    return { allowed: false, remaining: 0, limit, resetInSeconds: 0, unavailable: true };
   }
 }
 

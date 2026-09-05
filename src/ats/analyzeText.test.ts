@@ -82,6 +82,15 @@ describe("analyzeResumeText", () => {
     expect(analysis.score).toBeLessThanOrEqual(69);
   });
 
+  it("marks singleColumn as unknown for a DOCX/TXT source instead of a false pass, and excludes it from scoring", () => {
+    const clean = analyzeResumeText(baseResume({ kind: "docx", multiColumnPages: 0 }), "");
+    const suspicious = analyzeResumeText(baseResume({ kind: "docx", multiColumnPages: 5 }), "");
+    expect(clean.checks.find((c) => c.id === "singleColumn")?.status).toBe("unknown");
+    expect(suspicious.checks.find((c) => c.id === "singleColumn")?.status).toBe("unknown");
+    // multiColumnPages carries no real signal for a DOCX, so it must not move the score.
+    expect(suspicious.score).toBe(clean.score);
+  });
+
   it("flags letter-spaced headings (PDF extractor artifact) as spacedLetters fail", () => {
     const shattered = "S K I L L S A N D T O O L S U S E D";
     const analysis = analyzeResumeText(

@@ -53,6 +53,8 @@ export interface GroundingIssue {
 function factualEntries(draft: CvDraft): { field: string; value: string }[] {
   const entries: { field: string; value: string }[] = [];
 
+  if (draft.jobTitle) entries.push({ field: "jobTitle", value: draft.jobTitle });
+
   draft.experience.forEach((item, index) => {
     entries.push({ field: `experience[${index}].company`, value: item.company });
     entries.push({ field: `experience[${index}].role`, value: item.role });
@@ -75,6 +77,8 @@ function factualEntries(draft: CvDraft): { field: string; value: string }[] {
 
   draft.skills.forEach((item, index) => entries.push({ field: `skills[${index}]`, value: item.name }));
   draft.languages.forEach((item, index) => entries.push({ field: `languages[${index}]`, value: item.name }));
+  draft.softSkills.forEach((value, index) => entries.push({ field: `softSkills[${index}]`, value }));
+  draft.interests.forEach((value, index) => entries.push({ field: `interests[${index}]`, value }));
 
   return entries.filter((entry) => entry.value.trim().length > 0);
 }

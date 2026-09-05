@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chrome
+      # Every Supabase call the e2e suite makes is intercepted by
+      # e2e/helpers/mockCloud.ts (see cloud-save/mycvs/public-cv specs), so
+      # these values only need to be well-formed, not real — no secret is
+      # required for this job.
+      - name: Write placeholder Supabase config for the mocked client
+        run: |
+          cat <<'EOF' > .env.local
+          VITE_SUPABASE_URL=https://ci-placeholder-project.supabase.co
+          VITE_SUPABASE_ANON_KEY=ci-placeholder-anon-key
+          EOF
+      - run: npm run test:e2e

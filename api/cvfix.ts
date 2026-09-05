@@ -109,6 +109,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     CVFIX_DAILY_LIMIT * MAX_ROUNDS_PER_CV,
   );
   if (!rateLimit.allowed) {
+    if (rateLimit.unavailable) {
+      res.status(503).json({ error: "unavailable" });
+      return;
+    }
     res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;
   }

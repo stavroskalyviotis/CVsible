@@ -29,7 +29,7 @@ const BAND_LABEL_KEY = {
   poor: "bandPoor",
 } as const;
 
-const STATUS_ICON = { pass: "check", warn: "alert", fail: "x-circle" } as const;
+const STATUS_ICON = { pass: "check", warn: "alert", fail: "x-circle", unknown: "more" } as const;
 
 function format(template: string, value: string | number | undefined): string {
   return template.replace("{v}", String(value ?? ""));
@@ -52,7 +52,9 @@ function CheckRow({ check, dictionary }: { check: AtsCheck; dictionary: Dictiona
       <span className="scan-check-body">
         <span className="scan-check-label">{copy.label}</span>
         <span className="scan-check-detail">
-          {format(check.status === "pass" ? copy.ok : copy.bad, check.value)}
+          {check.status === "unknown"
+            ? dictionary.ats.notEvaluated
+            : format(check.status === "pass" ? copy.ok : copy.bad, check.value)}
         </span>
       </span>
     </li>
@@ -75,7 +77,7 @@ function CheckGroup({
   dictionary,
 }: {
   title: string;
-  tone: "fail" | "warn" | "pass";
+  tone: "fail" | "warn" | "pass" | "unknown";
   checks: AtsCheck[];
   dictionary: Dictionary;
 }) {
@@ -343,6 +345,12 @@ export function AtsScanPage({
                   title={dictionary.ats.passing}
                   tone="pass"
                   checks={analysis.checks.filter((check) => check.status === "pass")}
+                  dictionary={dictionary}
+                />
+                <CheckGroup
+                  title={dictionary.ats.notEvaluatedGroupTitle}
+                  tone="unknown"
+                  checks={analysis.checks.filter((check) => check.status === "unknown")}
                   dictionary={dictionary}
                 />
               </section>

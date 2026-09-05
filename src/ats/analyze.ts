@@ -1,6 +1,9 @@
 import { isStopword } from "./rules";
 
-export type AtsStatus = "pass" | "warn" | "fail";
+/** "unknown" is for a check the analyser cannot actually evaluate for this
+ *  document (e.g. column layout in a DOCX, which carries no geometry) — it
+ *  must never render as a silent "pass", and it earns no score either way. */
+export type AtsStatus = "pass" | "warn" | "fail" | "unknown";
 
 export type AtsCheckId =
   | "textLayer"

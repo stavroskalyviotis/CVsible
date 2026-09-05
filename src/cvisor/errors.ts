@@ -10,6 +10,8 @@ export function mapCvisorErrorMessage(error: unknown, dictionary: Dictionary): s
         return dictionary.cvisor.errorTooLong;
       case "rate_limited":
         return rateLimitedMessage(error.resetInSeconds, dictionary);
+      case "unavailable":
+        return dictionary.cvisor.errorUnavailable;
       case "refused":
         return dictionary.cvisor.errorRefused;
       default:

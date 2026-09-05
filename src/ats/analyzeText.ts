@@ -39,11 +39,14 @@ function shatteredLines(lines: string[]): string[] {
 }
 
 function scoreOf(checks: AtsCheck[]): number {
-  const earned = checks.reduce(
+  // A check the analyser couldn't actually evaluate contributes to neither
+  // side of the fraction — it's excluded, not silently counted as a pass.
+  const scored = checks.filter((item) => item.status !== "unknown");
+  const earned = scored.reduce(
     (total, item) => total + item.weight * (item.status === "pass" ? 1 : item.status === "warn" ? 0.5 : 0),
     0,
   );
-  const possible = checks.reduce((total, item) => total + item.weight, 0);
+  const possible = scored.reduce((total, item) => total + item.weight, 0);
   const raw = possible === 0 ? 0 : Math.round((earned / possible) * 100);
 
   // One blocking failure (unreadable text, wrong headings, ...) can be enough
@@ -100,12 +103,13 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
       WEIGHT_CRITICAL,
       shattered.length > 0 ? shattered[0].slice(0, 40) : 0,
     ),
-    check(
-      "singleColumn",
-      resume.multiColumnPages === 0 ? "pass" : "fail",
-      WEIGHT_CRITICAL,
-      resume.multiColumnPages,
-    ),
+    // Column layout is only actually measured for a PDF (from glyph geometry)
+    // and the builder's own CV (known from its template). A DOCX/TXT extract
+    // carries no positional data, so multiColumnPages is always 0 there —
+    // reporting that as a "pass" would be a false positive, not a real check.
+    resume.kind === "pdf" || resume.kind === "builder"
+      ? check("singleColumn", resume.multiColumnPages === 0 ? "pass" : "fail", WEIGHT_CRITICAL, resume.multiColumnPages)
+      : check("singleColumn", "unknown", WEIGHT_CRITICAL),
     check(
       "headingsFound",
       sectionKeys.has("experience") && sectionKeys.has("education") && sectionKeys.has("skills")

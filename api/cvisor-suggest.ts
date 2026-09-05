@@ -68,6 +68,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const identifier = await resolveIdentifier(req);
   const rateLimit = await checkDailyLimit("suggest", identifier, SUGGEST_DAILY_LIMIT);
   if (!rateLimit.allowed) {
+    if (rateLimit.unavailable) {
+      res.status(503).json({ error: "unavailable" });
+      return;
+    }
     res.status(429).json({ error: "rate_limited", limit: rateLimit.limit, resetInSeconds: rateLimit.resetInSeconds });
     return;
   }

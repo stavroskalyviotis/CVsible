@@ -5,6 +5,7 @@ export type CvisorErrorCode =
   | "missing_fields"
   | "text_too_long"
   | "rate_limited"
+  | "unavailable"
   | "refused"
   | "empty_response"
   | "server_error"

@@ -267,6 +267,8 @@ export interface Dictionary {
     blocking: string;
     warnings: string;
     passing: string;
+    notEvaluatedGroupTitle: string;
+    notEvaluated: string;
     parsedTitle: string;
     parsedHint: string;
     parsedName: string;
@@ -332,6 +334,7 @@ export interface Dictionary {
     errorRateLimitedInHours: string;
     errorRateLimitedInOneHour: string;
     errorRefused: string;
+    errorUnavailable: string;
     errorGeneric: string;
     title: string;
     intro: string;
@@ -806,6 +809,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       blocking: "Μπλοκάρουν",
       warnings: "Προσοχή",
       passing: "Περνούν",
+      notEvaluatedGroupTitle: "Δεν αξιολογήθηκαν",
+      notEvaluated: "Δεν μπορεί να αξιολογηθεί με ασφάλεια για αυτόν τον τύπο αρχείου.",
       parsedTitle: "Τι εξάγει το σύστημα",
       parsedHint: "Αυτά είναι τα πεδία που καταφέρνει να απομονώσει ένας parser από το αρχείο σου.",
       parsedName: "Όνομα",
@@ -849,7 +854,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "Το σκορ είναι ήδη καλό, αλλά ο CVisor μπορεί να προτείνει βελτιώσεις για τα σημεία παρακάτω, βασισμένες στην αγγελία εργασίας.",
       warningsCtaButton: "Άνοιγμα CVisor",
       buildTitle: "Ή φτιάξ' το από την αρχή",
-      buildBody: "Δύο από τα τρία πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού κάθε έλεγχο αυτής της σελίδας.",
+      buildBody:
+        "Δύο από τα τρία πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας — μονή στήλη, αναγνωρίσιμοι τίτλοι ενοτήτων. Οι υπόλοιποι έλεγχοι εξαρτώνται από τα στοιχεία που θα συμπληρώσεις.",
       buildButton: "Άνοιγμα builder",
       errorUnsupported: "Υποστηρίζονται μόνο αρχεία PDF, DOCX και TXT.",
       errorTooLarge: "Το αρχείο ξεπερνά τα 12 MB.",
@@ -960,6 +966,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       errorRateLimitedInHours: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά σε {v} ώρες.",
       errorRateLimitedInOneHour: "Έφτασες το ημερήσιο όριο χρήσης. Δοκίμασε ξανά σε 1 ώρα.",
       errorRefused: "Ο CVisor δεν μπόρεσε να επεξεργαστεί αυτό το κείμενο.",
+      errorUnavailable: "Η υπηρεσία AI είναι προσωρινά μη διαθέσιμη. Δοκίμασε ξανά σε λίγο.",
       errorGeneric: "Κάτι πήγε στραβά. Δοκίμασε ξανά.",
       title: "CVisor",
       intro:
@@ -1440,6 +1447,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       blocking: "Blocking",
       warnings: "Warnings",
       passing: "Passing",
+      notEvaluatedGroupTitle: "Not evaluated",
+      notEvaluated: "Can't be reliably evaluated for this file type.",
       parsedTitle: "What the system extracts",
       parsedHint: "These are the fields a parser manages to isolate from your file.",
       parsedName: "Name",
@@ -1483,7 +1492,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "The score is already good, but CVisor can suggest improvements for the points below, based on the job ad.",
       warningsCtaButton: "Open CVisor",
       buildTitle: "Or build it from scratch",
-      buildBody: "Two of the builder's three templates are designed to pass every check on this page by default.",
+      buildBody:
+        "Two of the builder's three templates are designed to pass this page's formatting checks by default — single column, recognisable section headings. The rest of the checks depend on what you fill in.",
       buildButton: "Open the builder",
       errorUnsupported: "Only PDF, DOCX and TXT files are supported.",
       errorTooLarge: "That file is larger than 12 MB.",
@@ -1594,6 +1604,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       errorRateLimitedInHours: "You have hit today's usage limit. Try again in {v} hours.",
       errorRateLimitedInOneHour: "You have hit today's usage limit. Try again in 1 hour.",
       errorRefused: "CVisor could not process that text.",
+      errorUnavailable: "The AI service is temporarily unavailable. Try again shortly.",
       errorGeneric: "Something went wrong. Try again.",
       title: "CVisor",
       intro:

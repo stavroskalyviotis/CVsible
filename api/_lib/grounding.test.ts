@@ -56,6 +56,16 @@ describe("findGroundingIssues — entities", () => {
     );
     expect(issues).toEqual([]);
   });
+
+  it("flags a fabricated jobTitle not present in the source", () => {
+    const issues = findGroundingIssues(draft({ jobTitle: "Chief Astronaut" }), source);
+    expect(issues).toEqual([{ field: "jobTitle", value: "Chief Astronaut", kind: "entity" }]);
+  });
+
+  it("flags a fabricated soft skill or interest not present in the source", () => {
+    const issues = findGroundingIssues(draft({ softSkills: ["Ηγεσία ομάδας 50 ατόμων"], interests: ["Σκάκι"] }), source);
+    expect(issues.map((issue) => issue.field).sort()).toEqual(["interests[0]", "softSkills[0]"]);
+  });
 });
 
 describe("findGroundingIssues — narrative numbers", () => {
