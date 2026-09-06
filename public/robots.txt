@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cvsible.vercel.app/sitemap.xml
+Sitemap: https://cvsible.com/sitemap.xml

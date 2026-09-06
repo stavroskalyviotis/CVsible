@@ -3,7 +3,7 @@
 
   <br />
 
-  <a href="https://cvsible.vercel.app/"><strong>Open the live app →</strong></a>
+  <a href="https://cvsible.com/"><strong>Open the live app →</strong></a>
 
   <br /><br />
 
@@ -53,7 +53,7 @@ The interface is available in **Greek and English**.
 
 ## Privacy
 
-Full details live on the in-app [Privacy Policy](https://cvsible.vercel.app/#/privacy) and [Terms of Use](https://cvsible.vercel.app/#/terms) pages — the short version:
+Full details live on the in-app [Privacy Policy](https://cvsible.com/#/privacy) and [Terms of Use](https://cvsible.com/#/terms) pages — the short version:
 
 - Without an account, everything stays in your browser's `localStorage`; nothing reaches a CVsible server except when you actively use CVisor, CVfix, or upload a file to CVscan.
 - CVisor/CVfix send the relevant text to a CVsible serverless function and from there to the Anthropic API to generate a result. That content isn't logged or permanently stored on our servers.
@@ -190,4 +190,4 @@ This is why the exported PDF's text layer matches the on-screen render 1:1 and i
 
 Created by **Stavros Kalyviotis**.
 
-[LinkedIn](https://www.linkedin.com/in/stavros-kalyviotis/) · [Live application](https://cvsible.vercel.app/)
+[LinkedIn](https://www.linkedin.com/in/stavros-kalyviotis/) · [Live application](https://cvsible.com/)

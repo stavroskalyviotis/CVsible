@@ -74,7 +74,7 @@ describe("URL_PATTERN", () => {
   });
 
   it("matches full https URLs", () => {
-    expect("https://cvsible.vercel.app".match(URL_PATTERN)?.[0]).toBe("https://cvsible.vercel.app");
+    expect("https://cvsible.com".match(URL_PATTERN)?.[0]).toBe("https://cvsible.com");
   });
 });
 
