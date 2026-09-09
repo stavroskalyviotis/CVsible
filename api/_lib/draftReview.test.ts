@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { reviewDraft, formatReview } from "./draftReview";
+import { reviewDraft, formatReview, ACTION_VERB_TARGET, KEYWORD_TARGET } from "./draftReview";
 import { EMPTY_DRAFT } from "./draftTypes";
 import type { CvDraft } from "./draftTypes";
+import * as appThresholds from "../../src/ats/analyzeText";
 
 function draft(overrides: Partial<CvDraft>): CvDraft {
   return { ...EMPTY_DRAFT, ...overrides };
@@ -120,7 +121,11 @@ describe("reviewDraft — experience", () => {
     expect(review.blocking.some((i) => i.includes("endDate is before startDate"))).toBe(true);
   });
 
-  it("gives advice, not a block, when a bullet doesn't start with a recognisable action verb", () => {
+  /** The whole point of the critic is that the agent may not declare a draft
+   *  finished while the report the candidate is about to read would criticise
+   *  it. Before this blocked, CVisor returned CVs that CVsible's own scan then
+   *  marked down for their verbs. */
+  it("blocks when too few bullets open with an action verb to pass the app's own check", () => {
     const review = reviewDraft(
       draft({
         summary: GOOD_SUMMARY,
@@ -129,8 +134,46 @@ describe("reviewDraft — experience", () => {
       "",
       "",
     );
-    expect(review.advice.some((i) => i.includes("action verb"))).toBe(true);
+    expect(review.blocking.some((i) => i.includes("action verb"))).toBe(true);
+    expect(review.metrics.verbRatio).toBe(0);
+  });
+
+  it("names the offending bullets so the fix is actionable", () => {
+    const review = reviewDraft(
+      draft({
+        summary: GOOD_SUMMARY,
+        experience: [{ ...goodExperience(), bullets: ["This particular quarter was a busy one for the whole team overall."] }],
+      }),
+      "",
+      "",
+    );
+    const issue = review.blocking.find((i) => i.includes("action verb")) ?? "";
+    expect(issue).toContain("experience[0].bullets[0]");
+  });
+
+  /** Above the threshold the CV passes, so a round spent rewriting one line is
+   *  a round not spent on something blocking. */
+  it("only advises about a stray weak opener once the ratio clears the target", () => {
+    const review = reviewDraft(
+      draft({
+        summary: GOOD_SUMMARY,
+        experience: [
+          {
+            ...goodExperience(),
+            bullets: [
+              "Coordinated a team of six baristas across two shifts every single week.",
+              "Reduced waste by rewriting the weekly ordering routine from scratch.",
+              "This particular quarter was a busy one for the whole team overall.",
+            ],
+          },
+        ],
+      }),
+      "",
+      "",
+    );
     expect(review.blocking.some((i) => i.includes("action verb"))).toBe(false);
+    expect(review.advice.some((i) => i.includes("action verb"))).toBe(true);
+    expect(review.metrics.verbRatio).toBeGreaterThanOrEqual(0.5);
   });
 });
 
@@ -178,16 +221,50 @@ describe("reviewDraft — missing keywords", () => {
   });
 });
 
+/** "I fix things and the score doesn't move" came from these two sides
+ *  measuring the same CV against different numbers. They are copies only
+ *  because api/ cannot import from src/. */
+describe("the agent is held to the thresholds the app reports", () => {
+  it("uses the same action-verb target as the scan", () => {
+    expect(ACTION_VERB_TARGET).toBe(appThresholds.ACTION_VERB_TARGET);
+  });
+
+  it("uses the same keyword target as the scan", () => {
+    expect(KEYWORD_TARGET).toBe(appThresholds.KEYWORD_TARGET);
+  });
+});
+
 describe("formatReview", () => {
+  const metrics = { verbRatio: 0.75, bulletCount: 4, keywordRatio: 0.5 };
+
   it("says BLOCKING: none when there is nothing blocking", () => {
-    const text = formatReview({ blocking: [], advice: [], missingKeywords: [] });
+    const text = formatReview({ blocking: [], advice: [], missingKeywords: [], metrics });
     expect(text).toContain("BLOCKING: none.");
   });
 
   it("includes counts and every section when populated", () => {
-    const text = formatReview({ blocking: ["b1"], advice: ["a1"], missingKeywords: ["k1"] });
+    const text = formatReview({ blocking: ["b1"], advice: ["a1"], missingKeywords: ["k1"], metrics });
     expect(text).toContain("BLOCKING (1)");
     expect(text).toContain("WORTH IMPROVING");
     expect(text).toContain("k1");
+  });
+
+  /** The agent argues with opinions and complies with numbers, so the numbers
+   *  the candidate will see go first. */
+  it("opens with the measurements the candidate's report will show", () => {
+    const text = formatReview({ blocking: [], advice: [], missingKeywords: [], metrics });
+    expect(text).toContain("75% opening with an action verb");
+    expect(text).toContain("50% job-ad coverage");
+    expect(text.indexOf("MEASURED")).toBeLessThan(text.indexOf("BLOCKING"));
+  });
+
+  it("leaves out coverage when there was no job ad to compare against", () => {
+    const text = formatReview({
+      blocking: [],
+      advice: [],
+      missingKeywords: [],
+      metrics: { verbRatio: 1, bulletCount: 2, keywordRatio: null },
+    });
+    expect(text).not.toContain("coverage");
   });
 });

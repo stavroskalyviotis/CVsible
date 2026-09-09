@@ -11,11 +11,15 @@ const WEIGHT_MINOR = 1;
 
 /** Share of bullets that must open with an action before the check passes.
  *  Well under half is deliberate: a CV legitimately carries context lines
- *  alongside its achievements. */
-const ACTION_VERB_TARGET = 0.5;
+ *  alongside its achievements.
+ *
+ *  Exported because api/_lib/draftReview.ts holds the CVisor agent to the same
+ *  number — a draft is not allowed to be "finished" while this report would
+ *  mark it down. Its test fails if the two ever diverge. */
+export const ACTION_VERB_TARGET = 0.5;
 
 /** Coverage at which a CV is answering the ad rather than brushing past it. */
-const KEYWORD_TARGET = 0.6;
+export const KEYWORD_TARGET = 0.6;
 
 function check(
   id: AtsCheck["id"],

@@ -1,0 +1,35 @@
+/** Word lists backing the ATS heuristics. Kept apart from the analyser so the
+ *  scoring logic stays readable.
+ *
+ *  The action-verb vocabulary lives in ./actionVerbs.ts, which both the
+ *  analyser and the CVisor critic share. */
+
+const STOPWORDS_EN = new Set([
+  "the", "and", "for", "with", "you", "your", "our", "are", "will", "have", "has", "that", "this",
+  "from", "who", "what", "into", "not", "but", "all", "any", "can", "able", "using", "use", "used",
+  "work", "working", "role", "team", "teams", "job", "position", "company", "must", "should",
+  "would", "about", "more", "other", "such", "than", "then", "them", "they", "their", "there",
+  "been", "being", "also", "well", "years", "year", "experience", "skills", "strong", "good",
+  "great", "new", "one", "two", "three", "day", "days", "per", "via", "etc", "plus", "within",
+  "across", "while", "when", "where", "how", "why", "which", "each", "every", "may", "might",
+]);
+
+const STOPWORDS_EL = new Set([
+  "και", "της", "του", "των", "τον", "την", "στο", "στη", "στην", "στον", "στα", "στις", "στους",
+  "για", "από", "που", "είναι", "θα", "να", "με", "σε", "ως", "τα", "το", "οι", "ένα", "μια",
+  "έναν", "μας", "σας", "τους", "όπως", "κατά", "μετά", "πριν", "προς", "εργασία", "εμπειρία",
+  "γνώση", "γνώσεις", "θέση", "εταιρεία", "ομάδα", "χρόνια", "έτη", "καλή", "άριστη", "πολύ",
+  "όλα", "όλες", "όλους", "αυτό", "αυτή", "αυτά", "δεν", "αν", "ή", "τι", "ενώ", "επίσης",
+]);
+
+/** Strips Greek tonos/dialytika so accent-dropped input (common in all-caps
+ *  job ad headers) still matches the accented stopword list below. */
+function stripGreekTonos(word: string): string {
+  return word.normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+const STOPWORDS_EL_NO_TONOS = new Set([...STOPWORDS_EL].map(stripGreekTonos));
+
+export function isStopword(word: string): boolean {
+  return STOPWORDS_EN.has(word) || STOPWORDS_EL.has(word) || STOPWORDS_EL_NO_TONOS.has(stripGreekTonos(word));
+}

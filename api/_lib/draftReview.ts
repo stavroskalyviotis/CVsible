@@ -4,11 +4,19 @@
  *  work, the server measures the draft against the rules a senior recruiter
  *  would apply and hands back a concrete fix list. The loop repeats until the
  *  blocking list is empty.
+ *
+ *  It measures the draft with the *same* modules the app's scan uses —
+ *  actionVerbs and keywords — against the *same* thresholds. That is not a
+ *  detail: while the verb check was advisory here, the agent could declare a
+ *  draft finished and CVsible's own report would immediately criticise its
+ *  verbs and keyword coverage. Anything the model can fix without inventing a
+ *  fact blocks; anything that would need facts it was never given is advice.
  */
 
-import { startsWithActionVerb } from "./actionVerbs.js";
+import { actionVerbRatio, startsWithActionVerb } from "./actionVerbs.js";
 import type { CvDraft } from "./draftTypes.js";
 import { normalizeForMatch } from "./grounding.js";
+import { matchKeywords, sameTerm } from "./keywords.js";
 
 /** Phrases that say nothing and that a recruiter reads as filler. */
 const CLICHES = [
@@ -25,10 +33,44 @@ const MAX_BULLET_CHARS = 210;
 const MIN_SUMMARY_CHARS = 240;
 const MAX_SUMMARY_CHARS = 900;
 
+/** Mirrors ACTION_VERB_TARGET and KEYWORD_TARGET in src/ats/analyzeText.ts.
+ *  These are the numbers the user is shown, so they are the numbers the agent
+ *  has to clear before it is allowed to stop. Exported so the test can prove
+ *  the two copies still agree. */
+export const ACTION_VERB_TARGET = 0.5;
+export const KEYWORD_TARGET = 0.6;
+
+/** How many offending items to name in one message. Enough to act on, few
+ *  enough that the review does not crowd out the draft in the next prompt. */
+const MAX_LISTED = 6;
+
 export interface DraftReview {
   blocking: string[];
   advice: string[];
   missingKeywords: string[];
+  /** What the app's own scan will report for this draft. */
+  metrics: {
+    verbRatio: number;
+    bulletCount: number;
+    /** Null when there was no job ad to compare against. */
+    keywordRatio: number | null;
+  };
+}
+
+/** Every bullet in the draft, with the path the model needs to address it. */
+function allBullets(draft: CvDraft): { where: string; text: string }[] {
+  const found: { where: string; text: string }[] = [];
+  const collect = (section: "experience" | "education" | "projects", items: { bullets: string[] }[]) => {
+    items.forEach((item, index) => {
+      item.bullets.forEach((bullet, bulletIndex) => {
+        found.push({ where: `${section}[${index}].bullets[${bulletIndex}]`, text: bullet.trim() });
+      });
+    });
+  };
+  collect("experience", draft.experience);
+  collect("education", draft.education);
+  collect("projects", draft.projects);
+  return found;
 }
 
 function findCliches(text: string): string[] {
@@ -40,39 +82,51 @@ function isMonthOrEmpty(value: string): boolean {
   return value === "" || MONTH_PATTERN.test(value);
 }
 
-/** Terms the job ad leans on that the candidate's own text supports but the
- *  draft has not used yet — safe, truthful wording upgrades. */
-function missingKeywords(draft: CvDraft, source: string, jobAd: string): string[] {
-  if (!jobAd.trim()) return [];
+/** Everything in the draft a keyword could legitimately appear in. Built from
+ *  the fields rather than JSON.stringify so field names ("skills", "current")
+ *  cannot themselves count as coverage. */
+function draftText(draft: CvDraft): string {
+  return [
+    draft.jobTitle,
+    draft.summary,
+    ...draft.experience.flatMap((item) => [item.role, item.company, item.location, ...item.bullets]),
+    ...draft.education.flatMap((item) => [item.degree, item.institution, item.location, ...item.bullets]),
+    ...draft.projects.flatMap((item) => [item.title, ...item.bullets]),
+    ...draft.certifications.flatMap((item) => [item.title, item.issuer]),
+    ...draft.skills.map((item) => item.name),
+    ...draft.languages.map((item) => item.name),
+    ...draft.softSkills,
+    ...draft.interests,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
 
-  const stop = new Set([
-    "the", "and", "for", "with", "you", "your", "our", "are", "will", "have", "has", "that", "this",
-    "from", "who", "what", "into", "not", "but", "all", "any", "can", "using", "use", "used", "work",
-    "working", "role", "team", "teams", "job", "position", "company", "must", "should", "would",
-    "about", "more", "other", "such", "than", "then", "them", "they", "their", "there", "been",
-    "being", "also", "well", "years", "year", "experience", "skills", "strong", "good", "great",
-    "και", "της", "του", "των", "τον", "την", "στο", "στη", "στην", "στον", "στα", "στις", "για",
-    "απο", "που", "ειναι", "θα", "να", "με", "σε", "ως", "τα", "το", "οι", "ενα", "μια", "μας",
-    "σας", "τους", "οπως", "κατα", "μετα", "πριν", "προς", "εργασια", "εμπειρια", "γνωση", "θεση",
-    "εταιρεια", "ομαδα", "χρονια", "καλη", "αριστη", "πολυ", "ολα", "δεν", "αν", "ενω", "επισης",
-  ]);
+/** Does the candidate's own text support this term? Only these are safe to
+ *  demand: asking for a term the source never mentions is asking the model to
+ *  make something up, which the grounding check would then reject anyway. */
+function sourceSupports(term: string, source: string, sourceTokens: string[]): boolean {
+  if (term.includes(" ")) return source.includes(term);
+  return sourceTokens.some((token) => sameTerm(token, term));
+}
 
-  const counts = new Map<string, number>();
-  normalizeForMatch(jobAd)
-    .split(" ")
-    .forEach((word) => {
-      if (word.length < 4 || stop.has(word) || /^\d+$/.test(word)) return;
-      counts.set(word, (counts.get(word) ?? 0) + 1);
-    });
+interface KeywordGap {
+  /** Ad terms the source supports but the draft does not use. Fixable. */
+  supported: string[];
+  /** Everything the draft is missing, fixable or not. */
+  missing: string[];
+  ratio: number | null;
+}
 
-  const draftText = normalizeForMatch(JSON.stringify(draft));
-  const sourceText = normalizeForMatch(source);
+function keywordGap(draft: CvDraft, source: string, jobAd: string): KeywordGap {
+  const report = matchKeywords(draftText(draft), jobAd);
+  if (!report) return { supported: [], missing: [], ratio: null };
 
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([word]) => word)
-    .filter((word) => sourceText.includes(word) && !draftText.includes(word))
-    .slice(0, 8);
+  const normalizedSource = ` ${normalizeForMatch(source)} `;
+  const sourceTokens = normalizeForMatch(source).split(" ").filter(Boolean);
+  const supported = report.missing.filter((term) => sourceSupports(term, normalizedSource, sourceTokens));
+
+  return { supported, missing: report.missing, ratio: report.ratio };
 }
 
 export function reviewDraft(draft: CvDraft, source: string, jobAd: string): DraftReview {
@@ -130,12 +184,6 @@ export function reviewDraft(draft: CvDraft, source: string, jobAd: string): Draf
       if (/<[a-z/]/i.test(bullet)) blocking.push(`${where} contains HTML. Use plain text.`);
       if (text.length < MIN_BULLET_CHARS) blocking.push(`${where} is too short to say anything (${text.length} chars).`);
       if (text.length > MAX_BULLET_CHARS) blocking.push(`${where} is ${text.length} chars, over ${MAX_BULLET_CHARS}. Split or trim it.`);
-      // Advice, not blocking: Greek verb morphology is too varied for a stem
-      // list to be authoritative, and a false reject makes the agent burn a
-      // round rewriting a perfectly good bullet.
-      if (!startsWithActionVerb(text)) {
-        advice.push(`${where} may not start with an action verb: "${text.slice(0, 60)}".`);
-      }
       const cliches = findCliches(text);
       if (cliches.length > 0) blocking.push(`${where} contains filler: ${cliches.join(", ")}.`);
     });
@@ -162,22 +210,68 @@ export function reviewDraft(draft: CvDraft, source: string, jobAd: string): Draf
     advice.push(`only ${draft.skills.length} skills. Include every skill the candidate named, without inventing any.`);
   }
 
+  // ---------------------------------------------------- the app's own checks
+  // Below here the draft is measured exactly as CVsible's scan will measure it
+  // moments later. Falling short of these is what used to produce a "finished"
+  // CV whose report immediately complained about its verbs and its coverage.
+
+  const bullets = allBullets(draft);
+  const verbRatio = actionVerbRatio(bullets.map((bullet) => bullet.text));
+  const weakOpeners = bullets.filter((bullet) => !startsWithActionVerb(bullet.text));
+
+  if (bullets.length > 0 && verbRatio < ACTION_VERB_TARGET) {
+    blocking.push(
+      `only ${Math.round(verbRatio * 100)}% of bullets open with an action verb; the report shown to the candidate requires at least ${ACTION_VERB_TARGET * 100}%. Rewrite these to start with a past-tense action verb (Greek: first person singular past, e.g. "Ανέπτυξα", never a noun like "Διαχείριση"):\n` +
+        weakOpeners
+          .slice(0, MAX_LISTED)
+          .map((bullet) => `  - ${bullet.where}: "${bullet.text.slice(0, 70)}"`)
+          .join("\n"),
+    );
+  } else if (weakOpeners.length > 0) {
+    // Above target overall, so not worth a round of its own — but still the
+    // first thing a recruiter's eye snags on.
+    advice.push(
+      `these bullets do not open with an action verb: ${weakOpeners.slice(0, MAX_LISTED).map((bullet) => bullet.where).join(", ")}.`,
+    );
+  }
+
+  const gap = keywordGap(draft, source, jobAd);
+  if (gap.ratio !== null && gap.ratio < KEYWORD_TARGET && gap.supported.length > 0) {
+    blocking.push(
+      `the draft covers ${Math.round(gap.ratio * 100)}% of the job ad's terms, under the ${KEYWORD_TARGET * 100}% the candidate's report calls a match. Every term below is in the ad AND in the candidate's own text, so using it is truthful, not padding — work each into wording that already exists rather than bolting on a list: ${gap.supported.slice(0, MAX_LISTED).join(", ")}.`,
+    );
+  } else if (gap.ratio !== null && gap.ratio < KEYWORD_TARGET) {
+    // Nothing honest left to do: the ad wants things this candidate never
+    // claimed. That is a fact about the fit, not a defect in the draft.
+    advice.push(
+      `coverage of the job ad is ${Math.round(gap.ratio * 100)}%, but the remaining terms are absent from the candidate's own text. Do not add them.`,
+    );
+  }
+
   const sourceHasNumbers = /\d/.test(source.replace(/\b(19|20)\d{2}\b/g, ""));
-  const draftBullets = [
-    ...draft.experience.flatMap((item) => item.bullets),
-    ...draft.projects.flatMap((item) => item.bullets),
-  ];
-  if (sourceHasNumbers && !draftBullets.some((bullet) => /\d/.test(bullet))) {
+  if (sourceHasNumbers && !bullets.some((bullet) => /\d/.test(bullet.text))) {
     advice.push(
       "the candidate's text contains figures but no bullet uses one. Surface the results they already mentioned.",
     );
   }
 
-  return { blocking, advice, missingKeywords: missingKeywords(draft, source, jobAd) };
+  return {
+    blocking,
+    advice,
+    missingKeywords: gap.supported.length > 0 ? gap.supported : gap.missing.slice(0, MAX_LISTED),
+    metrics: { verbRatio, bulletCount: bullets.length, keywordRatio: gap.ratio },
+  };
 }
 
 export function formatReview(review: DraftReview): string {
   const parts: string[] = [];
+
+  // Leading with the measurements makes the blocking items read as
+  // consequences of a number rather than as opinions to be negotiated.
+  const { verbRatio, bulletCount, keywordRatio } = review.metrics;
+  const measured = [`${bulletCount} bullets`, `${Math.round(verbRatio * 100)}% opening with an action verb`];
+  if (keywordRatio !== null) measured.push(`${Math.round(keywordRatio * 100)}% job-ad coverage`);
+  parts.push(`MEASURED (this is what the candidate's own report will show): ${measured.join(", ")}.`);
 
   if (review.blocking.length > 0) {
     parts.push(`BLOCKING (${review.blocking.length}) — the draft cannot be submitted until these are fixed:\n` +
@@ -192,7 +286,7 @@ export function formatReview(review: DraftReview): string {
 
   if (review.missingKeywords.length > 0) {
     parts.push(
-      "JOB-AD TERMS THE CANDIDATE'S OWN TEXT SUPPORTS BUT THE DRAFT DOES NOT USE — rewrite existing wording to use them where truthful, do not bolt them on:\n" +
+      "JOB-AD TERMS THE DRAFT DOES NOT USE — rewrite existing wording to use the ones the candidate's text supports, and leave the rest alone:\n" +
         review.missingKeywords.map((word) => `- ${word}`).join("\n"),
     );
   }

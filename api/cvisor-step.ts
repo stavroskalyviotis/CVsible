@@ -177,6 +177,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         missingKeywords: report.review.missingKeywords,
         fabrication: report.grounding.map((issue) => `${issue.field}: ${issue.value}`),
       },
+      metrics: report.review.metrics,
       remaining: rateLimit.remaining,
     });
   } catch (error) {
