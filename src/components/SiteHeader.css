@@ -128,6 +128,14 @@
 
   .site-burger {
     display: grid;
+    width: 40px;
+    height: 40px;
+  }
+
+  /* 24px tall is a mouse target, not a thumb one. */
+  .site-lang button {
+    padding: 9px 13px;
+    font-size: 0.78rem;
   }
 
   .site-nav {
@@ -159,5 +167,23 @@
   .site-nav-link.emphasis {
     margin-left: 0;
     text-align: center;
+  }
+}
+
+/* Narrow phones: the wordmark goes so the controls keep their tap size
+   rather than shrinking to fit beside it. */
+@media (max-width: 380px) {
+  .site-header-inner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .site-brand {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .site-brand-mark {
+    font-size: 0.66rem;
   }
 }
