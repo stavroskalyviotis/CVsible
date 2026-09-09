@@ -47,7 +47,7 @@ export function SkillsForm({
                 key={word}
                 type="button"
                 className="skill-suggestion-chip"
-                onClick={() => actions.add({ id: createId(), name: capitalize(word), level: 70 })}
+                onClick={() => actions.add({ id: createId(), name: capitalize(word), level: 70, category: "" })}
               >
                 <Icon name="plus" size={12} />
                 {capitalize(word)}
@@ -88,7 +88,7 @@ export function SkillsForm({
 
       <AddButton
         label={actionLabels.add}
-        onClick={() => actions.add({ id: createId(), name: "", level: 70 })}
+        onClick={() => actions.add({ id: createId(), name: "", level: 70, category: "" })}
       />
     </>
   );

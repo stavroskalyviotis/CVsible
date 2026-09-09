@@ -6,7 +6,7 @@ import type { IconName } from "../components/Icon";
 import { formatMonth, formatRange } from "./format";
 import { sectionTitle } from "./blockMeta";
 import type { BlockMeta, BlockSection } from "./blockMeta";
-import { inlineSectionText } from "./sectionText";
+import { inlineSectionText, skillGroups } from "./sectionText";
 
 const SECTION_ICON: Record<BlockSection, IconName> = {
   summary: "star",
@@ -84,11 +84,16 @@ export function BlockContent({
   if (meta.section === "education") {
     const item = data.education.find((entry) => entry.id === meta.itemId);
     if (!item) return null;
+    const expectedLabel = item.expectedGraduation
+      ? `${dictionary.placeholders.expectedPrefix} ${formatMonth(item.expectedGraduation, locale)}`
+      : undefined;
     return (
       <article className="cv-entry">
         <div className="cv-entry-head">
           <strong>{item.degree}</strong>
-          <span>{formatRange(item.startDate, item.endDate, item.current, locale, dictionary.placeholders.present)}</span>
+          <span>
+            {formatRange(item.startDate, item.endDate, item.current, locale, dictionary.placeholders.present, expectedLabel)}
+          </span>
         </div>
         {(item.institution || item.location) && (
           <em>{[item.institution, item.location].filter(Boolean).join(", ")}</em>
@@ -125,6 +130,23 @@ export function BlockContent({
           <em>{[item.issuer, formatMonth(item.date, locale)].filter(Boolean).join(", ")}</em>
         )}
       </div>
+    );
+  }
+
+  if (meta.section === "skills") {
+    const groups = skillGroups(data, dictionary);
+    if (groups.length === 0) return null;
+    // One line per category, so "Kitchen: HACCP, Sauces" reads as a label and
+    // its keywords rather than as one undifferentiated run of words.
+    return (
+      <>
+        {groups.map((group) => (
+          <p key={group.category} className="cv-inline-list">
+            {group.category && <strong className="cv-skill-category">{group.category}: </strong>}
+            {group.text}
+          </p>
+        ))}
+      </>
     );
   }
 

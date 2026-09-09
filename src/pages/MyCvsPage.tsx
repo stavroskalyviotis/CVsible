@@ -93,7 +93,7 @@ export function MyCvsPage({
     if (!user) return;
     if ((cvs?.length ?? 0) >= MAX_CVS_PER_USER) return;
     void runAction(cv.id, async () => {
-      await duplicateCv(user.id, cv, `${cv.name} · ${copy.duplicate}`);
+      await duplicateCv(user.id, cv, name);
     });
   };
 
@@ -108,6 +108,10 @@ export function MyCvsPage({
     void runAction(cv.id, () => deleteCv(cv.id));
   };
 
+    const defaultName = `${cv.name} · ${copy.duplicate}`;
+    const next = window.prompt(copy.duplicatePrompt, defaultName);
+    if (next === null) return;
+    const name = next.trim() || defaultName;
   const handleToggleShare = (cv: CloudCv) => {
     void runAction(cv.id, async () => {
       await setCvPublic(cv.id, !cv.isPublic);

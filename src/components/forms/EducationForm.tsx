@@ -92,6 +92,15 @@ export function EducationForm({
             checked={item.current}
             onChange={(current) => actions.update(item.id, { current, endDate: current ? "" : item.endDate })}
           />
+          {item.current && (
+            <MonthYearField
+              label={fields.expectedGraduation}
+              value={item.expectedGraduation}
+              onChange={(expectedGraduation) => actions.update(item.id, { expectedGraduation })}
+              locale={locale}
+              allowFuture
+            />
+          )}
           <RichTextEditor
             label={fields.description}
             value={item.description}
@@ -122,6 +131,7 @@ export function EducationForm({
             startDate: "",
             endDate: "",
             current: false,
+            expectedGraduation: "",
             description: "",
           })
         }

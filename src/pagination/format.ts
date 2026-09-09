@@ -15,9 +15,10 @@ export function formatRange(
   current: boolean,
   locale: string,
   presentLabel: string,
+  expectedLabel?: string,
 ): string {
   const startLabel = formatMonth(start, locale);
-  const endLabel = current ? presentLabel : formatMonth(end, locale);
+  const endLabel = current ? expectedLabel || presentLabel : formatMonth(end, locale);
   if (!startLabel && !endLabel) return "";
   if (!endLabel) return startLabel;
   // A plain hyphen, not an en/em dash: date-range parsers in ATS software are

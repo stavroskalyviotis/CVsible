@@ -147,7 +147,8 @@
 }
 
 .tpl-thumb-meridian,
-.tpl-thumb-atlas {
+.tpl-thumb-atlas,
+.tpl-thumb-compass {
   flex-direction: column;
   padding: 6px 5px;
   gap: 3px;
@@ -155,6 +156,19 @@
 
 .tpl-thumb-atlas .tpl-sub {
   margin-left: 0;
+}
+
+.tpl-thumb-compass .tpl-title,
+.tpl-thumb-compass .tpl-sub {
+  margin-left: 0;
+}
+
+.tpl-thumb .tpl-pill {
+  height: 5px;
+  width: 32%;
+  margin: 0 0 4px;
+  border-radius: 3px;
+  background: var(--tpl-accent);
 }
 
 .color-swatches {

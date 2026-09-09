@@ -85,6 +85,28 @@ describe("MonthYearField", () => {
     expect(screen.queryByRole("button", { name: "2020" })).not.toBeInTheDocument();
   });
 
+  it("disables future months and years by default", async () => {
+    const user = userEvent.setup();
+    render(<MonthYearField label="End" value="" onChange={() => {}} locale="en" />);
+    await user.click(screen.getByRole("button", { name: "—" }));
+    const futureDecade = new Date().getFullYear() + 10 - (new Date().getFullYear() % 10);
+    expect(screen.queryByRole("button", { name: String(futureDecade) })).not.toBeInTheDocument();
+  });
+
+  it("allows picking a future year and month when allowFuture is set", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<MonthYearField label="Expected graduation" value="" onChange={onChange} locale="en" allowFuture />);
+
+    const futureYear = new Date().getFullYear() + 2;
+    await user.click(screen.getByRole("button", { name: "—" }));
+    await user.click(screen.getByRole("button", { name: String(Math.floor(futureYear / 10) * 10) }));
+    await user.click(screen.getByRole("button", { name: String(futureYear) }));
+    await user.click(screen.getByRole("button", { name: "Dec" }));
+
+    expect(onChange).toHaveBeenCalledWith(`${futureYear}-12`);
+  });
+
   it("closes when clicking outside the field", async () => {
     const user = userEvent.setup();
     render(

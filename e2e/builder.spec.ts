@@ -64,7 +64,7 @@ test.describe("Builder", () => {
 
     const templateButtons = page.locator(".template-card");
     const count = await templateButtons.count();
-    expect(count).toBe(3); // aurora, meridian, atlas
+    expect(count).toBe(4); // aurora, meridian, atlas, compass
     for (let i = 0; i < count; i++) {
       await templateButtons.nth(i).click();
       await expect(templateButtons.nth(i)).toHaveAttribute("aria-pressed", "true");

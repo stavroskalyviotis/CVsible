@@ -104,6 +104,7 @@ export interface Dictionary {
     endDate: string;
     current: string;
     description: string;
+    expectedGraduation: string;
     degree: string;
     institution: string;
     skillName: string;
@@ -157,6 +158,7 @@ export interface Dictionary {
     projectDescription: string;
     present: string;
     customLabel: string;
+    expectedPrefix: string;
   };
   contactTypes: {
     email: string;
@@ -228,6 +230,7 @@ export interface Dictionary {
     meridian: { name: string; description: string };
     atlas: { name: string; description: string };
   };
+    compass: { name: string; description: string };
   sectionOrder: {
     title: string;
     hint: string;
@@ -428,6 +431,7 @@ export interface Dictionary {
     copyLink: string;
     linkCopied: string;
     limitReached: string;
+    duplicatePrompt: string;
     loadError: string;
     actionError: string;
     newCta: string;
@@ -539,8 +543,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
         {
           icon: "layout",
-          title: "Τρία πρότυπα, δύο ATS-safe",
-          body: "Aurora με έγχρωμη πλαϊνή στήλη, Meridian κλασικό μονόστηλο, Atlas μοντέρνο μονόστηλο. Αλλάζεις πρότυπο χωρίς να χάσεις τίποτα.",
+          title: "Τέσσερα πρότυπα, τρία ATS-safe",
+          body: "Aurora με έγχρωμη πλαϊνή στήλη, Meridian κλασικό μονόστηλο, Atlas μοντέρνο μονόστηλο, Compass τολμηρό μονόστηλο. Αλλάζεις πρότυπο χωρίς να χάσεις τίποτα.",
         },
         {
           icon: "zap",
@@ -679,6 +683,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       location: "Αθήνα, Ελλάδα",
       summary:
         "Σύντομη περιγραφή της επαγγελματικής σου ταυτότητας και των δυνατών σου σημείων.",
+      expectedGraduation: "Αναμενόμενη ολοκλήρωση",
       role: "Τίτλος θέσης",
       company: "Όνομα εταιρείας",
       experienceDescription: "Τι έκανες, τι πέτυχες, με ποια αποτελέσματα.",
@@ -733,6 +738,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       interests: "Ενδιαφέροντα",
       certifications: "Πιστοποιήσεις",
       projects: "Έργα",
+      expectedPrefix: "Αναμένεται",
     },
     pagination: {
       page: "Σελίδα",
@@ -810,6 +816,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       orUpload: "ή",
       analyzing: "Ανάλυση…",
       changeFile: "Άλλο αρχείο",
+      compass: {
+        name: "Compass",
+        description: "Μονόστηλο με έντονο όνομα και έγχρωμη ετικέτα τίτλου. ATS-friendly με λίγο παραπάνω χαρακτήρα.",
+      },
       jobAdLabel: "Αγγελία εργασίας (προαιρετικό)",
       jobAdPlaceholder: "Επικόλλησε εδώ το κείμενο της αγγελίας για ανάλυση λέξεων-κλειδιών…",
       jobAdHint: "Με την αγγελία, ο έλεγχος δείχνει ποιοι όροι της εμφανίζονται στο βιογραφικό σου.",
@@ -865,7 +875,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       warningsCtaButton: "Άνοιγμα CVisor",
       buildTitle: "Ή φτιάξ' το από την αρχή",
       buildBody:
-        "Δύο από τα τρία πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας — μονή στήλη, αναγνωρίσιμοι τίτλοι ενοτήτων. Οι υπόλοιποι έλεγχοι εξαρτώνται από τα στοιχεία που θα συμπληρώσεις.",
+        "Τρία από τα τέσσερα πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας — μονή στήλη, αναγνωρίσιμοι τίτλοι ενοτήτων. Οι υπόλοιποι έλεγχοι εξαρτώνται από τα στοιχεία που θα συμπληρώσεις.",
       buildButton: "Άνοιγμα builder",
       errorUnsupported: "Υποστηρίζονται μόνο αρχεία PDF, DOCX και TXT.",
       errorTooLarge: "Το αρχείο ξεπερνά τα 12 MB.",
@@ -1116,6 +1126,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     },
     support: {
       footerLink: "Στήριξε το CVsible ☕",
+      duplicatePrompt: "Όνομα για το νέο αντίγραφο:",
       badgeLabel: "Στήριξε το CVsible",
       modalTitle: "Το βιογραφικό σου είναι έτοιμο! 🎉",
       modalBody: "Αν σου φάνηκε χρήσιμο το CVsible, μια μικρή στήριξη μας βοηθάει να το κρατάμε δωρεάν για όλους.",
@@ -1188,8 +1199,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
         {
           icon: "layout",
-          title: "Three templates, two ATS-safe",
-          body: "Aurora with a coloured sidebar, Meridian a classic single column, Atlas a modern single column. Switch freely without losing anything.",
+          title: "Four templates, three ATS-safe",
+          body: "Aurora with a coloured sidebar, Meridian a classic single column, Atlas a modern single column, Compass a bold single column. Switch freely without losing anything.",
         },
         {
           icon: "zap",
@@ -1377,6 +1388,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       education: "Education",
       skills: "Skills",
       softSkills: "Soft Skills",
+      expectedGraduation: "Expected graduation",
       languages: "Languages",
       interests: "Interests",
       certifications: "Certifications",
@@ -1430,6 +1442,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Basic",
       "Intermediate",
       "Good",
+      expectedPrefix: "Expected",
       "Fluent",
       "Excellent",
       "Native",
@@ -1507,13 +1520,17 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "CVfix keeps your wording exactly as you wrote it and changes only the structure and formatting, so the file comes through cleanly.",
       cvfixButton: "Fix formatting with CVfix",
+      compass: {
+        name: "Compass",
+        description: "Single column with a bold name and a coloured job-title badge. ATS-friendly with a bit more personality.",
+      },
       warningsCtaTitle: "{v} warnings you can fix",
       warningsCtaBody:
         "The score is already good, but CVisor can suggest improvements for the points below, based on the job ad.",
       warningsCtaButton: "Open CVisor",
       buildTitle: "Or build it from scratch",
       buildBody:
-        "Two of the builder's three templates are designed to pass this page's formatting checks by default — single column, recognisable section headings. The rest of the checks depend on what you fill in.",
+        "Three of the builder's four templates are designed to pass this page's formatting checks by default — single column, recognisable section headings. The rest of the checks depend on what you fill in.",
       buildButton: "Open the builder",
       errorUnsupported: "Only PDF, DOCX and TXT files are supported.",
       errorTooLarge: "That file is larger than 12 MB.",
@@ -1772,3 +1789,4 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     },
   },
 };
+      duplicatePrompt: "Name for the new copy:",

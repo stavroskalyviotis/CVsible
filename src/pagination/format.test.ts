@@ -41,4 +41,14 @@ describe("formatRange", () => {
     expect(range).toBe("Mar 2022 - Jun 2023");
     expect(range).not.toMatch(/[–—]/);
   });
+
+  it("uses the expected label instead of the present label when current and given one", () => {
+    expect(formatRange("2022-03", "", true, "en", "Present", "Expected Jun 2026")).toBe(
+      "Mar 2022 - Expected Jun 2026",
+    );
+  });
+
+  it("falls back to the present label when current but no expected label is given", () => {
+    expect(formatRange("2022-03", "", true, "en", "Present", undefined)).toBe("Mar 2022 - Present");
+  });
 });

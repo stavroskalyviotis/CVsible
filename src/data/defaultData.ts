@@ -1,4 +1,4 @@
-import type { CvData, SectionKey } from "../types";
+import type { CvData, SectionKey, UserProfile } from "../types";
 import { createId } from "../utils/id";
 import { DEFAULT_THEME_COLOR } from "./themeColors";
 
@@ -43,5 +43,33 @@ export function createEmptyCvData(): CvData {
     certifications: [],
     projects: [],
     sectionOrder: [...DEFAULT_SECTION_ORDER],
+  };
+}
+
+/** A blank master profile. Seeded with the same three empty contact rows as a
+ *  new CV, so the form looks familiar the first time someone opens it. */
+export function createEmptyProfile(): UserProfile {
+  return {
+    personalInfo: {
+      fullName: "",
+      jobTitle: "",
+      summary: "",
+      dateOfBirth: "",
+      contacts: [
+        { id: createId(), type: "email", value: "", label: "" },
+        { id: createId(), type: "phone", value: "", label: "" },
+        { id: createId(), type: "location", value: "", label: "" },
+      ],
+    },
+    photo: null,
+    photoPosition: { x: 50, y: 50 },
+    experience: [],
+    education: [],
+    skills: [],
+    softSkills: [],
+    languages: [],
+    interests: [],
+    certifications: [],
+    projects: [],
   };
 }

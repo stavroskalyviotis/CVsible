@@ -41,7 +41,17 @@ function sectionLines(section: SectionKey, data: CvData, dictionary: Dictionary)
 
   if (section === "education") {
     data.education.forEach((item) => {
-      const range = formatRange(item.startDate, item.endDate, item.current, locale, dictionary.placeholders.present);
+      const expectedLabel = item.expectedGraduation
+        ? `${dictionary.placeholders.expectedPrefix} ${formatMonth(item.expectedGraduation, locale)}`
+        : undefined;
+      const range = formatRange(
+        item.startDate,
+        item.endDate,
+        item.current,
+        locale,
+        dictionary.placeholders.present,
+        expectedLabel,
+      );
       lines.push([item.degree, range].filter(Boolean).join(" "));
       const meta = [item.institution, item.location].filter(Boolean).join(", ");
       if (meta) lines.push(meta);

@@ -50,15 +50,30 @@ test.describe("My CVs (signed in)", () => {
     await expect(page.locator(".mycvs-list li", { hasText: "New Name" })).toBeVisible();
   });
 
-  test("duplicates a CV", async ({ page }) => {
+  test("duplicates a CV, prompting for a name first", async ({ page }) => {
     const table = createFakeCvTable();
     addFakeCv(table, { name: "Original" });
     await mockSignedIn(page, table);
     await page.goto("/#/my-cvs");
 
+    page.once("dialog", (dialog) => {
+      expect(dialog.defaultValue()).toBe("Original · Duplicate");
+      void dialog.accept("Original Copy");
+    });
     await page.locator(".mycvs-list li", { hasText: "Original" }).getByRole("button", { name: /duplicate/i }).click();
     await expect(page.locator(".mycvs-list li")).toHaveCount(2);
-    await expect(page.locator(".mycvs-row-main strong", { hasText: "Original · Duplicate" })).toBeVisible();
+    await expect(page.locator(".mycvs-row-main strong", { hasText: "Original Copy" })).toBeVisible();
+  });
+
+  test("cancelling the duplicate name prompt keeps a single CV", async ({ page }) => {
+    const table = createFakeCvTable();
+    addFakeCv(table, { name: "Original" });
+    await mockSignedIn(page, table);
+    await page.goto("/#/my-cvs");
+
+    page.once("dialog", (dialog) => void dialog.dismiss());
+    await page.locator(".mycvs-list li", { hasText: "Original" }).getByRole("button", { name: /duplicate/i }).click();
+    await expect(page.locator(".mycvs-list li")).toHaveCount(1);
   });
 
   test("deletes a CV after confirming", async ({ page }) => {

@@ -81,6 +81,19 @@ export const TEMPLATES: Record<TemplateId, TemplateDefinition> = {
     sectionGap: 16,
     entryGap: 10,
   },
+  compass: {
+    id: "compass",
+    layout: "single",
+    sidebarSections: [],
+    photoSupport: "optional",
+    atsSafe: true,
+    uppercaseName: false,
+    paddingX: 46,
+    paddingY: 44,
+    sidebarWidth: 0,
+    sectionGap: 17,
+    entryGap: 10,
+  },
 };
 
 export const TEMPLATE_IDS = Object.keys(TEMPLATES) as TemplateId[];

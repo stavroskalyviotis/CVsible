@@ -58,10 +58,24 @@ function TemplateThumbnail({ id }: { id: TemplateId }) {
     );
   }
 
+  if (id === "atlas") {
+    return (
+      <span className="tpl-thumb tpl-thumb-atlas">
+        <i className="tpl-title tpl-accent" />
+        <i className="tpl-sub" />
+        <i className="tpl-rule" />
+        <i />
+        <i />
+        <i className="tpl-rule" />
+        <i />
+      </span>
+    );
+  }
+
   return (
-    <span className="tpl-thumb tpl-thumb-atlas">
-      <i className="tpl-title tpl-accent" />
-      <i className="tpl-sub" />
+    <span className="tpl-thumb tpl-thumb-compass">
+      <i className="tpl-title" />
+      <i className="tpl-pill" />
       <i className="tpl-rule" />
       <i />
       <i />

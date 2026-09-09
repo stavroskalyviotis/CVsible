@@ -5,6 +5,7 @@ import { Icon } from "../Icon";
 import "./MonthYearField.css";
 
 const START_YEAR = 1970;
+const FUTURE_YEARS_AHEAD = 15;
 const POPOVER_WIDTH = 236;
 const VIEWPORT_MARGIN = 12;
 
@@ -34,6 +35,7 @@ export function MonthYearField({
   locale,
   minValue,
   minValueMessage,
+  allowFuture = false,
 }: {
   label: string;
   value: string;
@@ -43,6 +45,9 @@ export function MonthYearField({
   locale: LanguageCode;
   minValue?: string;
   minValueMessage?: string;
+  /** Lets the picker reach a handful of years ahead, for dates like an
+   *  expected graduation that haven't happened yet. */
+  allowFuture?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [level, setLevel] = useState<Level>("decade");
@@ -56,6 +61,7 @@ export function MonthYearField({
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
+  const maxYear = allowFuture ? currentYear + FUTURE_YEARS_AHEAD : currentYear;
   const [valueYear] = value ? value.split("-").map(Number) : [null];
   const [minYear, minMonth] = minValue ? minValue.split("-").map(Number) : [null, null];
 
@@ -108,7 +114,7 @@ export function MonthYearField({
   };
 
   const decades: number[] = [];
-  for (let d = START_YEAR; d <= Math.floor(currentYear / 10) * 10; d += 10) decades.push(d);
+  for (let d = START_YEAR; d <= Math.floor(maxYear / 10) * 10; d += 10) decades.push(d);
 
   const goBack = () => {
     if (level === "month") setLevel("year");
@@ -172,7 +178,7 @@ export function MonthYearField({
             {level === "year" && decade !== null && (
               <div className="month-year-grid year-grid">
                 {Array.from({ length: 10 }, (_, i) => decade + i)
-                  .filter((y) => y <= currentYear)
+                  .filter((y) => y <= maxYear)
                   .map((y) => {
                     const isDisabled = minYear !== null && y < minYear;
                     return (
@@ -197,7 +203,7 @@ export function MonthYearField({
                 {monthLabels(locale).map((label, index) => {
                   const isDisabled =
                     (minYear !== null && minMonth !== null && pendingYear === minYear && index + 1 < minMonth) ||
-                    (pendingYear === currentYear && index + 1 > currentMonth);
+                    (!allowFuture && pendingYear === currentYear && index + 1 > currentMonth);
                   return (
                     <button
                       key={label}

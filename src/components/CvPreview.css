@@ -27,7 +27,8 @@
 }
 
 .cv-tpl-meridian,
-.cv-tpl-atlas {
+.cv-tpl-atlas,
+.cv-tpl-compass {
   display: block;
 }
 
@@ -500,6 +501,104 @@
 
 .cv-tpl-atlas .cv-rich {
   font-size: calc(0.83rem * var(--cv-scale));
+}
+
+/* ------------------------------------------------------------------ compass */
+/* Single column with a bolder, personal header: the job title reads as a
+   colour badge instead of plain text, and section headings carry a left
+   accent bar instead of an underline. Still one top-to-bottom reading order. */
+
+.cv-tpl-compass .cv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(16px * var(--cv-scale));
+  padding-bottom: calc(14px * var(--cv-scale));
+  border-bottom: 2px solid var(--cv-rule);
+}
+
+.cv-tpl-compass .cv-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-tpl-compass .cv-photo {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--cv-accent);
+}
+
+.cv-tpl-compass .cv-name {
+  font-size: calc(1.9rem * var(--cv-scale));
+  letter-spacing: -0.01em;
+}
+
+.cv-tpl-compass .cv-role {
+  display: inline-block;
+  margin-top: calc(6px * var(--cv-scale));
+  padding: calc(3px * var(--cv-scale)) calc(10px * var(--cv-scale));
+  border-radius: 999px;
+  background: var(--cv-accent);
+  color: #ffffff;
+  font-size: calc(0.82rem * var(--cv-scale));
+  font-weight: 600;
+}
+
+.cv-tpl-compass .cv-contact-inline {
+  display: block;
+  margin-top: calc(9px * var(--cv-scale));
+  font-size: calc(0.78rem * var(--cv-scale));
+  color: var(--cv-ink-soft);
+}
+
+.cv-tpl-compass .cv-main-section h2 {
+  font-size: calc(0.78rem * var(--cv-scale));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cv-ink);
+  padding-left: calc(9px * var(--cv-scale));
+  border-left: 3px solid var(--cv-accent);
+}
+
+.cv-tpl-compass .cv-summary,
+.cv-tpl-compass .cv-inline-list {
+  font-size: calc(0.84rem * var(--cv-scale));
+}
+
+.cv-tpl-compass .cv-entry-head {
+  font-size: calc(0.89rem * var(--cv-scale));
+}
+
+.cv-tpl-compass .cv-entry-head span {
+  font-size: calc(0.78rem * var(--cv-scale));
+  color: var(--cv-ink-soft);
+}
+
+.cv-tpl-compass .cv-entry em {
+  font-size: calc(0.81rem * var(--cv-scale));
+  font-style: italic;
+}
+
+.cv-tpl-compass .cv-project-title {
+  font-size: calc(0.89rem * var(--cv-scale));
+}
+
+.cv-tpl-compass .cv-project-link,
+.cv-tpl-compass .cv-cert-row em {
+  font-size: calc(0.78rem * var(--cv-scale));
+}
+
+.cv-tpl-compass .cv-cert-row {
+  font-size: calc(0.86rem * var(--cv-scale));
+}
+
+.cv-tpl-compass .cv-rich {
+  font-size: calc(0.83rem * var(--cv-scale));
+  line-height: 1.45;
 }
 
 /* ------------------------------------------------------------ preview chrome */

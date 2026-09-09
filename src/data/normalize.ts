@@ -1,7 +1,7 @@
-import type { CvData, SectionKey, TemplateId } from "../types";
+import type { CvData, SectionKey, SkillItem, TemplateId, UserProfile } from "../types";
 import { TEMPLATE_IDS } from "../templates/registry";
 import { createId } from "../utils/id";
-import { createEmptyCvData, DEFAULT_SECTION_ORDER } from "./defaultData";
+import { createEmptyCvData, createEmptyProfile, DEFAULT_SECTION_ORDER } from "./defaultData";
 
 /** Shape of documents written by earlier versions, kept only so stored CVs
  *  and exported JSON files keep opening. */
@@ -17,6 +17,13 @@ function asArray<T>(value: unknown, fallback: T[]): T[] {
 function withIds<T extends { id?: string }>(value: unknown, fallback: T[]): T[] {
   if (!Array.isArray(value)) return fallback;
   return value.map((item) => ({ ...(item as T), id: (item as T).id || createId() }));
+}
+
+/** Skills gained their category field after the first release, so a stored CV
+ *  can carry entries without one. Left undefined it would reach the grouping
+ *  code as a category literally named "undefined". */
+function withCategories(skills: SkillItem[]): SkillItem[] {
+  return skills.map((skill) => ({ ...skill, category: typeof skill.category === "string" ? skill.category : "" }));
 }
 
 function normalizeSectionOrder(stored: Partial<CvData> & LegacyFields): SectionKey[] {
@@ -69,12 +76,43 @@ export function normalizeCvData(stored: (Partial<CvData> & LegacyFields) | null 
     },
     experience: withIds(stored.experience, base.experience),
     education: withIds(stored.education, base.education),
-    skills: withIds(stored.skills, base.skills),
+    skills: withCategories(withIds(stored.skills, base.skills)),
     softSkills: withIds(stored.softSkills, base.softSkills),
     languages: withIds(stored.languages, base.languages),
     interests: withIds(stored.interests, base.interests),
     certifications: withIds(stored.certifications, base.certifications),
     projects: withIds(stored.projects, base.projects),
     sectionOrder: normalizeSectionOrder(stored),
+  };
+}
+
+/** Same contract as normalizeCvData, for the master profile: a row written by
+ *  an older version of the app must keep opening, so every list falls back to
+ *  the blank profile's and every entry is guaranteed an id. */
+export function normalizeProfile(stored: Partial<UserProfile> | null | undefined): UserProfile {
+  const base = createEmptyProfile();
+  if (!stored || typeof stored !== "object") return base;
+
+  return {
+    ...base,
+    ...stored,
+    personalInfo: {
+      ...base.personalInfo,
+      ...stored.personalInfo,
+      contacts: withIds(stored.personalInfo?.contacts, base.personalInfo.contacts),
+    },
+    photo: typeof stored.photo === "string" ? stored.photo : null,
+    photoPosition:
+      stored.photoPosition && typeof stored.photoPosition.x === "number"
+        ? stored.photoPosition
+        : base.photoPosition,
+    experience: withIds(stored.experience, base.experience),
+    education: withIds(stored.education, base.education),
+    skills: withCategories(withIds(stored.skills, base.skills)),
+    softSkills: withIds(stored.softSkills, base.softSkills),
+    languages: withIds(stored.languages, base.languages),
+    interests: withIds(stored.interests, base.interests),
+    certifications: withIds(stored.certifications, base.certifications),
+    projects: withIds(stored.projects, base.projects),
   };
 }

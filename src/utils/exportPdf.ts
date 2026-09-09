@@ -66,15 +66,16 @@ function slugifyForFilename(value: string): string {
     .trim()
     .normalize("NFD")
     .replace(COMBINING_DIACRITICS, "")
-    .replace(/[^a-zA-Z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-/** Builds "CVsible-Name-Title.pdf" from the CV's own name and job title, so
- *  a downloaded file is self-identifying without the person renaming it. */
+/** Builds "CVsible - Name - Title.pdf" from the CV's own name and job title,
+ *  so a downloaded file is self-identifying without the person renaming it. */
 export function buildPdfFilename(fullName: string, jobTitle = ""): string {
   const nameSlug = slugifyForFilename(fullName) || "resume";
   const titleSlug = slugifyForFilename(jobTitle);
   const parts = ["CVsible", nameSlug, titleSlug].filter(Boolean);
-  return `${parts.join("-")}.pdf`;
+  return `${parts.join(" - ")}.pdf`;
 }

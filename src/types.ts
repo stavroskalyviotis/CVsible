@@ -44,6 +44,7 @@ export interface EducationItem {
   startDate: string;
   endDate: string;
   current: boolean;
+  expectedGraduation: string;
   description: string;
 }
 
@@ -51,6 +52,10 @@ export interface SkillItem {
   id: string;
   name: string;
   level: number;
+  /** Optional grouping label ("Kitchen", "Languages", "Frontend"). Empty for
+   *  a skill the user never sorted — a CV with no categories at all still
+   *  renders as one inline list, exactly as it did before. */
+  category: string;
 }
 
 export interface LanguageItem {
@@ -102,11 +107,41 @@ export type MainSectionOrderType = "experience" | "education" | "projects" | "ce
  *  first and is not part of the reorderable list. */
 export type SectionKey = SidebarSectionType | MainSectionOrderType;
 
-export type TemplateId = "aurora" | "meridian" | "atlas";
+export type TemplateId = "aurora" | "meridian" | "atlas" | "compass";
 
 /** How skill proficiency is rendered. Bars carry no meaning once a PDF is parsed,
  *  so the default is a plain text label. */
 export type SkillDisplay = "none" | "text";
+
+/** The sections a CV can pull entry-by-entry out of the master profile. */
+export type ProfileListKey =
+  | "experience"
+  | "education"
+  | "skills"
+  | "softSkills"
+  | "languages"
+  | "interests"
+  | "certifications"
+  | "projects";
+
+/** The master profile: everything the person has ever done, written once and
+ *  kept in one place. A CV is a curated subset of it — the profile holds the
+ *  jobs, skills and studies that no single CV would ever show together, so
+ *  nothing has to be typed twice. Carries no styling: templates, colours and
+ *  section order belong to a document, not to a person. */
+export interface UserProfile {
+  personalInfo: PersonalInfo;
+  photo: string | null;
+  photoPosition: { x: number; y: number };
+  experience: ExperienceItem[];
+  education: EducationItem[];
+  skills: SkillItem[];
+  softSkills: SoftSkillItem[];
+  languages: LanguageItem[];
+  interests: InterestItem[];
+  certifications: CertificationItem[];
+  projects: ProjectItem[];
+}
 
 export interface CvData {
   template: TemplateId;

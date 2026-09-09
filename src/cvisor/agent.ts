@@ -158,6 +158,7 @@ export function applyDraft(base: CvData, draft: CvDraft): CvData {
       startDate: item.startDate,
       endDate: item.endDate,
       current: item.current,
+      expectedGraduation: "",
       description: bulletsToHtml(item.bullets),
     })),
     projects: draft.projects.map((item) => ({
@@ -172,7 +173,7 @@ export function applyDraft(base: CvData, draft: CvDraft): CvData {
       issuer: item.issuer,
       date: item.date,
     })),
-    skills: draft.skills.map((item) => ({ id: createId(), name: item.name, level: item.level })),
+    skills: draft.skills.map((item) => ({ id: createId(), name: item.name, level: item.level, category: "" })),
     softSkills: draft.softSkills.map((name) => ({ id: createId(), name })),
     languages: draft.languages.map((item) => ({ id: createId(), name: item.name, level: item.level })),
     interests: draft.interests.map((name) => ({ id: createId(), name })),

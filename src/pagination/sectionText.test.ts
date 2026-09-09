@@ -41,8 +41,8 @@ describe("languageText", () => {
 describe("inlineSectionText", () => {
   it("joins skills, respecting skillDisplay", () => {
     const data = { ...createEmptyCvData(), skillDisplay: "none" as const, skills: [
-      { id: "1", name: "React", level: 90 },
-      { id: "2", name: "TypeScript", level: 60 },
+      { id: "1", name: "React", level: 90, category: "" },
+      { id: "2", name: "TypeScript", level: 60, category: "" },
     ] };
     expect(inlineSectionText("skills", data, en)).toBe("React, TypeScript");
   });
