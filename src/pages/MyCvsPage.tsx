@@ -21,6 +21,7 @@ import type { ApplicationEntry, CloudCv } from "../cloud/cvStore";
 import { CvHistoryPanel } from "../cloud/CvHistoryPanel";
 import { createEmptyCvData } from "../data/defaultData";
 import { normalizeCvData } from "../data/normalize";
+import { useProfile } from "../profile/useProfile";
 import { saveCvData, setCurrentCloudId } from "../utils/storage";
 import "./MyCvsPage.css";
 
@@ -36,6 +37,7 @@ export function MyCvsPage({
   navigate: (route: Exclude<Route, "public-cv">) => void;
 }) {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { profile } = useProfile();
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const copy = dictionary.myCvsPage;
   const [cvs, setCvs] = useState<CloudCv[] | null>(null);
@@ -69,9 +71,23 @@ export function MyCvsPage({
     navigate("builder");
   };
 
+  /** A new CV starts with the person's own details already filled in — name,
+   *  contacts and photo never change between applications, so asking for them
+   *  again on every document is pure friction. Everything else (which jobs,
+   *  which skills) stays a per-CV choice, made in the builder. */
   const createNew = () => {
     if ((cvs?.length ?? 0) >= MAX_CVS_PER_USER) return;
-    saveCvData(createEmptyCvData());
+    const blank = createEmptyCvData();
+    saveCvData(
+      profile
+        ? {
+            ...blank,
+            personalInfo: { ...profile.personalInfo, summary: blank.personalInfo.summary },
+            photo: profile.photo,
+            photoPosition: profile.photoPosition,
+          }
+        : blank,
+    );
     setCurrentCloudId(null);
     navigate("builder");
   };
@@ -92,6 +108,10 @@ export function MyCvsPage({
   const handleDuplicate = (cv: CloudCv) => {
     if (!user) return;
     if ((cvs?.length ?? 0) >= MAX_CVS_PER_USER) return;
+    const defaultName = `${cv.name} · ${copy.duplicate}`;
+    const next = window.prompt(copy.duplicatePrompt, defaultName);
+    if (next === null) return;
+    const name = next.trim() || defaultName;
     void runAction(cv.id, async () => {
       await duplicateCv(user.id, cv, name);
     });
@@ -108,10 +128,6 @@ export function MyCvsPage({
     void runAction(cv.id, () => deleteCv(cv.id));
   };
 
-    const defaultName = `${cv.name} · ${copy.duplicate}`;
-    const next = window.prompt(copy.duplicatePrompt, defaultName);
-    if (next === null) return;
-    const name = next.trim() || defaultName;
   const handleToggleShare = (cv: CloudCv) => {
     void runAction(cv.id, async () => {
       await setCvPublic(cv.id, !cv.isPublic);
@@ -165,7 +181,13 @@ export function MyCvsPage({
         onLanguageChange={onLanguageChange}
         items={buildSiteNav(dictionary, "landing", navigate)}
         onBrandClick={() => navigate("landing")}
-        authSlot={<AuthMenu dictionary={dictionary} onOpenMyCvs={() => navigate("my-cvs")} />}
+        authSlot={
+          <AuthMenu
+            dictionary={dictionary}
+            onOpenMyCvs={() => navigate("my-cvs")}
+            onOpenProfile={() => navigate("profile")}
+          />
+        }
       />
 
       <main className="mycvs-main">

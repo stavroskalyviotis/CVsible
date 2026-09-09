@@ -46,7 +46,13 @@ export function LegalPage({
         onLanguageChange={onLanguageChange}
         items={buildSiteNav(dictionary, "landing", navigate)}
         onBrandClick={() => navigate("landing")}
-        authSlot={<AuthMenu dictionary={dictionary} onOpenMyCvs={() => navigate("my-cvs")} />}
+        authSlot={
+          <AuthMenu
+            dictionary={dictionary}
+            onOpenMyCvs={() => navigate("my-cvs")}
+            onOpenProfile={() => navigate("profile")}
+          />
+        }
       />
 
       <div className="legal-shell">

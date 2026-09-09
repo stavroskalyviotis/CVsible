@@ -23,7 +23,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Saved CVs cascade-delete via the cvs.user_id foreign key.
+  // Saved CVs and the master profile cascade-delete via their user_id
+  // foreign keys onto auth.users.
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) {
     console.error("delete-account error", error);

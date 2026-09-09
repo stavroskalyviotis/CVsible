@@ -48,7 +48,8 @@ describe("analyzeResumeText", () => {
   it("gives a well-formed resume a high, non-contradictory score", () => {
     const analysis = analyzeResumeText(baseResume(), "");
     expect(analysis.checks.some((check) => check.status === "fail")).toBe(false);
-    expect(analysis.score).toBeGreaterThanOrEqual(70);
+    expect(analysis.format.score).toBeGreaterThanOrEqual(70);
+    expect(analysis.content.score).toBeGreaterThanOrEqual(70);
   });
 
   it("short-circuits to score 0 / fail when there is no text layer (scanned PDF)", () => {
@@ -56,9 +57,9 @@ describe("analyzeResumeText", () => {
       baseResume({ hasTextLayer: false, text: "", lines: [] }),
       "",
     );
-    expect(analysis.score).toBe(0);
+    expect(analysis.format.score).toBe(0);
     expect(analysis.checks).toEqual([
-      { id: "textLayer", status: "fail", weight: 3, value: 0 },
+      { id: "textLayer", axis: "format", status: "fail", weight: 3, value: 0 },
     ]);
   });
 
@@ -72,14 +73,14 @@ describe("analyzeResumeText", () => {
       "",
     );
     expect(analysis.checks.some((c) => c.status === "fail")).toBe(true);
-    expect(analysis.score).toBeLessThanOrEqual(69);
+    expect(Math.min(analysis.format.score, analysis.content.score)).toBeLessThanOrEqual(69);
   });
 
   it("flags a two-column layout as a hard fail (singleColumn)", () => {
     const analysis = analyzeResumeText(baseResume({ multiColumnPages: 1 }), "");
     const check = analysis.checks.find((c) => c.id === "singleColumn");
     expect(check?.status).toBe("fail");
-    expect(analysis.score).toBeLessThanOrEqual(69);
+    expect(analysis.format.score).toBeLessThanOrEqual(69);
   });
 
   it("marks singleColumn as unknown for a DOCX/TXT source instead of a false pass, and excludes it from scoring", () => {
@@ -88,7 +89,7 @@ describe("analyzeResumeText", () => {
     expect(clean.checks.find((c) => c.id === "singleColumn")?.status).toBe("unknown");
     expect(suspicious.checks.find((c) => c.id === "singleColumn")?.status).toBe("unknown");
     // multiColumnPages carries no real signal for a DOCX, so it must not move the score.
-    expect(suspicious.score).toBe(clean.score);
+    expect(suspicious.format.score).toBe(clean.format.score);
   });
 
   it("flags letter-spaced headings (PDF extractor artifact) as spacedLetters fail", () => {
@@ -121,6 +122,97 @@ describe("analyzeResumeText", () => {
     });
     const analysis = analyzeResumeText(resume, "");
     const check = analysis.checks.find((c) => c.id === "experienceDates");
+    expect(check?.status).toBe("warn");
+  });
+});
+
+describe("analyzeResumeText — the three axes", () => {
+  it("files every check under exactly one axis", () => {
+    const analysis = analyzeResumeText(baseResume(), "React TypeScript GraphQL engineer wanted");
+    const axes = new Set(analysis.checks.map((check) => check.axis));
+    expect([...axes].sort()).toEqual(["content", "format", "match"]);
+    expect(analysis.format.checks.length + analysis.content.checks.length + analysis.match!.checks.length).toBe(
+      analysis.checks.length,
+    );
+  });
+
+  it("leaves the match axis null when no job ad was given", () => {
+    const analysis = analyzeResumeText(baseResume(), "");
+    expect(analysis.match).toBeNull();
+    expect(analysis.checks.some((check) => check.axis === "match")).toBe(false);
+  });
+
+  it("reports the match axis as the plain coverage percentage", () => {
+    const analysis = analyzeResumeText(baseResume(), "React TypeScript GraphQL engineer wanted");
+    expect(analysis.match!.score).toBe(Math.round(analysis.match!.keywords.ratio * 100));
+  });
+
+  it("does not let a poor job-ad match move the CV's own score", () => {
+    const withoutAd = analyzeResumeText(baseResume(), "");
+    const withUnrelatedAd = analyzeResumeText(
+      baseResume(),
+      "Seeking a licensed heavy goods vehicle driver for regional haulage routes.",
+    );
+    expect(withUnrelatedAd.format.score).toBe(withoutAd.format.score);
+    expect(withUnrelatedAd.content.score).toBe(withoutAd.content.score);
+    expect(withUnrelatedAd.match!.score).toBeLessThan(withoutAd.format.score);
+  });
+
+  it("separates a broken file from a well-written one: format falls, content holds", () => {
+    const clean = analyzeResumeText(baseResume(), "");
+    const twoColumn = analyzeResumeText(baseResume({ multiColumnPages: 2 }), "");
+    expect(twoColumn.format.score).toBeLessThan(clean.format.score);
+    expect(twoColumn.content.score).toBe(clean.content.score);
+  });
+});
+
+describe("analyzeResumeText — action verbs", () => {
+  /** The regression this whole check exists for: these bullets all open with
+   *  a real action verb, and the old fixed word list scored them at 0%. */
+  it("credits bullets that open with verbs the old list had never heard of", () => {
+    const bullets = [
+      "• Coordinated a team of 6 engineers across two product squads",
+      "• Executed the migration from MySQL to PostgreSQL with zero downtime",
+      "• Performed code reviews on 40+ pull requests per month",
+      "• Conducted user research interviews with 15 enterprise customers",
+      "• Deployed the service to AWS using Terraform and GitHub Actions",
+    ];
+    const lines = ["Jane Smith", "jane@example.com", "Experience", "Engineer, Acme — 03/2022 - present", ...bullets];
+    const analysis = analyzeResumeText(
+      baseResume({ lines, text: lines.join("\n") }),
+      "",
+    );
+
+    const check = analysis.checks.find((item) => item.id === "actionVerbs");
+    expect(check?.value).toBe(100);
+    expect(check?.status).toBe("pass");
+  });
+
+  it("credits the action nouns a Greek CV leads with", () => {
+    const bullets = [
+      "• Διαχείριση ομάδας 6 ατόμων σε δύο τμήματα",
+      "• Ανάπτυξη εφαρμογών σε React και TypeScript",
+      "• Εξυπηρέτηση πελατών σε καθημερινή βάση",
+      "• Παρακολούθηση αποθέματος και παραγγελιών",
+    ];
+    const lines = ["Γιάννης Παπάς", "giannis@example.com", "Εμπειρία", "Υπεύθυνος, Acme — 03/2022 - σήμερα", ...bullets];
+    const analysis = analyzeResumeText(baseResume({ lines, text: lines.join("\n") }), "");
+
+    expect(analysis.checks.find((item) => item.id === "actionVerbs")?.value).toBe(100);
+  });
+
+  it("still warns when the bullets are duty lists rather than achievements", () => {
+    const bullets = [
+      "• Responsible for the weekly rota",
+      "• Duties included cleaning the machines",
+      "• My role was to greet customers",
+      "• Various administrative tasks as needed",
+    ];
+    const lines = ["Jane Smith", "jane@example.com", "Experience", "Barista, Acme — 03/2022 - present", ...bullets];
+    const analysis = analyzeResumeText(baseResume({ lines, text: lines.join("\n") }), "");
+
+    const check = analysis.checks.find((item) => item.id === "actionVerbs");
+    expect(check?.value).toBe(0);
     expect(check?.status).toBe("warn");
   });
 });

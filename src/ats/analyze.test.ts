@@ -1,39 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { extractJobAdKeywords, scoreBand, passesAts } from "./analyze";
-import type { AtsReport } from "./analyze";
+import { scoreBand, passesAts, hasStructuralFailure } from "./analyze";
+import type { AtsAxisId, AtsCheck, AtsReport, AtsStatus } from "./analyze";
 
-describe("extractJobAdKeywords", () => {
-  it("ranks by frequency, tie-broken alphabetically", () => {
-    const jobAd = "react react react vue vue angular";
-    expect(extractJobAdKeywords(jobAd, 3)).toEqual(["react", "vue", "angular"]);
-  });
-
-  it("drops stopwords and pure numbers", () => {
-    const jobAd = "the team needs someone with 5 years of react experience";
-    const terms = extractJobAdKeywords(jobAd);
-    expect(terms).not.toContain("the");
-    expect(terms).not.toContain("5");
-    expect(terms).not.toContain("experience");
-    expect(terms).toContain("react");
-  });
-
-  it("drops words shorter than 3 characters", () => {
-    const terms = extractJobAdKeywords("go ci ui css react");
-    expect(terms).not.toContain("go");
-    expect(terms).not.toContain("ci");
-    expect(terms).not.toContain("ui");
-    expect(terms).toContain("css");
-  });
-
-  it("respects the limit parameter", () => {
-    const jobAd = "alpha beta gamma delta epsilon zeta";
-    expect(extractJobAdKeywords(jobAd, 2)).toHaveLength(2);
-  });
-
-  it("handles an empty job ad", () => {
-    expect(extractJobAdKeywords("")).toEqual([]);
-  });
-});
+/** Job-ad term extraction lives in ./keywords.ts and is tested there. */
 
 describe("scoreBand", () => {
   it("bands scores at the documented thresholds", () => {
@@ -49,28 +18,93 @@ describe("scoreBand", () => {
 });
 
 describe("passesAts", () => {
-  function report(statuses: Array<"pass" | "warn" | "fail">): AtsReport {
+  function checksOf(axis: AtsAxisId, statuses: AtsStatus[]): AtsCheck[] {
+    return statuses.map((status, index) => ({
+      id: "email" as const,
+      axis,
+      status,
+      weight: 1,
+      value: index,
+    }));
+  }
+
+  function report({
+    format = [],
+    content = [],
+    match = [],
+  }: {
+    format?: AtsStatus[];
+    content?: AtsStatus[];
+    match?: AtsStatus[];
+  }): AtsReport {
+    const formatChecks = checksOf("format", format);
+    const contentChecks = checksOf("content", content);
+    const matchChecks = checksOf("match", match);
     return {
-      score: 0,
+      format: { id: "format", score: 0, checks: formatChecks },
+      content: { id: "content", score: 0, checks: contentChecks },
+      match:
+        match.length > 0
+          ? { id: "match", score: 0, checks: matchChecks, keywords: { matched: [], missing: [], ratio: 0 } }
+          : null,
+      checks: [...formatChecks, ...contentChecks, ...matchChecks],
       keywords: null,
-      checks: statuses.map((status, index) => ({
-        id: "email" as const,
-        status,
-        weight: 1,
-        value: index,
-      })),
     };
   }
 
   it("passes when nothing failed, regardless of warnings", () => {
-    expect(passesAts(report(["pass", "warn", "pass"]))).toBe(true);
+    expect(passesAts(report({ format: ["pass", "warn"], content: ["pass"] }))).toBe(true);
   });
 
-  it("fails when any check failed", () => {
-    expect(passesAts(report(["pass", "fail", "pass"]))).toBe(false);
+  it("fails when a format check failed", () => {
+    expect(passesAts(report({ format: ["pass", "fail"], content: ["pass"] }))).toBe(false);
+  });
+
+  it("fails when a content check failed", () => {
+    expect(passesAts(report({ format: ["pass"], content: ["fail"] }))).toBe(false);
   });
 
   it("passes vacuously for an empty checklist", () => {
-    expect(passesAts(report([]))).toBe(true);
+    expect(passesAts(report({}))).toBe(true);
+  });
+
+  it("is not dragged down by the job-ad match — a poor fit is not a broken CV", () => {
+    expect(passesAts(report({ format: ["pass"], content: ["pass"], match: ["fail"] }))).toBe(true);
+  });
+
+});
+
+describe("hasStructuralFailure", () => {
+  function withCheck(id: AtsCheck["id"], status: AtsStatus): AtsReport {
+    const check: AtsCheck = { id, axis: "format", status, weight: 3 };
+    return {
+      format: { id: "format", score: 0, checks: [check] },
+      content: { id: "content", score: 0, checks: [] },
+      match: null,
+      checks: [check],
+      keywords: null,
+    };
+  }
+
+  it("is true when a layout decision defeats a parser", () => {
+    expect(hasStructuralFailure(withCheck("singleColumn", "fail"))).toBe(true);
+    expect(hasStructuralFailure(withCheck("spacedLetters", "fail"))).toBe(true);
+  });
+
+  /** Otherwise a brand-new, still-empty CV would raise the flag from the
+   *  first second, and a flag that is always on says nothing. */
+  it("stays quiet for gaps the author can see in their own form", () => {
+    expect(hasStructuralFailure(withCheck("email", "fail"))).toBe(false);
+    expect(hasStructuralFailure(withCheck("phone", "fail"))).toBe(false);
+    expect(hasStructuralFailure(withCheck("headingsFound", "fail"))).toBe(false);
+  });
+
+  it("stays quiet for a document that is simply still empty", () => {
+    expect(hasStructuralFailure(withCheck("textLayer", "fail"))).toBe(false);
+  });
+
+  it("stays quiet when the structural checks merely warn", () => {
+    expect(hasStructuralFailure(withCheck("singleColumn", "warn"))).toBe(false);
+    expect(hasStructuralFailure(withCheck("singleColumn", "unknown"))).toBe(false);
   });
 });

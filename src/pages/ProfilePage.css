@@ -1,0 +1,216 @@
+.profile-page {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.profile-main {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.profile-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.profile-head h1 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.profile-head p {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  max-width: 62ch;
+}
+
+/* ------------------------------------------------------------ save status */
+
+.profile-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.profile-save-busy {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.profile-save-ok {
+  background: #dff3e6;
+  color: #1d6b3c;
+}
+
+.profile-save-error {
+  background: #fbe6e3;
+  color: #97372f;
+}
+
+.profile-save-spinner {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--ink-soft);
+  animation: profile-spin 0.7s linear infinite;
+}
+
+@keyframes profile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -------------------------------------------------------- completeness meter */
+
+.profile-meter {
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  margin-bottom: 22px;
+}
+
+.profile-meter-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.profile-meter-head strong {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.profile-meter-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.profile-meter-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.profile-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.35s ease;
+}
+
+.profile-meter-hint,
+.profile-meter-done {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.profile-meter-done {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #1d6b3c;
+  font-weight: 600;
+}
+
+.profile-meter-missing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.profile-missing-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px dashed var(--line-strong);
+  background: var(--paper);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.profile-build-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- sections */
+
+.profile-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-signin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+.profile-signin p {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  max-width: 52ch;
+}
+
+.profile-status,
+.profile-error {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  padding: 20px 0;
+}
+
+.profile-error {
+  color: #97372f;
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .profile-main {
+    padding: 24px 14px 60px;
+  }
+
+  .profile-head {
+    flex-direction: column;
+  }
+}

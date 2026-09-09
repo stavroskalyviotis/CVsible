@@ -6,29 +6,9 @@
  *  blocking list is empty.
  */
 
+import { startsWithActionVerb } from "./actionVerbs.js";
 import type { CvDraft } from "./draftTypes.js";
 import { normalizeForMatch } from "./grounding.js";
-
-const ACTION_VERBS_EN = [
-  "achieved", "advised", "analysed", "analyzed", "architected", "automated", "built", "coached",
-  "consolidated", "converted", "coordinated", "created", "cut", "delivered", "designed", "developed",
-  "directed", "drove", "established", "expanded", "generated", "grew", "implemented", "improved",
-  "increased", "influenced", "initiated", "introduced", "launched", "led", "maintained", "managed",
-  "mentored", "migrated", "negotiated", "operated", "optimised", "optimized", "orchestrated", "owned",
-  "planned", "prototyped", "rebuilt", "redesigned", "reduced", "refactored", "resolved", "restructured",
-  "scaled", "secured", "shipped", "simplified", "standardised", "standardized", "streamlined",
-  "supervised", "supported", "taught", "tested", "trained", "transformed", "wrote",
-];
-
-const ACTION_VERB_STEMS_EL = [
-  "ανελαβ", "ανεπτυξ", "αναδιοργανωσ", "αναβαθμισ", "αναλυσ", "ανασχεδιασ", "αξιοποιησ", "απλοποιησ",
-  "αυξησ", "βελτιωσ", "βελτιστοποιησ", "δημιουργησ", "διαχειριστ", "διηυθυν", "διοργανωσ",
-  "εγκαταστησ", "εισηγαγ", "εκπαιδευσ", "εκπροσωπησ", "εξοικονομησ", "εξυπηρετησ", "επεβλεπ",
-  "επιβλεπ", "επιταχυν", "επιλυσ", "εφαρμοσ", "καθιερωσ", "κατασκευασ", "κατεγραψ", "μειωσ",
-  "μετεφερ", "οργανωσ", "παρακολουθησ", "παρεδωσ", "προωθησ", "συγκεντρωσ", "συνεργαστ", "σχεδιασ",
-  "συντονισ", "συνεβαλ", "υλοποιησ", "υποστηριξ", "ηγηθηκ", "διδαξ", "εγραψ", "ελεγξ", "εκλεισ",
-  "διαπραγματευτ", "διεκπεραιωσ", "τηρησ", "χειριστ", "λειτουργησ", "προγραμματισ",
-];
 
 /** Phrases that say nothing and that a recruiter reads as filler. */
 const CLICHES = [
@@ -49,12 +29,6 @@ export interface DraftReview {
   blocking: string[];
   advice: string[];
   missingKeywords: string[];
-}
-
-function startsWithActionVerb(bullet: string): boolean {
-  const first = normalizeForMatch(bullet).split(" ")[0] ?? "";
-  if (!first) return false;
-  return ACTION_VERBS_EN.includes(first) || ACTION_VERB_STEMS_EL.some((stem) => first.startsWith(stem));
 }
 
 function findCliches(text: string): string[] {

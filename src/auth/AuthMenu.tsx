@@ -10,9 +10,11 @@ import "./AuthMenu.css";
 export function AuthMenu({
   dictionary,
   onOpenMyCvs,
+  onOpenProfile,
 }: {
   dictionary: Dictionary;
   onOpenMyCvs?: () => void;
+  onOpenProfile?: () => void;
 }) {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +82,19 @@ export function AuthMenu({
       {isOpen && (
         <div className="auth-menu-pop" role="menu">
           {displayName && <div className="auth-menu-identity">{displayName}</div>}
+          {onOpenProfile && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setIsOpen(false);
+                onOpenProfile();
+              }}
+            >
+              <Icon name="user" size={15} />
+              {dictionary.profile.navLink}
+            </button>
+          )}
           {onOpenMyCvs && (
             <button
               type="button"

@@ -18,6 +18,7 @@ export function PersonalInfoForm({
   photoPosition,
   showPhoto,
   photoSupported = true,
+  photoToggle = true,
   onChange,
   onPhotoChange,
   onPhotoPositionChange,
@@ -32,6 +33,9 @@ export function PersonalInfoForm({
   /** False for templates (e.g. Meridian) that never render a photo, so we can
    *  explain that instead of showing an upload widget with no visible effect. */
   photoSupported?: boolean;
+  /** False in the master profile, where the photo is simply the person's
+   *  photo — whether a given CV prints it is that document's decision. */
+  photoToggle?: boolean;
   onChange: (patch: Partial<PersonalInfo>) => void;
   onPhotoChange: (photo: string | null) => void;
   onPhotoPositionChange: (position: { x: number; y: number }) => void;
@@ -43,9 +47,11 @@ export function PersonalInfoForm({
 
   return (
     <>
-      <CheckboxField label={fields.showPhoto} checked={showPhoto} onChange={onShowPhotoChange} />
+      {photoToggle && <CheckboxField label={fields.showPhoto} checked={showPhoto} onChange={onShowPhotoChange} />}
 
-      {showPhoto && !photoSupported && <p className="photo-upload-note">{dictionary.templates.photoUnsupported}</p>}
+      {photoToggle && showPhoto && !photoSupported && (
+        <p className="photo-upload-note">{dictionary.templates.photoUnsupported}</p>
+      )}
 
       {showPhoto && photoSupported && (
         <PhotoUpload

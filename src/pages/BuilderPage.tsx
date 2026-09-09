@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "../i18n/translations";
-import type { LanguageCode, SectionKey } from "../types";
+import type { LanguageCode, ProfileListKey, SectionKey } from "../types";
 import { useCvData } from "../hooks/useCvData";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { CvPreview } from "../components/CvPreview";
@@ -26,13 +26,16 @@ import { applyDraft } from "../cvisor/agent";
 import type { CvDraft } from "../cvisor/agent";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { AtsScoreChip } from "../ats/AtsScoreChip";
-import { extractJobAdKeywords } from "../ats/analyze";
+import { hasStructuralFailure } from "../ats/analyze";
+import { extractJobAdTerms } from "../ats/keywords";
 import { analyzeResumeText } from "../ats/analyzeText";
 import { cvToExtractedResume } from "../ats/cvToResume";
 import { downloadCvJson, readCvJson } from "../utils/cvFile";
 import { getCurrentCloudId, setCurrentCloudId } from "../utils/storage";
 import { AuthMenu } from "../auth/AuthMenu";
 import { useAuth } from "../auth/useAuth";
+import { useProfile } from "../profile/useProfile";
+import { ProfileSectionTools } from "../profile/ProfileSectionTools";
 import { isCloudConfigured } from "../lib/supabaseClient";
 import { CloudCvError, createCv, updateCvData } from "../cloud/cvStore";
 import { SupportBadge } from "../components/SupportBadge";
@@ -71,6 +74,7 @@ export function BuilderPage({
   onGoHome,
   onOpenScan,
   onOpenMyCvs,
+  onOpenProfile,
   autoOpenCvisor = false,
 }: {
   dictionary: Dictionary;
@@ -79,10 +83,13 @@ export function BuilderPage({
   onGoHome: () => void;
   onOpenScan: () => void;
   onOpenMyCvs: () => void;
+  onOpenProfile: () => void;
   autoOpenCvisor?: boolean;
 }) {
   const cv = useCvData();
   const { user } = useAuth();
+  const profileController = useProfile();
+  const { profile } = profileController;
   const { containerRef, scale } = usePreviewScale();
   const [openSection, setOpenSection] = useState<SectionId>("personalInfo");
   const [isDownloading, setIsDownloading] = useState(false);
@@ -108,8 +115,26 @@ export function BuilderPage({
   // added anything of their own, the suggestions would just be clutter.
   const suggestedSkills = useMemo(() => {
     if (cv.data.skills.length > 0 || !jobAd.trim()) return [];
-    return extractJobAdKeywords(jobAd, 8);
+    return extractJobAdTerms(jobAd, 8);
   }, [cv.data.skills.length, jobAd]);
+
+  /** The import / save-back pair for one section, wired to that section's
+   *  list actions. Rendered above the form so both directions are offered
+   *  before the user starts typing something they already have. */
+  const profileTools = <K extends ProfileListKey>(section: K) => (
+    <ProfileSectionTools
+      section={section}
+      cv={cv.data}
+      profile={profile}
+      onImport={(entries) => {
+        const list = cv[section] as unknown as { add: (item: unknown) => void };
+        entries.forEach((entry) => list.add(entry));
+      }}
+      onSaveToProfile={(entries) => profileController.addEntries(section, entries)}
+      dictionary={dictionary}
+      locale={dictionary.locale}
+    />
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -259,7 +284,9 @@ export function BuilderPage({
               <Icon name="redo" size={16} strokeWidth={2.2} />
             </button>
           </div>
-          {isCloudConfigured && <AuthMenu dictionary={dictionary} onOpenMyCvs={onOpenMyCvs} />}
+          {isCloudConfigured && (
+            <AuthMenu dictionary={dictionary} onOpenMyCvs={onOpenMyCvs} onOpenProfile={onOpenProfile} />
+          )}
           <div className="builder-lang-switch" role="group" aria-label="Language">
             <button
               type="button"
@@ -277,7 +304,17 @@ export function BuilderPage({
             </button>
           </div>
           <div className="builder-topbar-buttons">
-            <AtsScoreChip score={atsReport.score} label={dictionary.siteNav.scan} onClick={onOpenScan} />
+            {/* Content only: it is the axis that moves as you write. A
+                template a parser cannot read (Aurora's two columns) shows up
+                as the flag instead, since it is one decision rather than a
+                gradient. */}
+            <AtsScoreChip
+              score={atsReport.content.score}
+              label={dictionary.siteNav.scan}
+              warn={hasStructuralFailure(atsReport)}
+              warnLabel={dictionary.ats.formatIssue}
+              onClick={onOpenScan}
+            />
             <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
               <Icon name="sparkles" size={15} />
               {dictionary.cvisor.brand}
@@ -411,6 +448,7 @@ export function BuilderPage({
             open={openSection === "experience"}
             onToggle={() => toggleSection("experience")}
           >
+            {profileTools("experience")}
             <ExperienceForm
               items={cv.data.experience}
               actions={cv.experience}
@@ -426,6 +464,7 @@ export function BuilderPage({
             open={openSection === "education"}
             onToggle={() => toggleSection("education")}
           >
+            {profileTools("education")}
             <EducationForm
               items={cv.data.education}
               actions={cv.education}
@@ -441,6 +480,7 @@ export function BuilderPage({
             open={openSection === "skills"}
             onToggle={() => toggleSection("skills")}
           >
+            {profileTools("skills")}
             <SkillsForm
               items={cv.data.skills}
               actions={cv.skills}
@@ -455,6 +495,7 @@ export function BuilderPage({
             open={openSection === "softSkills"}
             onToggle={() => toggleSection("softSkills")}
           >
+            {profileTools("softSkills")}
             <SimpleNameListForm
               items={cv.data.softSkills}
               actions={cv.softSkills}
@@ -475,6 +516,7 @@ export function BuilderPage({
             open={openSection === "languages"}
             onToggle={() => toggleSection("languages")}
           >
+            {profileTools("languages")}
             <LanguagesForm items={cv.data.languages} actions={cv.languages} dictionary={dictionary} />
           </AccordionSection>
 
@@ -484,6 +526,7 @@ export function BuilderPage({
             open={openSection === "interests"}
             onToggle={() => toggleSection("interests")}
           >
+            {profileTools("interests")}
             <SimpleNameListForm
               items={cv.data.interests}
               actions={cv.interests}
@@ -504,6 +547,7 @@ export function BuilderPage({
             open={openSection === "certifications"}
             onToggle={() => toggleSection("certifications")}
           >
+            {profileTools("certifications")}
             <CertificationsForm
               items={cv.data.certifications}
               actions={cv.certifications}
@@ -518,6 +562,7 @@ export function BuilderPage({
             open={openSection === "projects"}
             onToggle={() => toggleSection("projects")}
           >
+            {profileTools("projects")}
             <ProjectsForm items={cv.data.projects} actions={cv.projects} dictionary={dictionary} jobAd={jobAd} />
           </AccordionSection>
 

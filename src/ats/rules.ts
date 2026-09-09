@@ -1,24 +1,8 @@
 /** Word lists backing the ATS heuristics. Kept apart from the analyser so the
- *  scoring logic stays readable. */
-
-export const ACTION_VERBS_EN = [
-  "achieved", "advised", "analysed", "analyzed", "architected", "automated", "built", "coached",
-  "consolidated", "converted", "created", "cut", "delivered", "designed", "developed", "directed",
-  "drove", "established", "expanded", "generated", "grew", "implemented", "improved", "increased",
-  "influenced", "initiated", "introduced", "launched", "led", "maintained", "managed", "mentored",
-  "migrated", "negotiated", "optimised", "optimized", "orchestrated", "owned", "planned",
-  "prototyped", "rebuilt", "redesigned", "reduced", "refactored", "resolved", "restructured",
-  "scaled", "secured", "shipped", "simplified", "standardised", "standardized", "streamlined",
-  "supervised", "supported", "tested", "trained", "transformed",
-];
-
-export const ACTION_VERBS_EL = [
-  "ανέλαβα", "ανέπτυξα", "αναδιοργάνωσα", "αναβάθμισα", "αξιοποίησα", "απλοποίησα", "αύξησα",
-  "βελτίωσα", "βελτιστοποίησα", "δημιούργησα", "διαχειρίστηκα", "διηύθυνα", "εγκατέστησα",
-  "εισήγαγα", "εκπαίδευσα", "εξοικονόμησα", "επέβλεψα", "επεξεργάστηκα", "επιτάχυνα", "καθιέρωσα",
-  "κατασκεύασα", "μείωσα", "μετέφερα", "οργάνωσα", "παρέδωσα", "σχεδίασα", "συντόνισα",
-  "συνέβαλα", "υλοποίησα", "υποστήριξα", "ηγήθηκα",
-];
+ *  scoring logic stays readable.
+ *
+ *  The action-verb vocabulary lives in ./actionVerbs.ts, which both the
+ *  analyser and the CVisor critic share. */
 
 const STOPWORDS_EN = new Set([
   "the", "and", "for", "with", "you", "your", "our", "are", "will", "have", "has", "that", "this",

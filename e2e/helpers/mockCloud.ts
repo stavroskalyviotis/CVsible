@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page } from "@playwright/test";
-import type { CvData } from "../../src/types";
+import type { CvData, UserProfile } from "../../src/types";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -203,11 +203,51 @@ export async function mockCvsRestApi(page: Page, table: FakeCvTable): Promise<vo
   });
 }
 
+/** In-memory stand-in for the one-row-per-user `profiles` table. */
+export interface FakeProfileStore {
+  data: UserProfile | null;
+  writes: number;
+}
+
+export function createFakeProfileStore(data: UserProfile | null = null): FakeProfileStore {
+  return { data, writes: 0 };
+}
+
+/** Intercepts the calls profileStore.ts makes. The select is a `maybeSingle()`
+ *  GET, which supabase-js unwraps from an array client-side, so the mock can
+ *  answer with a plain array; the save is an upsert POST. */
+export async function mockProfileRestApi(page: Page, store: FakeProfileStore): Promise<void> {
+  await page.route("**/rest/v1/profiles**", async (route) => {
+    const request = route.request();
+    const method = request.method();
+
+    if (method === "GET") {
+      const rows = store.data ? [{ data: store.data, updated_at: new Date().toISOString() }] : [];
+      await route.fulfill({ status: 200, json: rows });
+      return;
+    }
+
+    if (method === "POST") {
+      const body = request.postDataJSON() as { user_id: string; data: UserProfile };
+      store.data = body.data;
+      store.writes += 1;
+      await route.fulfill({ status: 201, body: "" });
+      return;
+    }
+
+    await route.continue();
+  });
+}
+
 /** Seeds a signed-in Supabase session before any page script runs (so
  *  AuthContext sees a user on first render), and wires up the REST/RPC
  *  mocks. Lets My CVs / share-link / application-tracker flows run without
  *  a real Supabase backend or a real Google login. */
-export async function mockSignedIn(page: Page, table: FakeCvTable): Promise<void> {
+export async function mockSignedIn(
+  page: Page,
+  table: FakeCvTable,
+  profiles: FakeProfileStore = createFakeProfileStore(),
+): Promise<void> {
   const session = buildSession();
   await page.addInitScript(
     ([key, value]) => {
@@ -216,4 +256,5 @@ export async function mockSignedIn(page: Page, table: FakeCvTable): Promise<void
     [STORAGE_KEY, JSON.stringify(session)],
   );
   await mockCvsRestApi(page, table);
+  await mockProfileRestApi(page, profiles);
 }

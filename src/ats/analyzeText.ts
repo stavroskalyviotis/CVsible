@@ -1,30 +1,30 @@
-import type { AtsCheck, AtsReport } from "./analyze";
-import { extractJobAdKeywords } from "./analyze";
+import type { AtsAxis, AtsAxisId, AtsCheck, AtsMatchAxis, AtsReport } from "./analyze";
+import { actionVerbRatio } from "./actionVerbs";
 import type { ExtractedResume } from "./extractResume";
-import { normalize, parseResume } from "./parse";
+import { matchKeywords } from "./keywords";
+import { parseResume } from "./parse";
 import type { ParsedFields } from "./parse";
-import { ACTION_VERBS_EL, ACTION_VERBS_EN } from "./rules";
 
 const WEIGHT_CRITICAL = 3;
 const WEIGHT_IMPORTANT = 2;
 const WEIGHT_MINOR = 1;
-// A CV that never mentions the role or its core terms won't survive a real
-// ATS keyword filter no matter how clean its formatting is — weighted well
-// above every structural check so a bad match visibly drags the score down
-// instead of hiding behind a near-perfect formatting score.
-const WEIGHT_KEYWORDS = 9;
 
-function startsWithActionVerb(line: string): boolean {
-  const first = normalize(line.replace(/^\s*([•▪◦‣·*+–—-])\s+/, "")).split(" ")[0];
-  if (!first) return false;
-  return (
-    ACTION_VERBS_EN.includes(first) ||
-    ACTION_VERBS_EL.some((verb) => first.startsWith(normalize(verb).slice(0, 5)))
-  );
-}
+/** Share of bullets that must open with an action before the check passes.
+ *  Well under half is deliberate: a CV legitimately carries context lines
+ *  alongside its achievements. */
+const ACTION_VERB_TARGET = 0.5;
 
-function check(id: AtsCheck["id"], status: AtsCheck["status"], weight: number, value?: string | number): AtsCheck {
-  return { id, status, weight, value };
+/** Coverage at which a CV is answering the ad rather than brushing past it. */
+const KEYWORD_TARGET = 0.6;
+
+function check(
+  id: AtsCheck["id"],
+  axis: AtsAxisId,
+  status: AtsCheck["status"],
+  weight: number,
+  value?: string | number,
+): AtsCheck {
+  return { id, axis, status, weight, value };
 }
 
 /** Wide letter-spacing makes PDF extractors emit one space per glyph, so a
@@ -38,9 +38,14 @@ function shatteredLines(lines: string[]): string[] {
   });
 }
 
+/** Weighted share of the checks that passed, 0-100.
+ *
+ *  A check the analyser could not evaluate contributes to neither side of the
+ *  fraction — it is excluded, not silently counted as a pass. A single
+ *  failure caps the result below "good", because one blocking defect can be
+ *  enough for a real ATS to drop the document however well everything else
+ *  scores. */
 function scoreOf(checks: AtsCheck[]): number {
-  // A check the analyser couldn't actually evaluate contributes to neither
-  // side of the fraction — it's excluded, not silently counted as a pass.
   const scored = checks.filter((item) => item.status !== "unknown");
   const earned = scored.reduce(
     (total, item) => total + item.weight * (item.status === "pass" ? 1 : item.status === "warn" ? 0.5 : 0),
@@ -48,29 +53,12 @@ function scoreOf(checks: AtsCheck[]): number {
   );
   const possible = scored.reduce((total, item) => total + item.weight, 0);
   const raw = possible === 0 ? 0 : Math.round((earned / possible) * 100);
-
-  // One blocking failure (unreadable text, wrong headings, ...) can be enough
-  // for an ATS to reject the document outright, no matter how strong every
-  // other check scores — so the number can never read as "good"/"excellent"
-  // while passesAts() would say no. Keeps the score and the pass/fail verdict
-  // from ever contradicting each other.
-  const hasFail = checks.some((item) => item.status === "fail");
-  return hasFail ? Math.min(raw, 69) : raw;
+  return scored.some((item) => item.status === "fail") ? Math.min(raw, 69) : raw;
 }
 
-function keywordSection(text: string, jobAd: string) {
-  if (!jobAd.trim()) return null;
-  const terms = extractJobAdKeywords(jobAd);
-  if (terms.length === 0) return null;
-
-  const haystack = new Set(
-    normalize(text)
-      .split(/[^\p{L}\p{N}+#.]+/u)
-      .filter(Boolean),
-  );
-  const matched = terms.filter((term) => haystack.has(normalize(term)));
-  const missing = terms.filter((term) => !haystack.has(normalize(term)));
-  return { matched, missing, ratio: matched.length / terms.length };
+function axisOf(id: AtsAxisId, checks: AtsCheck[]): AtsAxis {
+  const own = checks.filter((item) => item.axis === id);
+  return { id, score: scoreOf(own), checks: own };
 }
 
 export interface ResumeAnalysis extends AtsReport {
@@ -84,21 +72,31 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
 
   // With no text layer every other check would report a misleading "missing".
   if (!resume.hasTextLayer) {
-    const checks = [check("textLayer", "fail", WEIGHT_CRITICAL, 0)];
-    return { score: 0, checks, keywords: null, fields };
+    const checks = [check("textLayer", "format", "fail", WEIGHT_CRITICAL, 0)];
+    return {
+      format: axisOf("format", checks),
+      content: axisOf("content", []),
+      match: null,
+      checks,
+      keywords: null,
+      fields,
+    };
   }
 
   const sectionKeys = new Set(fields.sections.map((section) => section.key));
   const topLines = resume.lines.slice(0, 12).join("\n");
   const bullets = fields.bulletLines;
-  const verbBullets = bullets.filter(startsWithActionVerb).length;
+  const verbRatio = actionVerbRatio(bullets);
 
   const shattered = shatteredLines(resume.lines);
 
-  const checks: AtsCheck[] = [
-    check("textLayer", "pass", WEIGHT_CRITICAL, fields.wordCount),
+  // ---------------------------------------------------------------- format
+  // Everything a parser has to succeed at before the writing matters at all.
+  const formatChecks: AtsCheck[] = [
+    check("textLayer", "format", "pass", WEIGHT_CRITICAL, fields.wordCount),
     check(
       "spacedLetters",
+      "format",
       shattered.length === 0 ? "pass" : "fail",
       WEIGHT_CRITICAL,
       shattered.length > 0 ? shattered[0].slice(0, 40) : 0,
@@ -108,10 +106,17 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
     // carries no positional data, so multiColumnPages is always 0 there —
     // reporting that as a "pass" would be a false positive, not a real check.
     resume.kind === "pdf" || resume.kind === "builder"
-      ? check("singleColumn", resume.multiColumnPages === 0 ? "pass" : "fail", WEIGHT_CRITICAL, resume.multiColumnPages)
-      : check("singleColumn", "unknown", WEIGHT_CRITICAL),
+      ? check(
+          "singleColumn",
+          "format",
+          resume.multiColumnPages === 0 ? "pass" : "fail",
+          WEIGHT_CRITICAL,
+          resume.multiColumnPages,
+        )
+      : check("singleColumn", "format", "unknown", WEIGHT_CRITICAL),
     check(
       "headingsFound",
+      "format",
       sectionKeys.has("experience") && sectionKeys.has("education") && sectionKeys.has("skills")
         ? "pass"
         : fields.sections.length >= 2
@@ -120,73 +125,95 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
       WEIGHT_CRITICAL,
       fields.sections.length,
     ),
-
-    check("email", fields.emails.length > 0 ? "pass" : "fail", WEIGHT_CRITICAL, fields.emails[0] ?? ""),
-    check("phone", fields.phones.length > 0 ? "pass" : "fail", WEIGHT_IMPORTANT, fields.phones[0] ?? ""),
+    check("email", "format", fields.emails.length > 0 ? "pass" : "fail", WEIGHT_CRITICAL, fields.emails[0] ?? ""),
+    check("phone", "format", fields.phones.length > 0 ? "pass" : "fail", WEIGHT_IMPORTANT, fields.phones[0] ?? ""),
     check(
       "contactAtTop",
+      "format",
       /[^\s@]+@[^\s@]+\.[a-z]{2,}/i.test(topLines) ? "pass" : "warn",
       WEIGHT_IMPORTANT,
     ),
-    check("onlineProfile", fields.urls.length > 0 ? "pass" : "warn", WEIGHT_MINOR, fields.urls.length),
-
-    check("summary", sectionKeys.has("summary") ? "pass" : "warn", WEIGHT_MINOR),
-    check("experience", sectionKeys.has("experience") ? "pass" : "fail", WEIGHT_CRITICAL),
-    check("education", sectionKeys.has("education") ? "pass" : "warn", WEIGHT_IMPORTANT),
-    check("skills", sectionKeys.has("skills") ? "pass" : "warn", WEIGHT_IMPORTANT),
-
-    check(
-      "experienceDates",
-      fields.dateRanges.length >= 2 ? "pass" : fields.dateRanges.length === 1 ? "warn" : "fail",
-      WEIGHT_CRITICAL,
-      fields.dateRanges.length,
-    ),
-    check(
-      "bullets",
-      bullets.length >= 4 ? "pass" : bullets.length > 0 ? "warn" : "fail",
-      WEIGHT_IMPORTANT,
-      bullets.length,
-    ),
-    check(
-      "actionVerbs",
-      bullets.length === 0 ? "warn" : verbBullets / bullets.length >= 0.4 ? "pass" : "warn",
-      WEIGHT_IMPORTANT,
-      bullets.length === 0 ? 0 : Math.round((verbBullets / bullets.length) * 100),
-    ),
-    check(
-      "quantified",
-      bullets.length === 0 ? "warn" : bullets.some((line) => /\d/.test(line)) ? "pass" : "warn",
-      WEIGHT_IMPORTANT,
-      bullets.filter((line) => /\d/.test(line)).length,
-    ),
-
-    check("length", resume.pageCount <= 2 ? "pass" : "warn", WEIGHT_IMPORTANT, resume.pageCount),
-    check(
-      "wordCount",
-      fields.wordCount >= 250 && fields.wordCount <= 1200 ? "pass" : "warn",
-      WEIGHT_MINOR,
-      fields.wordCount,
-    ),
-    check("photo", resume.imageCount === 0 ? "pass" : "warn", WEIGHT_MINOR, resume.imageCount),
+    check("photo", "format", resume.imageCount === 0 ? "pass" : "warn", WEIGHT_MINOR, resume.imageCount),
     check(
       "fileName",
+      "format",
       /^[\p{L}\p{N}][\p{L}\p{N} ._-]{3,}\.(pdf|docx|txt)$/iu.test(resume.fileName) ? "pass" : "warn",
       WEIGHT_MINOR,
       resume.fileName,
     ),
   ];
 
-  const keywords = keywordSection(resume.text, jobAd);
-  if (keywords) {
-    checks.push(
-      check(
-        "keywords",
-        keywords.ratio >= 0.6 ? "pass" : keywords.ratio >= 0.3 ? "warn" : "fail",
-        WEIGHT_KEYWORDS,
-        Math.round(keywords.ratio * 100),
-      ),
-    );
-  }
+  // --------------------------------------------------------------- content
+  // What the document says once it has been read successfully.
+  const contentChecks: AtsCheck[] = [
+    check("summary", "content", sectionKeys.has("summary") ? "pass" : "warn", WEIGHT_MINOR),
+    check("experience", "content", sectionKeys.has("experience") ? "pass" : "fail", WEIGHT_CRITICAL),
+    check("education", "content", sectionKeys.has("education") ? "pass" : "warn", WEIGHT_IMPORTANT),
+    check("skills", "content", sectionKeys.has("skills") ? "pass" : "warn", WEIGHT_IMPORTANT),
+    check(
+      "experienceDates",
+      "content",
+      fields.dateRanges.length >= 2 ? "pass" : fields.dateRanges.length === 1 ? "warn" : "fail",
+      WEIGHT_CRITICAL,
+      fields.dateRanges.length,
+    ),
+    check(
+      "bullets",
+      "content",
+      bullets.length >= 4 ? "pass" : bullets.length > 0 ? "warn" : "fail",
+      WEIGHT_IMPORTANT,
+      bullets.length,
+    ),
+    check(
+      "actionVerbs",
+      "content",
+      bullets.length === 0 ? "warn" : verbRatio >= ACTION_VERB_TARGET ? "pass" : "warn",
+      WEIGHT_IMPORTANT,
+      Math.round(verbRatio * 100),
+    ),
+    check(
+      "quantified",
+      "content",
+      bullets.length === 0 ? "warn" : bullets.some((line) => /\d/.test(line)) ? "pass" : "warn",
+      WEIGHT_IMPORTANT,
+      bullets.filter((line) => /\d/.test(line)).length,
+    ),
+    check("onlineProfile", "content", fields.urls.length > 0 ? "pass" : "warn", WEIGHT_MINOR, fields.urls.length),
+    check("length", "content", resume.pageCount <= 2 ? "pass" : "warn", WEIGHT_IMPORTANT, resume.pageCount),
+    check(
+      "wordCount",
+      "content",
+      fields.wordCount >= 250 && fields.wordCount <= 1200 ? "pass" : "warn",
+      WEIGHT_MINOR,
+      fields.wordCount,
+    ),
+  ];
 
-  return { score: scoreOf(checks), checks, keywords, fields };
+  // ----------------------------------------------------------------- match
+  // Scored as plain coverage rather than as weighted checks: "your CV says
+  // 8 of the 20 things this ad asks for" is a fact the reader can act on,
+  // and it never drags the document's own score down.
+  const keywords = matchKeywords(resume.text, jobAd);
+  const matchChecks: AtsCheck[] = keywords
+    ? [
+        check(
+          "keywords",
+          "match",
+          // Never "fail": missing an ad's vocabulary is a reason to rewrite
+          // for that ad, not a defect in the document.
+          keywords.ratio >= KEYWORD_TARGET ? "pass" : "warn",
+          WEIGHT_IMPORTANT,
+          Math.round(keywords.ratio * 100),
+        ),
+      ]
+    : [];
+
+  const checks = [...formatChecks, ...contentChecks, ...matchChecks];
+  const format = axisOf("format", checks);
+  const content = axisOf("content", checks);
+  const match: AtsMatchAxis | null = keywords
+    ? { id: "match", score: Math.round(keywords.ratio * 100), checks: matchChecks, keywords }
+    : null;
+
+  return { format, content, match, checks, keywords, fields };
 }

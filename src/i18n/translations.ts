@@ -1,5 +1,6 @@
 import type { LanguageCode } from "../types";
 import type { AtsCheckId } from "../ats/analyze";
+import type { ProfileCheckKey } from "../profile/completeness";
 
 type AtsCheckKey = AtsCheckId;
 
@@ -103,8 +104,8 @@ export interface Dictionary {
     startDate: string;
     endDate: string;
     current: string;
-    description: string;
     expectedGraduation: string;
+    description: string;
     degree: string;
     institution: string;
     skillName: string;
@@ -157,8 +158,8 @@ export interface Dictionary {
     projectLink: string;
     projectDescription: string;
     present: string;
-    customLabel: string;
     expectedPrefix: string;
+    customLabel: string;
   };
   contactTypes: {
     email: string;
@@ -229,8 +230,8 @@ export interface Dictionary {
     aurora: { name: string; description: string };
     meridian: { name: string; description: string };
     atlas: { name: string; description: string };
-  };
     compass: { name: string; description: string };
+  };
   sectionOrder: {
     title: string;
     hint: string;
@@ -243,7 +244,16 @@ export interface Dictionary {
     navLabel: string;
     title: string;
     subtitle: string;
-    scoreOf: string;
+    verdictPassHint: string;
+    verdictFailHint: string;
+    formatIssue: string;
+    axisFormat: string;
+    axisFormatHint: string;
+    axisContent: string;
+    axisContentHint: string;
+    axisMatch: string;
+    axisMatchHint: string;
+    axisMatchNone: string;
     verdictPass: string;
     verdictFail: string;
     bandExcellent: string;
@@ -421,6 +431,7 @@ export interface Dictionary {
     updated: string;
     open: string;
     duplicate: string;
+    duplicatePrompt: string;
     rename: string;
     renamePrompt: string;
     delete: string;
@@ -431,10 +442,37 @@ export interface Dictionary {
     copyLink: string;
     linkCopied: string;
     limitReached: string;
-    duplicatePrompt: string;
     loadError: string;
     actionError: string;
     newCta: string;
+  };
+  profile: {
+    navLink: string;
+    title: string;
+    subtitle: string;
+    signInPrompt: string;
+    loading: string;
+    loadError: string;
+    saving: string;
+    saved: string;
+    saveError: string;
+    completeTitle: string;
+    completeHint: string;
+    completeDone: string;
+    missingLabel: string;
+    checks: Record<ProfileCheckKey, string>;
+    importButton: string;
+    importTitle: string;
+    importSubtitle: string;
+    importEmpty: string;
+    importAll: string;
+    importClear: string;
+    importConfirm: string;
+    importCancel: string;
+    saveBack: string;
+    saveBackButton: string;
+    saveBackDone: string;
+    openBuilder: string;
   };
   legal: {
     privacyLink: string;
@@ -645,6 +683,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       startDate: "Έναρξη",
       endDate: "Λήξη",
       current: "Τρέχουσα",
+      expectedGraduation: "Αναμενόμενη ολοκλήρωση",
       description: "Περιγραφή",
       degree: "Τίτλος σπουδών",
       institution: "Ίδρυμα",
@@ -683,7 +722,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       location: "Αθήνα, Ελλάδα",
       summary:
         "Σύντομη περιγραφή της επαγγελματικής σου ταυτότητας και των δυνατών σου σημείων.",
-      expectedGraduation: "Αναμενόμενη ολοκλήρωση",
       role: "Τίτλος θέσης",
       company: "Όνομα εταιρείας",
       experienceDescription: "Τι έκανες, τι πέτυχες, με ποια αποτελέσματα.",
@@ -700,6 +738,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       projectLink: "example.com",
       projectDescription: "Σύντομη περιγραφή του έργου.",
       present: "Σήμερα",
+      expectedPrefix: "Αναμένεται",
       customLabel: "π.χ. Behance",
     },
     contactTypes: {
@@ -738,7 +777,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       interests: "Ενδιαφέροντα",
       certifications: "Πιστοποιήσεις",
       projects: "Έργα",
-      expectedPrefix: "Αναμένεται",
     },
     pagination: {
       page: "Σελίδα",
@@ -778,6 +816,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         name: "Atlas",
         description: "Μοντέρνο μονόστηλο με έγχρωμους τίτλους. ATS-friendly και κομψό.",
       },
+      compass: {
+        name: "Compass",
+        description: "Μονόστηλο με έντονο όνομα και έγχρωμη ετικέτα τίτλου. ATS-friendly με λίγο παραπάνω χαρακτήρα.",
+      },
     },
     sectionOrder: {
       title: "Σειρά ενοτήτων",
@@ -798,7 +840,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       title: "CVscan — τεχνικός έλεγχος ATS",
       subtitle:
         "Ανέβασε το βιογραφικό σου και δες ακριβώς τι διαβάζει ένα σύστημα ATS: τι εξάγει, τι δομή αναγνωρίζει και τι μπλοκάρει.",
-      scoreOf: "στα 100",
+      verdictPassHint: "Κανένα κρίσιμο πρόβλημα — ένα ATS μπορεί να το διαβάσει και να το καταχωρήσει.",
+      verdictFailHint: "Κάτι κρίσιμο εμποδίζει την ανάγνωση. Δες παρακάτω τι ακριβώς.",
+      formatIssue: "Πρόβλημα στη μορφή — δες τον έλεγχο ATS",
+      axisFormat: "Μορφή",
+      axisFormatHint: "Αν μπορεί μια μηχανή να διαβάσει το αρχείο και να βρει τα στοιχεία σου.",
+      axisContent: "Περιεχόμενο",
+      axisContentHint: "Αν είναι γραμμένο όπως ένα βιογραφικό που πείθει άνθρωπο.",
+      axisMatch: "Ταίριασμα",
+      axisMatchHint: "Πόσα από όσα ζητάει η συγκεκριμένη αγγελία τα λέει το βιογραφικό σου.",
+      axisMatchNone: "Επικόλλησε μια αγγελία για να μετρηθεί.",
       verdictPass: "Δομή φιλική προς ATS",
       verdictFail: "Έχει σημεία που δυσκολεύουν τα ATS",
       bandExcellent: "Άριστο",
@@ -816,10 +867,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       orUpload: "ή",
       analyzing: "Ανάλυση…",
       changeFile: "Άλλο αρχείο",
-      compass: {
-        name: "Compass",
-        description: "Μονόστηλο με έντονο όνομα και έγχρωμη ετικέτα τίτλου. ATS-friendly με λίγο παραπάνω χαρακτήρα.",
-      },
       jobAdLabel: "Αγγελία εργασίας (προαιρετικό)",
       jobAdPlaceholder: "Επικόλλησε εδώ το κείμενο της αγγελίας για ανάλυση λέξεων-κλειδιών…",
       jobAdHint: "Με την αγγελία, ο έλεγχος δείχνει ποιοι όροι της εμφανίζονται στο βιογραφικό σου.",
@@ -1079,6 +1126,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       updated: "Τελευταία επεξεργασία",
       open: "Άνοιγμα",
       duplicate: "Αντιγραφή",
+      duplicatePrompt: "Όνομα για το νέο αντίγραφο:",
       rename: "Μετονομασία",
       renamePrompt: "Νέο όνομα:",
       delete: "Διαγραφή",
@@ -1092,6 +1140,46 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       loadError: "Δεν ήταν δυνατή η φόρτωση των βιογραφικών σου.",
       actionError: "Κάτι πήγε στραβά. Δοκίμασε ξανά.",
       newCta: "Δημιουργία νέου",
+    },
+    profile: {
+      navLink: "Το προφίλ μου",
+      title: "Το προφίλ μου",
+      subtitle:
+        "Γράψε εδώ μία φορά όλα σου τα στοιχεία — κάθε δουλειά, κάθε σπουδή, κάθε δεξιότητα. Μετά, σε κάθε βιογραφικό διαλέγεις ποια από αυτά θα μπουν, χωρίς να τα ξαναγράφεις.",
+      signInPrompt: "Συνδέσου με Google για να φτιάξεις το προφίλ σου.",
+      loading: "Φόρτωση…",
+      loadError: "Δεν ήταν δυνατή η φόρτωση του προφίλ σου.",
+      saving: "Αποθήκευση…",
+      saved: "Αποθηκεύτηκε",
+      saveError: "Η αποθήκευση απέτυχε",
+      completeTitle: "Πληρότητα προφίλ",
+      completeHint: "Όσο πιο πλήρες το προφίλ, τόσο λιγότερα θα χρειάζεται να γράφεις σε κάθε βιογραφικό.",
+      completeDone: "Το προφίλ σου είναι πλήρες. Τώρα κάθε βιογραφικό ξεκινάει έτοιμο.",
+      missingLabel: "Λείπουν ακόμα:",
+      checks: {
+        name: "Ονοματεπώνυμο",
+        jobTitle: "Επαγγελματικός τίτλος",
+        email: "Email",
+        phone: "Τηλέφωνο",
+        summary: "Σύνοψη",
+        experience: "Μία τουλάχιστον εμπειρία",
+        education: "Μία τουλάχιστον σπουδή",
+        skills: "Πέντε τουλάχιστον δεξιότητες",
+        languages: "Μία τουλάχιστον γλώσσα",
+        photo: "Φωτογραφία",
+      },
+      importButton: "Εισαγωγή από το προφίλ",
+      importTitle: "Εισαγωγή από το προφίλ",
+      importSubtitle: "Διάλεξε τι θα μπει σε αυτό το βιογραφικό.",
+      importEmpty: "Δεν υπάρχει κάτι στο προφίλ σου για αυτή την ενότητα — ή μπήκαν ήδη όλα.",
+      importAll: "Επιλογή όλων",
+      importClear: "Καθαρισμός",
+      importConfirm: "Εισαγωγή ({v})",
+      importCancel: "Άκυρο",
+      saveBack: "{v} από αυτά δεν υπάρχουν στο προφίλ σου.",
+      saveBackButton: "Αποθήκευση στο προφίλ",
+      saveBackDone: "Μπήκαν στο προφίλ σου.",
+      openBuilder: "Δημιουργία βιογραφικού",
     },
     legal: {
       privacyLink: "Απόρρητο",
@@ -1126,7 +1214,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     },
     support: {
       footerLink: "Στήριξε το CVsible ☕",
-      duplicatePrompt: "Όνομα για το νέο αντίγραφο:",
       badgeLabel: "Στήριξε το CVsible",
       modalTitle: "Το βιογραφικό σου είναι έτοιμο! 🎉",
       modalBody: "Αν σου φάνηκε χρήσιμο το CVsible, μια μικρή στήριξη μας βοηθάει να το κρατάμε δωρεάν για όλους.",
@@ -1301,6 +1388,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       startDate: "Start date",
       endDate: "End date",
       current: "Current",
+      expectedGraduation: "Expected graduation",
       description: "Description",
       degree: "Degree",
       institution: "Institution",
@@ -1354,6 +1442,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       projectLink: "example.com",
       projectDescription: "Short description of the project.",
       present: "Present",
+      expectedPrefix: "Expected",
       customLabel: "e.g. Behance",
     },
     contactTypes: {
@@ -1388,7 +1477,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       education: "Education",
       skills: "Skills",
       softSkills: "Soft Skills",
-      expectedGraduation: "Expected graduation",
       languages: "Languages",
       interests: "Interests",
       certifications: "Certifications",
@@ -1432,6 +1520,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         name: "Atlas",
         description: "Modern single column with accent headings. ATS-friendly and sharp.",
       },
+      compass: {
+        name: "Compass",
+        description: "Single column with a bold name and a coloured job-title badge. ATS-friendly with a bit more personality.",
+      },
     },
     sectionOrder: {
       title: "Section order",
@@ -1442,7 +1534,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Basic",
       "Intermediate",
       "Good",
-      expectedPrefix: "Expected",
       "Fluent",
       "Excellent",
       "Native",
@@ -1453,7 +1544,16 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       title: "CVscan — technical ATS check",
       subtitle:
         "Upload your CV and see exactly what an applicant tracking system reads: what it extracts, what structure it recognises and what blocks it.",
-      scoreOf: "out of 100",
+      verdictPassHint: "Nothing critical is broken — an ATS can read this and file it.",
+      verdictFailHint: "Something critical blocks it from being read. The checks below say what.",
+      formatIssue: "Formatting problem — open the ATS check",
+      axisFormat: "Format",
+      axisFormatHint: "Whether a machine can read the file and find your details.",
+      axisContent: "Content",
+      axisContentHint: "Whether it reads like a CV that convinces a person.",
+      axisMatch: "Match",
+      axisMatchHint: "How much of what this particular ad asks for your CV actually says.",
+      axisMatchNone: "Paste a job ad to measure this.",
       verdictPass: "ATS-friendly structure",
       verdictFail: "Has ATS-unfriendly issues",
       bandExcellent: "Excellent",
@@ -1520,10 +1620,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "CVfix keeps your wording exactly as you wrote it and changes only the structure and formatting, so the file comes through cleanly.",
       cvfixButton: "Fix formatting with CVfix",
-      compass: {
-        name: "Compass",
-        description: "Single column with a bold name and a coloured job-title badge. ATS-friendly with a bit more personality.",
-      },
       warningsCtaTitle: "{v} warnings you can fix",
       warningsCtaBody:
         "The score is already good, but CVisor can suggest improvements for the points below, based on the job ad.",
@@ -1732,6 +1828,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       updated: "Last edited",
       open: "Open",
       duplicate: "Duplicate",
+      duplicatePrompt: "Name for the new copy:",
       rename: "Rename",
       renamePrompt: "New name:",
       delete: "Delete",
@@ -1745,6 +1842,46 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       loadError: "Couldn't load your CVs.",
       actionError: "Something went wrong. Please try again.",
       newCta: "Create new",
+    },
+    profile: {
+      navLink: "My profile",
+      title: "My profile",
+      subtitle:
+        "Write everything down once — every job, every qualification, every skill. Then each CV just picks what belongs in it, and you never type any of it twice.",
+      signInPrompt: "Sign in with Google to build your profile.",
+      loading: "Loading…",
+      loadError: "Couldn't load your profile.",
+      saving: "Saving…",
+      saved: "Saved",
+      saveError: "Couldn't save",
+      completeTitle: "Profile completeness",
+      completeHint: "The fuller your profile, the less you have to write for each new CV.",
+      completeDone: "Your profile is complete. Every new CV now starts ready.",
+      missingLabel: "Still missing:",
+      checks: {
+        name: "Full name",
+        jobTitle: "Job title",
+        email: "Email",
+        phone: "Phone",
+        summary: "Summary",
+        experience: "At least one role",
+        education: "At least one qualification",
+        skills: "At least five skills",
+        languages: "At least one language",
+        photo: "Photo",
+      },
+      importButton: "Import from profile",
+      importTitle: "Import from profile",
+      importSubtitle: "Pick what goes into this CV.",
+      importEmpty: "Nothing in your profile for this section — or it is all in the CV already.",
+      importAll: "Select all",
+      importClear: "Clear",
+      importConfirm: "Import ({v})",
+      importCancel: "Cancel",
+      saveBack: "{v} of these aren't in your profile.",
+      saveBackButton: "Save to profile",
+      saveBackDone: "Added to your profile.",
+      openBuilder: "Create a CV",
     },
     legal: {
       privacyLink: "Privacy",
@@ -1789,4 +1926,3 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
     },
   },
 };
-      duplicatePrompt: "Name for the new copy:",

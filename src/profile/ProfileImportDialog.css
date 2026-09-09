@@ -1,0 +1,233 @@
+.pimport-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pimport-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background: rgba(24, 20, 30, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.pimport-modal {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: min(680px, 90vh);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+
+.pimport-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pimport-head h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.pimport-head p {
+  margin-top: 3px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.pimport-close {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.pimport-bulk {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.pimport-bulk div {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pimport-bulk button {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.pimport-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 20px 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pimport-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.pimport-list label:hover {
+  border-color: var(--line-strong);
+}
+
+.pimport-list input {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.pimport-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pimport-entry strong {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pimport-entry em {
+  font-size: 0.76rem;
+  font-style: normal;
+  color: var(--ink-soft);
+}
+
+.pimport-empty {
+  padding: 26px 20px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.pimport-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.pimport-cancel {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 9px 15px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pimport-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.pimport-confirm:disabled {
+  opacity: 0.45;
+}
+
+/* --------------------------------------------- in-builder section toolbar */
+
+.psection-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.psection-import {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.psection-saveback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+
+.psection-saveback button {
+  margin-left: auto;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.psection-saveback-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1d6b3c;
+}

@@ -10,8 +10,8 @@ import { buildSiteNav } from "../components/siteNav";
 import { AuthMenu } from "../auth/AuthMenu";
 import { normalizeCvData } from "../data/normalize";
 import { loadCvData } from "../utils/storage";
-import { AtsScoreRing } from "../ats/AtsScoreRing";
-import { passesAts, scoreBand } from "../ats/analyze";
+import { AtsAxisCards } from "../ats/AtsAxisCards";
+import { passesAts } from "../ats/analyze";
 import type { AtsCheck } from "../ats/analyze";
 import { analyzeResumeText } from "../ats/analyzeText";
 import type { ResumeAnalysis } from "../ats/analyzeText";
@@ -21,13 +21,6 @@ import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { ACCEPTED_RESUME_TYPES, extractResume, ResumeReadError } from "../ats/extractResume";
 import type { ExtractedResume } from "../ats/extractResume";
 import "./AtsScanPage.css";
-
-const BAND_LABEL_KEY = {
-  excellent: "bandExcellent",
-  good: "bandGood",
-  fair: "bandFair",
-  poor: "bandPoor",
-} as const;
 
 const STATUS_ICON = { pass: "check", warn: "alert", fail: "x-circle", unknown: "more" } as const;
 
@@ -206,7 +199,6 @@ export function AtsScanPage({
     window.setTimeout(() => setCopied(false), 1800);
   };
 
-  const band = analysis ? scoreBand(analysis.score) : "poor";
   const passes = analysis ? passesAts(analysis) : false;
 
   return (
@@ -217,7 +209,13 @@ export function AtsScanPage({
         onLanguageChange={onLanguageChange}
         items={buildSiteNav(dictionary, "ats", navigate)}
         onBrandClick={() => navigate("landing")}
-        authSlot={<AuthMenu dictionary={dictionary} onOpenMyCvs={() => navigate("my-cvs")} />}
+        authSlot={
+          <AuthMenu
+            dictionary={dictionary}
+            onOpenMyCvs={() => navigate("my-cvs")}
+            onOpenProfile={() => navigate("profile")}
+          />
+        }
       />
 
       {builderData && (
@@ -294,13 +292,18 @@ export function AtsScanPage({
 
         {resume && analysis && (
           <>
-            <section className={`scan-verdict scan-band-${band} ${passes ? "passes" : "fails"}`}>
-              <AtsScoreRing score={analysis.score} size={92} />
+            {/* No single blended score here: the three axes below answer
+                three different questions, and averaging them produced a
+                number that needed a caption to explain what it meant. What
+                stays is the verdict, which is not a score at all — it is
+                whether anything critical failed. */}
+            <section className={`scan-verdict ${passes ? "passes" : "fails"}`}>
+              <span className={`scan-verdict-mark ${passes ? "ok" : "bad"}`} aria-hidden="true">
+                <Icon name={passes ? "check" : "alert"} size={30} strokeWidth={2.4} />
+              </span>
               <div className="scan-verdict-text">
                 <strong>{passes ? dictionary.ats.verdictPass : dictionary.ats.verdictFail}</strong>
-                <span>
-                  {analysis.score} {dictionary.ats.scoreOf} · {dictionary.ats[BAND_LABEL_KEY[band]]}
-                </span>
+                <span>{passes ? dictionary.ats.verdictPassHint : dictionary.ats.verdictFailHint}</span>
                 <span className="scan-source">
                   {resume.kind === "builder" ? dictionary.ats.sourceBuilder : resume.fileName}
                 </span>
@@ -310,6 +313,8 @@ export function AtsScanPage({
                 {dictionary.ats.changeFile}
               </button>
             </section>
+
+            <AtsAxisCards report={analysis} dictionary={dictionary} />
 
             <section className="scan-card">
               <label className="scan-label" htmlFor="scan-job-ad">

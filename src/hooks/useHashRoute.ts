@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 
-export type Route = "landing" | "builder" | "ats" | "my-cvs" | "privacy" | "terms" | "public-cv";
+export type Route =
+  | "landing"
+  | "builder"
+  | "ats"
+  | "my-cvs"
+  | "profile"
+  | "privacy"
+  | "terms"
+  | "public-cv";
 
 const ROUTES: Record<string, Route> = {
   "#/builder": "builder",
   "#/ats": "ats",
   "#/my-cvs": "my-cvs",
+  "#/profile": "profile",
   "#/privacy": "privacy",
   "#/terms": "terms",
 };
@@ -15,6 +24,7 @@ const HASHES: Record<Exclude<Route, "public-cv">, string> = {
   builder: "#/builder",
   ats: "#/ats",
   "my-cvs": "#/my-cvs",
+  profile: "#/profile",
   privacy: "#/privacy",
   terms: "#/terms",
 };

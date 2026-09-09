@@ -1,0 +1,59 @@
+.ats-axes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.ats-axis {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  min-width: 0;
+}
+
+.ats-axis-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ats-axis-text strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ats-axis-text span {
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.ats-axis-nodata {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px dashed var(--line-strong);
+  color: var(--ink-soft);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.ats-axis-empty {
+  background: var(--paper);
+}
+
+@media (max-width: 780px) {
+  .ats-axes {
+    grid-template-columns: 1fr;
+  }
+}

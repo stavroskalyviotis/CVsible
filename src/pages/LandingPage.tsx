@@ -60,7 +60,13 @@ export function LandingPage({
         onLanguageChange={onLanguageChange}
         items={buildSiteNav(dictionary, "landing", navigate)}
         onBrandClick={() => navigate("landing")}
-        authSlot={<AuthMenu dictionary={dictionary} onOpenMyCvs={() => navigate("my-cvs")} />}
+        authSlot={
+          <AuthMenu
+            dictionary={dictionary}
+            onOpenMyCvs={() => navigate("my-cvs")}
+            onOpenProfile={() => navigate("profile")}
+          />
+        }
       />
 
       <main className="landing-hero">

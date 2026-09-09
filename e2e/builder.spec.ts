@@ -125,4 +125,30 @@ test.describe("Builder", () => {
     expect(stats.byteLength).toBeGreaterThan(1000);
     expect(errors).toEqual([]);
   });
+
+  test("the toolbar flags a two-column template without moving the content score", async ({ page }) => {
+    // Enough text to clear the analyser's "is there anything here yet" floor,
+    // so the layout is actually evaluated.
+    await page.getByLabel(/full name|ονοματεπώνυμο/i).fill("Chip Test Person");
+    await page.getByLabel(/^(job title|επαγγελματικός τίτλος)$/i).fill("Senior Barista and Shift Lead");
+    await page.locator(".accordion-header", { hasText: /work experience|εργασιακή εμπειρία/i }).click();
+    await page.locator(".add-button").last().click();
+    await page.getByLabel(/^(role|θέση)$/i).fill("Barista and Shift Supervisor");
+    await page.getByLabel(/^(company|εταιρεία)$/i).fill("Coffee Laboratory Athens");
+
+    const contentScore = page.locator(".ats-chip-button .ats-ring strong");
+    await expect(contentScore).not.toHaveText("0");
+    const atlasScore = await contentScore.textContent();
+
+    // Atlas is single-column: nothing about the layout blocks a parser.
+    await expect(page.locator(".ats-chip-warn")).toHaveCount(0);
+
+    await page.locator(".accordion-header", { hasText: /appearance|εμφάνιση/i }).click();
+    await page.locator(".template-card", { hasText: /aurora/i }).click();
+
+    // Aurora's sidebar is two columns, which a parser reads interleaved.
+    await expect(page.locator(".ats-chip-warn")).toHaveCount(1);
+    // ...but the writing did not change, so the content score must not move.
+    await expect(contentScore).toHaveText(atlasScore ?? "");
+  });
 });

@@ -9,6 +9,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { BuilderPage } from "./pages/BuilderPage";
 import { AtsScanPage } from "./pages/AtsScanPage";
 import { MyCvsPage } from "./pages/MyCvsPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { PublicCvPage } from "./pages/PublicCvPage";
 import { LegalPage } from "./legal/LegalPage";
 import { PRIVACY_CONTENT, TERMS_CONTENT } from "./legal/legalContent";
@@ -27,6 +28,7 @@ function AppShell() {
         onGoHome={() => navigate("landing")}
         onOpenScan={() => navigate("ats")}
         onOpenMyCvs={() => navigate("my-cvs")}
+        onOpenProfile={() => navigate("profile")}
         autoOpenCvisor={autoOpenCvisor}
       />
     );
@@ -50,6 +52,17 @@ function AppShell() {
   if (route === "my-cvs") {
     return (
       <MyCvsPage
+        dictionary={dictionary}
+        language={language}
+        onLanguageChange={setLanguage}
+        navigate={navigate}
+      />
+    );
+  }
+
+  if (route === "profile") {
+    return (
+      <ProfilePage
         dictionary={dictionary}
         language={language}
         onLanguageChange={setLanguage}
