@@ -9,7 +9,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { buildSiteNav } from "../components/siteNav";
 import { AuthMenu } from "../auth/AuthMenu";
 import { normalizeCvData } from "../data/normalize";
-import { loadCvData } from "../utils/storage";
+import { loadCvData, saveCvData, setCurrentCloudId } from "../utils/storage";
 import { AtsAxisCards } from "../ats/AtsAxisCards";
 import { passesAts } from "../ats/analyze";
 import type { AtsCheck } from "../ats/analyze";
@@ -17,6 +17,7 @@ import { analyzeResumeText } from "../ats/analyzeText";
 import type { ResumeAnalysis } from "../ats/analyzeText";
 import { cvToExtractedResume } from "../ats/cvToResume";
 import { CvFixCard } from "../cvisor/CvFixCard";
+import { CvFixWindow } from "../cvfix/CvFixWindow";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { ACCEPTED_RESUME_TYPES, extractResume, ResumeReadError } from "../ats/extractResume";
 import type { ExtractedResume } from "../ats/extractResume";
@@ -112,13 +113,11 @@ export function AtsScanPage({
   language,
   onLanguageChange,
   navigate,
-  onOpenCvisor,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
   onLanguageChange: (language: LanguageCode) => void;
   navigate: (route: Exclude<Route, "public-cv">) => void;
-  onOpenCvisor: () => void;
 }) {
   const [uploaded, setUploaded] = useState<ExtractedResume | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -130,6 +129,11 @@ export function AtsScanPage({
   const [builderData, setBuilderData] = useState<CvData | null>(null);
   const [builderPages, setBuilderPages] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /** The document CVfix is reviewing, once one has been chosen. For an upload
+   *  this is the structured version; `extraSource` keeps the raw extraction
+   *  available, since it holds detail the structuring dropped. */
+  const [fixTarget, setFixTarget] = useState<{ cv: CvData; extraSource?: string } | null>(null);
 
   const storedCv = useMemo(() => {
     const stored = loadCvData<Partial<CvData>>();
@@ -482,39 +486,37 @@ export function AtsScanPage({
               ))}
             </section>
 
-            {/* Only offered for an uploaded document: there is nothing to
-                restructure when the source is already the builder's own CV. */}
-            {resume.kind !== "builder" && (
+            {/* CVfix is offered on every report, not only a failing one. It
+                used to appear for uploads only, and a passing CV was sent to
+                CVisor instead — which rebuilds from scratch rather than fixing
+                what is here, and is why acting on the report so often failed to
+                move it. An upload needs the verbatim structuring pass first;
+                the builder's own CV is already structured. */}
+            {resume.kind !== "builder" ? (
               <CvFixCard
                 resumeText={resume.text}
                 fields={analysis.fields}
                 dictionary={dictionary}
                 language={language}
-                onOpenBuilder={() => navigate("builder")}
+                onStructured={(cv) => setFixTarget({ cv, extraSource: resume.text })}
               />
-            )}
-
-            {/* CVfix restructures raw text — not useful once the source is
-                already the builder's own structured CV. CVisor is the right
-                tool there instead: point to it whenever anything could still
-                be improved, even while the overall score already reads "good". */}
-            {resume.kind === "builder" &&
-              analysis.checks.every((check) => check.status !== "fail") &&
-              analysis.checks.some((check) => check.status === "warn") && (
-              <section className="scan-cta">
-                <div>
-                  <h2>
-                    {format(
-                      dictionary.ats.warningsCtaTitle,
-                      analysis.checks.filter((check) => check.status === "warn").length,
-                    )}
-                  </h2>
-                  <p>{dictionary.ats.warningsCtaBody}</p>
-                </div>
-                <button type="button" className="scan-primary" onClick={onOpenCvisor}>
-                  {dictionary.ats.warningsCtaButton}
-                </button>
-              </section>
+            ) : (
+              builderData && (
+                <section className="scan-cta">
+                  <div>
+                    <h2>{dictionary.ats.fixCtaTitle}</h2>
+                    <p>{dictionary.ats.fixCtaBody}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="scan-primary"
+                    onClick={() => setFixTarget({ cv: builderData })}
+                  >
+                    <Icon name="zap" size={15} />
+                    {dictionary.ats.fixCtaButton}
+                  </button>
+                </section>
+              )
             )}
 
             <section className="scan-cta">
@@ -529,6 +531,25 @@ export function AtsScanPage({
           </>
         )}
       </main>
+
+      {fixTarget && (
+        <CvFixWindow
+          onClose={() => setFixTarget(null)}
+          cv={fixTarget.cv}
+          extraSource={fixTarget.extraSource}
+          jobAd={jobAd}
+          onJobAdChange={setJobAd}
+          language={language}
+          dictionary={dictionary}
+          onApply={(next) => {
+            // The report is read-only; the fixed CV belongs in the editor,
+            // where it can be looked at before it goes anywhere.
+            saveCvData(next);
+            setCurrentCloudId(null);
+            navigate("builder");
+          }}
+        />
+      )}
     </div>
   );
 }

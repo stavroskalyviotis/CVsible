@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { LanguageProvider } from "./i18n/LanguageContext";
@@ -8,6 +7,7 @@ import { useHashRoute } from "./hooks/useHashRoute";
 import { LandingPage } from "./pages/LandingPage";
 import { BuilderPage } from "./pages/BuilderPage";
 import { AtsScanPage } from "./pages/AtsScanPage";
+import { CvisorPage } from "./cvisor/CvisorPage";
 import { MyCvsPage } from "./pages/MyCvsPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { PublicCvPage } from "./pages/PublicCvPage";
@@ -17,7 +17,6 @@ import { PRIVACY_CONTENT, TERMS_CONTENT } from "./legal/legalContent";
 function AppShell() {
   const { route, param, navigate } = useHashRoute();
   const { dictionary, language, setLanguage } = useLanguage();
-  const [autoOpenCvisor, setAutoOpenCvisor] = useState(false);
 
   if (route === "builder") {
     return (
@@ -29,7 +28,18 @@ function AppShell() {
         onOpenScan={() => navigate("ats")}
         onOpenMyCvs={() => navigate("my-cvs")}
         onOpenProfile={() => navigate("profile")}
-        autoOpenCvisor={autoOpenCvisor}
+        onOpenCvisor={() => navigate("cvisor")}
+      />
+    );
+  }
+
+  if (route === "cvisor") {
+    return (
+      <CvisorPage
+        dictionary={dictionary}
+        language={language}
+        onLanguageChange={setLanguage}
+        navigate={navigate}
       />
     );
   }
@@ -41,10 +51,6 @@ function AppShell() {
         language={language}
         onLanguageChange={setLanguage}
         navigate={navigate}
-        onOpenCvisor={() => {
-          setAutoOpenCvisor(true);
-          navigate("builder");
-        }}
       />
     );
   }
@@ -105,14 +111,8 @@ function AppShell() {
       language={language}
       onLanguageChange={setLanguage}
       navigate={navigate}
-      onStart={() => {
-        setAutoOpenCvisor(false);
-        navigate("builder");
-      }}
-      onStartWithCvisor={() => {
-        setAutoOpenCvisor(true);
-        navigate("builder");
-      }}
+      onStart={() => navigate("builder")}
+      onStartWithCvisor={() => navigate("cvisor")}
     />
   );
 }

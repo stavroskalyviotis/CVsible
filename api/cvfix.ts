@@ -1,20 +1,18 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicClient } from "./_lib/anthropic.js";
-import { buildDraftSchema, buildPatchSchema, isEmptyDraft, mergeDraft } from "./_lib/draftTypes.js";
 import type { CvDraft } from "./_lib/draftTypes.js";
-import { formatStructureReport, reviewStructure } from "./_lib/structureReview.js";
-import { findVerbatimIssues, formatVerbatimReport } from "./_lib/verbatim.js";
-import { sanitizeDraft } from "./_lib/sanitizeDraft.js";
+import { formatReview, reviewDraft } from "./_lib/draftReview.js";
+import { validateChanges } from "./_lib/cvFixChanges.js";
 import { checkDailyLimit } from "./_lib/rateLimit.js";
 import { resolveIdentifier } from "./_lib/identity.js";
 import {
   CVFIX_DAILY_LIMIT,
+  CVFIX_MAX_CHANGES,
   CVFIX_MAX_TOKENS,
   CVFIX_MODEL,
-  LANGUAGE_LEVELS,
+  MAX_JOB_AD_CHARS,
   MAX_RESUME_TEXT_CHARS,
-  MAX_ROUNDS_PER_CV,
 } from "./_lib/constants.js";
 
 export const config = { maxDuration: 60 };
@@ -25,58 +23,96 @@ const LANGUAGE_NAME: Record<"el" | "en", string> = { el: "Greek (Ελληνικ�
 const SECTION_SEPARATOR = ["", "---", ""].join("\n\n");
 
 interface CvFixRequestBody {
-  resumeText?: unknown;
-  language?: unknown;
   draft?: unknown;
+  source?: unknown;
+  jobAd?: unknown;
+  language?: unknown;
 }
 
 function buildSystemPrompt(language: "el" | "en"): string {
-  return `You are CVfix, part of the CVsible app.
+  return `You are CVfix, the revision engine inside the CVsible app.
 
-A candidate has uploaded a CV that a hiring system cannot read properly — usually because it is laid out in columns, uses decorative headings, or buries its structure in a table. Your job is to move their content into a clean, machine-readable structure.
+A candidate has a CV and a report saying what is wrong with it. Your job is to propose the specific edits that fix it — not to rebuild the document, and not to hand back advice they have to act on themselves. You work only through the propose_changes tool and never speak to the candidate.
 
-# The absolute constraint
+# What a change is
 
-You are a restructurer, not a writer. **Do not change a single word.** Every sentence, phrase and bullet you output must be copied character-for-character from the CV you were given.
+Each change names one place in the CV, quotes exactly what is there now, and gives the text that should replace it.
 
-You may:
-- Split a run-on paragraph into separate bullets, cutting at sentence or clause boundaries.
-- Move text into the correct field: a role name into role, an employer into company, a date into startDate/endDate.
-- Drop leading bullet glyphs, stray punctuation and layout artefacts.
-- Reorder entries into reverse-chronological order.
-- Omit text that belongs nowhere (page numbers, headers, "References available on request").
+Paths you may use, and nothing else:
+- \`summary\` — replace the professional summary.
+- \`jobTitle\` — replace the headline title.
+- \`experience[i].bullets[j]\` / \`education[i].bullets[j]\` / \`projects[i].bullets[j]\` — replace one bullet.
+- \`experience[i].bullets\` / \`education[i].bullets\` / \`projects[i].bullets\` — add a new bullet to that entry. Send \`before\` as an empty string.
+- \`skills\` — add one skill. Send \`before\` as an empty string and the skill name as \`after\`.
 
-You may not:
-- Rephrase, summarise, expand, translate or "improve" anything.
-- Add a fact, a number, a skill or an adjective that is not already there.
-- Merge two different sentences into one new sentence.
+\`before\` must be copied character-for-character from the CV you were given. A change whose quote does not match is discarded unread, so do not paraphrase it, do not tidy it, and do not guess at it.
 
-A server-side checker compares every line you produce against the original text and rejects your draft if the wording drifted. There is no way around it, so do not try to polish anything.
+\`why\` is one short sentence, in ${LANGUAGE_NAME[language]}, addressed to the candidate: what this fixes. "Opens with an action verb instead of a noun." Not "improved for ATS".
 
-# Reading a broken CV
+# The one rule you never break
 
-The text you receive was extracted in the parser's own reading order, which for a two-column CV means the columns are interleaved and lines are out of sequence. Untangle it: sidebar contact details and skills will be mixed into the main flow. Use judgement about what belongs where, but never invent the connection — if you cannot tell which employer a bullet belongs to, attach it to the nearest role that makes sense, or leave it out.
+You may rewrite wording as freely as you like. You may not introduce a fact the candidate never gave you: no employer, technology, qualification, skill or figure that is absent from the SOURCE MATERIAL. If the job ad asks for something they never claimed, leave it out — a CV that wins an interview it cannot survive is worse than one that does not.
 
-# Dates
+Numbers are where this goes wrong most often. If their text says no figures, your rewrites contain no figures. A server-side check verifies every change against the source and silently discards the ones that invent; those are wasted changes.
 
-Convert whatever format the CV uses into YYYY-MM. "March 2022", "03/2022" and "2022" all become 2022-03 / 2022-03 / 2022-01. This is a format conversion, not a rewording, and it is required. A role with no end date and wording that implies the present gets current: true and an empty endDate.
+# What to fix
 
-# Fields that are labels, not prose
+Start with everything the REPORT lists as blocking — those are measured, and the candidate sees the same measurements. Then keep going: a CV is rarely finished just because it stopped failing. Look for
 
-jobTitle, role, company, institution, degree, skill names, language names and certification titles are labels. Copy them as written. If the CV lists skills as one comma-separated line, split that line into individual skills.
+- bullets that open with a noun or "Responsible for" instead of an action;
+- bullets that describe duties rather than what actually happened as a result;
+- results the candidate mentioned in their own words but the CV never states;
+- a summary that lists adjectives instead of naming their strongest concrete proof;
+- vocabulary from the job ad that truthfully describes what they already did;
+- an entry with one thin bullet where their source material clearly supports a second.
 
-Skill levels live in their own field, so strip a trailing parenthetical level from the name: "React (Expert)" becomes the name "React" with level 90, "Node.js (Advanced)" becomes "Node.js" with level 75. Map basic/βασικό to 25, intermediate/μέτριο to 50, advanced/προχωρημένο to 75, expert/άριστο to 90. A skill with no stated level gets 50. Language levels stay as written.
+Order your changes by how much they matter: the candidate reads from the top and may stop early.
 
-# How you work
+Propose at most ${CVFIX_MAX_CHANGES}. Fewer real improvements beat a long list of rephrasings — every change costs the candidate a decision, so do not spend one on moving a comma.
 
-You work one step at a time and make exactly one tool call per turn, with no commentary.
+Write all CV content in ${LANGUAGE_NAME[language]}, keeping proper nouns and technology names as they are.`;
+}
 
-- Asked for a draft: call **save_draft** with the complete restructured CV.
-- Given a draft and a review: call **patch_draft** with only the fields that need changing, clearing every issue the review names.
+const CHANGE_TOOL: Anthropic.Messages.Tool = {
+  name: "propose_changes",
+  description: "Propose the edits that fix this CV, most important first.",
+  input_schema: {
+    type: "object",
+    properties: {
+      changes: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            path: {
+              type: "string",
+              description:
+                "One of: summary, jobTitle, skills, experience[i].bullets[j], education[i].bullets[j], projects[i].bullets[j], or the same three without [j] to add a bullet.",
+            },
+            before: {
+              type: "string",
+              description: "The current text at that path, copied exactly. Empty string for an addition.",
+            },
+            after: { type: "string", description: "The replacement text." },
+            why: { type: "string", description: "One short sentence for the candidate explaining what this fixes." },
+          },
+          required: ["path", "before", "after", "why"],
+        },
+      },
+    },
+    required: ["changes"],
+  } as Anthropic.Messages.Tool["input_schema"],
+};
 
-The reviews come from a deterministic checker that diffs your output against the original text, so fix exactly what it names.
-
-The CV is written in ${LANGUAGE_NAME[language]}; keep it in that language.`;
+function isDraft(value: unknown): value is CvDraft {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<CvDraft>;
+  return (
+    Array.isArray(candidate.experience) &&
+    Array.isArray(candidate.education) &&
+    Array.isArray(candidate.projects) &&
+    Array.isArray(candidate.skills)
+  );
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -87,27 +123,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const body = req.body as CvFixRequestBody;
   const language = body.language === "en" ? "en" : "el";
-  const resumeText = typeof body.resumeText === "string" ? body.resumeText.trim() : "";
-  const previous = body.draft && typeof body.draft === "object" ? (body.draft as CvDraft) : null;
+  const jobAd = typeof body.jobAd === "string" ? body.jobAd.trim() : "";
+  const source = typeof body.source === "string" ? body.source.trim() : "";
 
-  if (!resumeText) {
+  if (!isDraft(body.draft)) {
     res.status(400).json({ error: "missing_fields" });
     return;
   }
-  if (resumeText.length > MAX_RESUME_TEXT_CHARS) {
+  const draft = body.draft;
+
+  if (source.length > MAX_RESUME_TEXT_CHARS || jobAd.length > MAX_JOB_AD_CHARS) {
     res.status(400).json({ error: "text_too_long" });
     return;
   }
 
-  // Every round of a run — not just the opening one — is charged here. A
-  // client-supplied `draft` is not proof of a prior legitimate call, so it
-  // must never skip this check; the multiplier just keeps a single CV's
-  // refinement rounds from crowding out its own daily budget.
-  const rateLimit = await checkDailyLimit(
-    "cvfix",
-    await resolveIdentifier(req),
-    CVFIX_DAILY_LIMIT * MAX_ROUNDS_PER_CV,
-  );
+  const rateLimit = await checkDailyLimit("cvfix", await resolveIdentifier(req), CVFIX_DAILY_LIMIT);
   if (!rateLimit.allowed) {
     if (rateLimit.unavailable) {
       res.status(503).json({ error: "unavailable" });
@@ -117,58 +147,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const languageLevels = LANGUAGE_LEVELS[language];
-
-  const buildReport = (draft: CvDraft) => {
-    const verbatim = findVerbatimIssues(draft, resumeText);
-    const structure = reviewStructure(draft);
-    return {
-      verbatim,
-      structure,
-      text: `${formatVerbatimReport(verbatim)}
-
-${formatStructureReport(structure)}`,
-      done: verbatim.length === 0 && structure.length === 0,
-    };
-  };
+  // The CV always vouches for itself: rewording what is already written is the
+  // whole job. For an upload, the raw extraction is added, since it holds
+  // detail the structured draft dropped.
+  const grounds = [JSON.stringify(draft), source].filter(Boolean).join("\n");
+  const review = reviewDraft(draft, grounds, jobAd);
 
   try {
     const client = getAnthropicClient();
-    const isRefine = previous !== null;
 
-    const tool: Anthropic.Messages.Tool = isRefine
-      ? {
-          name: "patch_draft",
-          description: "Replace only the fields you are changing.",
-          input_schema: buildPatchSchema(languageLevels) as Anthropic.Messages.Tool["input_schema"],
-        }
-      : {
-          name: "save_draft",
-          description: "Store the complete restructured CV.",
-          input_schema: buildDraftSchema(languageLevels) as Anthropic.Messages.Tool["input_schema"],
-        };
+    const parts = [`# THE CANDIDATE'S CV
 
-    const parts = [`# ORIGINAL CV TEXT, as a parser reads it
+${JSON.stringify(draft, null, 1)}`];
 
-${resumeText}`];
-    if (isRefine) {
-      parts.push(`# CURRENT DRAFT
+    parts.push(`# REPORT ON THAT CV
 
-${JSON.stringify(previous, null, 1)}`);
-      parts.push(`# REVIEW OF THAT DRAFT
+${formatReview(review)}`);
 
-${buildReport(previous).text}`);
-      parts.push("Call patch_draft once, sending only the fields you are changing. One tool call, no commentary.");
-    } else {
-      parts.push("Restructure it. Call save_draft once, no commentary.");
+    if (jobAd) parts.push(`# THE JOB THEY ARE APPLYING FOR
+
+${jobAd}`);
+    if (source) {
+      parts.push(`# SOURCE MATERIAL — everything the candidate has said about themselves
+
+${source}`);
     }
+    parts.push("Call propose_changes once, no commentary.");
 
     const response = await client.messages.create({
       model: CVFIX_MODEL,
       max_tokens: CVFIX_MAX_TOKENS,
       system: buildSystemPrompt(language),
-      tools: [tool],
-      tool_choice: { type: "tool", name: tool.name },
+      tools: [CHANGE_TOOL],
+      tool_choice: { type: "tool", name: CHANGE_TOOL.name },
       messages: [{ role: "user", content: parts.join(SECTION_SEPARATOR) }],
     });
 
@@ -185,28 +196,19 @@ ${buildReport(previous).text}`);
       return;
     }
 
-    const incoming = sanitizeDraft(use.input, languageLevels);
-    let draft: CvDraft;
+    const proposed = (use.input as { changes?: unknown }).changes;
+    const { changes, rejected } = validateChanges(proposed, draft, grounds);
 
-    if (isRefine) {
-      draft = mergeDraft(previous, use.input as Record<string, unknown>, incoming);
-    } else {
-      if (isEmptyDraft(incoming)) {
-        res.status(502).json({ error: "no_draft" });
-        return;
-      }
-      draft = incoming;
+    if (rejected.length > 0) {
+      // Not an error for the candidate — but a run where most proposals are
+      // discarded is worth seeing in the logs.
+      console.warn("cvfix discarded changes", rejected);
     }
 
-    const report = buildReport(draft);
-
     res.status(200).json({
-      draft,
-      done: report.done,
-      issues: {
-        reworded: report.verbatim.map((issue) => issue.value),
-        structure: report.structure,
-      },
+      changes: changes.slice(0, CVFIX_MAX_CHANGES),
+      metrics: review.metrics,
+      blocking: review.blocking.length,
       remaining: rateLimit.remaining,
     });
   } catch (error) {

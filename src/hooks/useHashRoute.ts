@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export type Route =
   | "landing"
   | "builder"
+  | "cvisor"
   | "ats"
   | "my-cvs"
   | "profile"
@@ -12,6 +13,7 @@ export type Route =
 
 const ROUTES: Record<string, Route> = {
   "#/builder": "builder",
+  "#/cvisor": "cvisor",
   "#/ats": "ats",
   "#/my-cvs": "my-cvs",
   "#/profile": "profile",
@@ -22,6 +24,7 @@ const ROUTES: Record<string, Route> = {
 const HASHES: Record<Exclude<Route, "public-cv">, string> = {
   landing: "#/",
   builder: "#/builder",
+  cvisor: "#/cvisor",
   ats: "#/ats",
   "my-cvs": "#/my-cvs",
   profile: "#/profile",

@@ -11,6 +11,7 @@ const PAGES = [
   ["landing", "/#/"],
   ["ATS check", "/#/ats"],
   ["builder", "/#/builder"],
+  ["CVisor", "/#/cvisor"],
   ["my CVs", "/#/my-cvs"],
   ["profile", "/#/profile"],
   ["privacy", "/#/privacy"],
@@ -60,7 +61,7 @@ test.describe("Narrow screens", () => {
     await page.locator(".site-burger").click();
     const nav = page.locator(".site-nav");
     await expect(nav).toBeVisible();
-    await expect(nav.locator(".site-nav-link")).toHaveCount(3);
+    await expect(nav.locator(".site-nav-link")).toHaveCount(4);
 
     const box = await nav.boundingBox();
     expect(box!.width).toBeLessThanOrEqual(360);

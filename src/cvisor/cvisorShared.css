@@ -1,0 +1,66 @@
+/* The handful of pieces the CVisor page and the CVfix window both use.
+ *
+ *  What is left of the old CVisor modal's stylesheet. The modal itself is
+ *  gone — CVisor is a page now and CVfix has its own window — but the button,
+ *  spinner and error treatments are shared, and duplicating them into two
+ *  files is how two AI surfaces start looking like two different products. */
+
+.cvisor-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cvisor-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.cvisor-error {
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: #fdeeec;
+  border: 1px solid #f2cdc9;
+  color: #97372f;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.cvisor-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: cvisor-spin 0.85s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes cvisor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cvisor-spinner {
+    animation-duration: 2.5s;
+  }
+}

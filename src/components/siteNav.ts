@@ -11,6 +11,12 @@ export function buildSiteNav(
     { key: "home", label: dictionary.siteNav.home, onClick: () => navigate("landing"), active: route === "landing" },
     { key: "scan", label: dictionary.siteNav.scan, onClick: () => navigate("ats"), active: route === "ats" },
     {
+      key: "cvisor",
+      label: dictionary.siteNav.cvisor,
+      onClick: () => navigate("cvisor"),
+      active: route === "cvisor",
+    },
+    {
       key: "build",
       label: dictionary.siteNav.build,
       onClick: () => navigate("builder"),

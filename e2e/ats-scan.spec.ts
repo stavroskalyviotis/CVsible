@@ -48,12 +48,12 @@ test.describe("CVscan (ATS check)", () => {
     await expect(page.locator(".scan-drop")).toBeVisible();
   });
 
-  test("a builder CV with warnings offers a CVisor CTA (not CVfix) and opens CVisor", async ({ page }) => {
-    // The CVisor CTA only shows once every "fail"-level check is cleared (a
-    // real fail next to it would read as a contradiction) while some "warn"
-    // checks remain — e.g. no education/skills section. Email, phone and one
-    // dated, bulleted experience entry are seeded directly since driving the
-    // custom month/year picker through the UI adds nothing this test needs.
+  test("a builder CV is offered CVfix, which opens its own window", async ({ page }) => {
+    // CVfix is offered on every report now, passing or failing: the old
+    // behaviour sent a warned-about CV to CVisor, which rebuilds from scratch
+    // instead of fixing what is there. Email, phone and one dated, bulleted
+    // experience entry are seeded directly since driving the custom month/year
+    // picker through the UI adds nothing this test needs.
     await page.addInitScript(() => {
       localStorage.setItem(
         "cvsible:cv-data",
@@ -93,14 +93,23 @@ test.describe("CVscan (ATS check)", () => {
     await page.getByRole("button", { name: /check the cv i.m building|έλεγξε το βιογραφικό που φτιάχνω/i }).click();
     await expect(page.locator(".scan-verdict")).toBeVisible();
 
-    // Restructuring (CVfix) makes no sense for a CV that's already structured
-    // in the builder — CVisor (content suggestions) is the correct CTA here.
+    // The verbatim restructuring card is for uploads only: a builder CV is
+    // already in fields, so there is nothing to untangle.
     await expect(page.locator(".cvfix-card")).toHaveCount(0);
-    const cta = page.locator(".scan-cta", { hasText: /cvisor/i });
+    const cta = page.locator(".scan-cta", { hasText: /cvfix/i });
     await expect(cta).toBeVisible();
 
+    // Its own window, on this page — not a detour through CVisor.
     await cta.getByRole("button").click();
-    await expect(page).toHaveURL(/#\/builder/);
-    await expect(page.locator(".cvisor-overlay")).toBeVisible();
+    await expect(page.locator(".cvfix-window")).toBeVisible();
+    await expect(page).toHaveURL(/#\/ats/);
+  });
+
+  test("CVisor is a page of its own, reachable from the site nav", async ({ page }) => {
+    await page.goto("/#/ats");
+    await page.locator(".site-nav-link", { hasText: /^cvisor$/i }).click();
+    await expect(page).toHaveURL(/#\/cvisor/);
+    // It opens on a question, not on a wall of empty textareas.
+    await expect(page.locator(".cvisor-step-prompt")).toBeVisible();
   });
 });

@@ -8,16 +8,30 @@ export const CVISOR_SUGGEST_MODEL = "claude-haiku-4-5";
 export const AGENT_MODEL = "claude-sonnet-5";
 export const AGENT_MAX_TOKENS = 8000;
 
-// CVfix never writes prose, it untangles an interleaved extraction into the
-// right fields — reading comprehension, not composition, so the small model
-// is enough, backed by the same verbatim/structure checks.
-export const CVFIX_MODEL = "claude-haiku-4-5";
+// Untangling an interleaved extraction into the right fields is reading
+// comprehension, not composition, and it may not change a word — the small
+// model does it well, backed by the verbatim/structure checks.
+export const CVFIX_STRUCTURE_MODEL = "claude-haiku-4-5";
+
+// Proposing rewrites is composition, and every proposal has to stay inside the
+// grounding rules — same reasoning as AGENT_MODEL above.
+export const CVFIX_MODEL = "claude-sonnet-5";
 export const CVFIX_MAX_TOKENS = 8000;
 export const CVFIX_DAILY_LIMIT = 8;
 export const MAX_RESUME_TEXT_CHARS = 20000;
 
+// Each change costs the candidate a yes/no decision, and a list nobody reads
+// to the end is a list that gets dismissed wholesale.
+export const CVFIX_MAX_CHANGES = 12;
+
 export const AGENT_DAILY_LIMIT = 5;
 export const SUGGEST_DAILY_LIMIT = 20;
+
+// One call per job described, so the ceiling is generous — a candidate walking
+// through five jobs is using it as intended, not abusing it.
+export const FOLLOWUP_DAILY_LIMIT = 40;
+export const FOLLOWUP_MAX_QUESTIONS = 3;
+export const FOLLOWUP_MAX_TOKENS = 400;
 
 // Mirrors MAX_ROUNDS in src/cvisor/agent.ts. Every step of a CVfix/CVisor run
 // — not just the opening one — is charged against the daily limit below, so

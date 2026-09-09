@@ -76,6 +76,7 @@ export interface Dictionary {
     home: string;
     build: string;
     scan: string;
+    cvisor: string;
     features: string;
     openMenu: string;
     myCvs: string;
@@ -322,9 +323,9 @@ export interface Dictionary {
     cvfixTitle: string;
     cvfixBody: string;
     cvfixButton: string;
-    warningsCtaTitle: string;
-    warningsCtaBody: string;
-    warningsCtaButton: string;
+    fixCtaTitle: string;
+    fixCtaBody: string;
+    fixCtaButton: string;
     buildTitle: string;
     buildBody: string;
     buildButton: string;
@@ -332,6 +333,82 @@ export interface Dictionary {
     errorTooLarge: string;
     errorUnreadable: string;
     checks: Record<AtsCheckKey, { label: string; ok: string; bad: string }>;
+  };
+  /** The conversational intake. Separate from `cvisor`, which is the wording
+   *  shared with the inline "improve this text" buttons. */
+  cvisorChat: {
+    title: string;
+    intro: string;
+    yes: string;
+    no: string;
+    back: string;
+    skip: string;
+    next: string;
+    thinking: string;
+    answerLabel: string;
+    followUpPlaceholder: string;
+    thisJob: string;
+    targetPrompt: string;
+    targetHint: string;
+    targetLabel: string;
+    targetPlaceholder: string;
+    firstRolePrompt: string;
+    firstRoleHint: string;
+    nextRolePrompt: string;
+    roleLabel: string;
+    rolePlaceholder: string;
+    companyLabel: string;
+    companyPlaceholder: string;
+    periodLabel: string;
+    periodPlaceholder: string;
+    /** "{0}" is the job title the candidate just gave. */
+    storyPrompt: string;
+    storyHint: string;
+    storyLabel: string;
+    storyPlaceholder: string;
+    moreRolesPrompt: string;
+    firstSchoolPrompt: string;
+    firstSchoolHint: string;
+    nextSchoolPrompt: string;
+    degreeLabel: string;
+    degreePlaceholder: string;
+    institutionLabel: string;
+    institutionPlaceholder: string;
+    moreSchoolsPrompt: string;
+    skillsPrompt: string;
+    skillsHint: string;
+    skillsLabel: string;
+    skillsPlaceholder: string;
+    languagesPrompt: string;
+    languagesHint: string;
+    languagesLabel: string;
+    languagesPlaceholder: string;
+    extrasPrompt: string;
+    extrasHint: string;
+    extrasLabel: string;
+    extrasPlaceholder: string;
+    groupTarget: string;
+    groupExperience: string;
+    groupEducation: string;
+    groupSkills: string;
+    groupExtras: string;
+    previewTitle: string;
+    previewEmpty: string;
+    readyTitle: string;
+    readyBody: string;
+    buildButton: string;
+    notEnough: string;
+    restart: string;
+    restartConfirm: string;
+    importProfile: string;
+    importProfileHint: string;
+    importedProfile: string;
+    /** Labels prefixed onto the source material handed to the agent. */
+    sourceJob: string;
+    sourceStudy: string;
+    sourceSkills: string;
+    sourceLanguages: string;
+    sourceExtras: string;
   };
   cvisor: {
     brand: string;
@@ -401,6 +478,38 @@ export interface Dictionary {
     openBuilder: string;
     openBuilderHint: string;
     cancel: string;
+    /* --- the change-review window --- */
+    windowTitle: string;
+    windowIntro: string;
+    scanning: string;
+    reviewHint: string;
+    noChangesTitle: string;
+    noChangesBody: string;
+    before: string;
+    after: string;
+    addition: string;
+    accept: string;
+    accepted: string;
+    skip: string;
+    skipped: string;
+    acceptAll: string;
+    /** "{0}" is the number of accepted changes. */
+    applyCount: string;
+    applyOne: string;
+    applyNone: string;
+    close: string;
+    metricVerbs: string;
+    metricCoverage: string;
+    metricBullets: string;
+    toolbarButton: string;
+    appliedToast: string;
+    targetLabel: string;
+    targetPlaceholder: string;
+    targetNone: string;
+    targetSet: string;
+    targetAdd: string;
+    targetChange: string;
+    rerun: string;
   };
   emptyStates: {
     experience: string;
@@ -659,6 +768,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       home: "Αρχική",
       build: "Δημιουργία βιογραφικού",
       scan: "Έλεγχος ATS",
+      cvisor: "CVisor",
       features: "Λειτουργίες",
       openMenu: "Μενού",
       myCvs: "Τα βιογραφικά μου",
@@ -924,10 +1034,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "Ο CVfix κρατάει τα λόγια σου ακριβώς όπως τα έγραψες και αλλάζει μόνο τη δομή και τη μορφοποίηση, ώστε το αρχείο να περνάει καθαρά.",
       cvfixButton: "Διόρθωση μορφής με τον CVfix",
-      warningsCtaTitle: "{v} προειδοποιήσεις μπορούν να διορθωθούν",
-      warningsCtaBody:
-        "Το σκορ είναι ήδη καλό, αλλά ο CVisor μπορεί να προτείνει βελτιώσεις για τα σημεία παρακάτω, βασισμένες στην αγγελία εργασίας.",
-      warningsCtaButton: "Άνοιγμα CVisor",
+      fixCtaTitle: "Θες να τα διορθώσει ο CVfix;",
+      fixCtaBody:
+        "Ο CVfix διαβάζει το βιογραφικό σου με τα ίδια κριτήρια αυτής της αναφοράς και προτείνει συγκεκριμένες αλλαγές — βλέπεις τι αντικαθιστά η καθεμία και εγκρίνεις όποιες θέλεις.",
+      fixCtaButton: "Άνοιγμα CVfix",
       buildTitle: "Ή φτιάξ' το από την αρχή",
       buildBody:
         "Τρία από τα τέσσερα πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας — μονή στήλη, αναγνωρίσιμοι τίτλοι ενοτήτων. Οι υπόλοιποι έλεγχοι εξαρτώνται από τα στοιχεία που θα συμπληρώσεις.",
@@ -1023,6 +1133,80 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
       },
     },
+    cvisorChat: {
+      title: "CVisor",
+      intro: "Λίγες ερωτήσεις, μία κάθε φορά. Το βιογραφικό χτίζεται δίπλα σου καθώς απαντάς.",
+      yes: "Ναι",
+      no: "Όχι",
+      back: "Πίσω",
+      skip: "Προσπέραση",
+      next: "Συνέχεια",
+      thinking: "Σκέφτομαι τι να ρωτήσω…",
+      answerLabel: "Η απάντησή σου",
+      followUpPlaceholder: "Ό,τι θυμάσαι — αριθμοί, μέγεθος ομάδας, αποτέλεσμα.",
+      thisJob: "αυτή τη δουλειά",
+      targetPrompt: "Τι δουλειά ψάχνεις;",
+      targetHint:
+        "Αν έχεις συγκεκριμένη αγγελία, κόλλα την ολόκληρη — θα προσαρμόσω το λεξιλόγιο σε αυτήν. Αλλιώς αρκεί μια περιγραφή.",
+      targetLabel: "Θέση ή αγγελία",
+      targetPlaceholder: "π.χ. Barista σε specialty καφετέρια — ή κόλλα εδώ την αγγελία",
+      firstRolePrompt: "Ποια ήταν η τελευταία σου δουλειά;",
+      firstRoleHint: "Ξεκινάμε από την πιο πρόσφατη και πάμε προς τα πίσω.",
+      nextRolePrompt: "Και η προηγούμενη;",
+      roleLabel: "Θέση",
+      rolePlaceholder: "π.χ. Barista",
+      companyLabel: "Εταιρεία",
+      companyPlaceholder: "π.χ. Coffee Lab",
+      periodLabel: "Περίοδος",
+      periodPlaceholder: "π.χ. Μάρτιος 2022 – σήμερα",
+      storyPrompt: "Τι έκανες ως {0};",
+      storyHint: "Γράψε το όπως θα το έλεγες σε φίλο. Θα το κάνω εγώ βιογραφικό.",
+      storyLabel: "Με δικά σου λόγια",
+      storyPlaceholder: "Έφτιαχνα καφέδες, κρατούσα το ταμείο, εκπαίδευσα δύο καινούρια άτομα…",
+      moreRolesPrompt: "Υπάρχει κι άλλη δουλειά πριν από αυτή;",
+      firstSchoolPrompt: "Τι έχεις σπουδάσει;",
+      firstSchoolHint: "Αν δεν έχεις σπουδές, προσπέρασέ το — δεν είναι απαραίτητο.",
+      nextSchoolPrompt: "Κάτι άλλο που σπούδασες;",
+      degreeLabel: "Τίτλος σπουδών",
+      degreePlaceholder: "π.χ. Πτυχίο Τουριστικών Επιχειρήσεων",
+      institutionLabel: "Ίδρυμα",
+      institutionPlaceholder: "π.χ. ΑΠΘ",
+      moreSchoolsPrompt: "Υπάρχει κι άλλο;",
+      skillsPrompt: "Τι ξέρεις να κάνεις;",
+      skillsHint: "Γράψ' τα χύμα, χωρισμένα με κόμμα. Θα τα τακτοποιήσω.",
+      skillsLabel: "Δεξιότητες",
+      skillsPlaceholder: "π.χ. Espresso, latte art, HACCP, ταμείο, Excel",
+      languagesPrompt: "Ποιες γλώσσες μιλάς;",
+      languagesHint: "Βάλε και το επίπεδο αν το ξέρεις.",
+      languagesLabel: "Γλώσσες",
+      languagesPlaceholder: "π.χ. Αγγλικά (καλά), Γερμανικά (βασικά)",
+      extrasPrompt: "Κάτι άλλο που αξίζει να μπει;",
+      extrasHint: "Πιστοποιήσεις, σεμινάρια, εθελοντισμός, προσωπικά project — ή προσπέρασέ το.",
+      extrasLabel: "Οτιδήποτε άλλο",
+      extrasPlaceholder: "π.χ. Πιστοποίηση HACCP 2023, εθελοντισμός σε φεστιβάλ καφέ",
+      groupTarget: "Στόχος",
+      groupExperience: "Εμπειρία",
+      groupEducation: "Σπουδές",
+      groupSkills: "Δεξιότητες",
+      groupExtras: "Έξτρα",
+      previewTitle: "Το βιογραφικό σου",
+      previewEmpty: "Ό,τι απαντάς εμφανίζεται εδώ.",
+      readyTitle: "Τα έχω όλα",
+      readyBody:
+        "Θα τα γράψω σε κανονικό βιογραφικό — με ρήματα δράσης, το λεξιλόγιο της αγγελίας και χωρίς να προσθέσω τίποτα που δεν μου είπες.",
+      buildButton: "Φτιάξε το βιογραφικό",
+      notEnough: "Πες μου πρώτα για μία δουλειά ή για τις σπουδές σου.",
+      restart: "Από την αρχή",
+      restartConfirm: "Να σβηστούν όσα έχεις απαντήσει;",
+      importProfile: "Συμπλήρωση από το προφίλ μου",
+      importProfileHint: "Θα προσυμπληρώσω όσα έχεις ήδη αποθηκευμένα, για να μην τα ξαναγράφεις.",
+      importedProfile: "Συμπληρώθηκαν από το προφίλ σου",
+      sourceJob: "Δουλειά",
+      sourceStudy: "Σπουδές",
+      sourceSkills: "Δεξιότητες",
+      sourceLanguages: "Γλώσσες",
+      sourceExtras: "Άλλα",
+    },
     cvisor: {
       brand: "CVisor",
       tryButton: "Δοκίμασε τον CVisor",
@@ -1100,6 +1284,39 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       openBuilder: "Άνοιγμα στον builder",
       openBuilderHint: "Θα αντικαταστήσει το βιογραφικό που έχεις τώρα στο CVsible.",
       cancel: "Άκυρο",
+      windowTitle: "CVfix",
+      windowIntro:
+        "Διαβάζει το βιογραφικό σου με τα ίδια κριτήρια που το βαθμολογεί το CVscan και προτείνει συγκεκριμένες διορθώσεις.",
+      scanning: "Διαβάζω το βιογραφικό σου…",
+      reviewHint:
+        "Καμία αλλαγή δεν εφαρμόζεται αν δεν την εγκρίνεις. Δες τι αντικαθιστά η καθεμία και κράτα όσες θέλεις.",
+      noChangesTitle: "Δεν βρήκα κάτι να προτείνω",
+      noChangesBody:
+        "Το βιογραφικό περνάει τους ελέγχους που μετράει το CVscan. Αν αλλάξεις αγγελία-στόχο, ξανατρέξε τον CVfix για να το προσαρμόσει σε αυτήν.",
+      before: "Πριν",
+      after: "Μετά",
+      addition: "Προσθήκη",
+      accept: "Εφαρμογή",
+      accepted: "Θα εφαρμοστεί",
+      skip: "Παράλειψη",
+      skipped: "Παραλείφθηκε",
+      acceptAll: "Επιλογή όλων",
+      applyCount: "Εφαρμογή {0} αλλαγών",
+      applyOne: "Εφαρμογή 1 αλλαγής",
+      applyNone: "Διάλεξε τουλάχιστον μία",
+      close: "Κλείσιμο",
+      metricVerbs: "ξεκινούν με ρήμα",
+      metricCoverage: "κάλυψη αγγελίας",
+      metricBullets: "σημεία",
+      toolbarButton: "CVfix",
+      appliedToast: "Εφαρμόστηκαν {0} αλλαγές",
+      targetLabel: "Η αγγελία που στοχεύεις",
+      targetPlaceholder: "Κόλλα εδώ την αγγελία, για να προσαρμοστεί το λεξιλόγιο σε αυτήν.",
+      targetNone: "Χωρίς αγγελία — οι προτάσεις αφορούν γενικά το βιογραφικό.",
+      targetSet: "Προσαρμοσμένο στην αγγελία που έδωσες.",
+      targetAdd: "Πρόσθεσε αγγελία",
+      targetChange: "Αλλαγή",
+      rerun: "Ξανατρέξ' το",
     },
     emptyStates: {
       experience: "Δεν έχεις προσθέσει ακόμα εργασιακή εμπειρία.",
@@ -1368,6 +1585,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       home: "Home",
       build: "Build a CV",
       scan: "ATS check",
+      cvisor: "CVisor",
       features: "Features",
       openMenu: "Menu",
       myCvs: "My CVs",
@@ -1632,10 +1850,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       cvfixBody:
         "CVfix keeps your wording exactly as you wrote it and changes only the structure and formatting, so the file comes through cleanly.",
       cvfixButton: "Fix formatting with CVfix",
-      warningsCtaTitle: "{v} warnings you can fix",
-      warningsCtaBody:
-        "The score is already good, but CVisor can suggest improvements for the points below, based on the job ad.",
-      warningsCtaButton: "Open CVisor",
+      fixCtaTitle: "Want CVfix to sort these out?",
+      fixCtaBody:
+        "CVfix reads your CV against the same standards as this report and proposes specific changes — you see what each one replaces and approve the ones you want.",
+      fixCtaButton: "Open CVfix",
       buildTitle: "Or build it from scratch",
       buildBody:
         "Three of the builder's four templates are designed to pass this page's formatting checks by default — single column, recognisable section headings. The rest of the checks depend on what you fill in.",
@@ -1731,6 +1949,80 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
       },
     },
+    cvisorChat: {
+      title: "CVisor",
+      intro: "A few questions, one at a time. Your CV builds itself beside you as you answer.",
+      yes: "Yes",
+      no: "No",
+      back: "Back",
+      skip: "Skip",
+      next: "Continue",
+      thinking: "Thinking what to ask…",
+      answerLabel: "Your answer",
+      followUpPlaceholder: "Whatever you remember — numbers, team size, the result.",
+      thisJob: "that job",
+      targetPrompt: "What job are you going for?",
+      targetHint:
+        "If you have a specific ad, paste the whole thing — I'll match its vocabulary. Otherwise a description is enough.",
+      targetLabel: "Role or job ad",
+      targetPlaceholder: "e.g. Barista at a specialty coffee shop — or paste the ad here",
+      firstRolePrompt: "What was your most recent job?",
+      firstRoleHint: "We start with the latest and work backwards.",
+      nextRolePrompt: "And the one before that?",
+      roleLabel: "Role",
+      rolePlaceholder: "e.g. Barista",
+      companyLabel: "Company",
+      companyPlaceholder: "e.g. Coffee Lab",
+      periodLabel: "Period",
+      periodPlaceholder: "e.g. March 2022 – present",
+      storyPrompt: "What did you do as {0}?",
+      storyHint: "Write it the way you'd tell a friend. Turning it into a CV is my job.",
+      storyLabel: "In your own words",
+      storyPlaceholder: "Made the coffee, ran the till, trained two new people…",
+      moreRolesPrompt: "Was there another job before that one?",
+      firstSchoolPrompt: "What did you study?",
+      firstSchoolHint: "Skip it if you didn't — it isn't required.",
+      nextSchoolPrompt: "Anything else you studied?",
+      degreeLabel: "Qualification",
+      degreePlaceholder: "e.g. BSc Hospitality Management",
+      institutionLabel: "Institution",
+      institutionPlaceholder: "e.g. AUTH",
+      moreSchoolsPrompt: "Is there another one?",
+      skillsPrompt: "What can you do?",
+      skillsHint: "Just list them, separated by commas. I'll tidy them up.",
+      skillsLabel: "Skills",
+      skillsPlaceholder: "e.g. Espresso, latte art, HACCP, till, Excel",
+      languagesPrompt: "What languages do you speak?",
+      languagesHint: "Add the level if you know it.",
+      languagesLabel: "Languages",
+      languagesPlaceholder: "e.g. English (good), German (basic)",
+      extrasPrompt: "Anything else worth including?",
+      extrasHint: "Certifications, courses, volunteering, side projects — or skip it.",
+      extrasLabel: "Anything else",
+      extrasPlaceholder: "e.g. HACCP certification 2023, volunteered at a coffee festival",
+      groupTarget: "Target",
+      groupExperience: "Experience",
+      groupEducation: "Education",
+      groupSkills: "Skills",
+      groupExtras: "Extras",
+      previewTitle: "Your CV",
+      previewEmpty: "Whatever you answer shows up here.",
+      readyTitle: "That's everything",
+      readyBody:
+        "I'll write it up as a proper CV — action verbs, the job ad's vocabulary, and nothing added that you didn't tell me.",
+      buildButton: "Build my CV",
+      notEnough: "Tell me about one job or your studies first.",
+      restart: "Start over",
+      restartConfirm: "Clear everything you've answered?",
+      importProfile: "Fill in from my profile",
+      importProfileHint: "I'll pre-fill what you've already saved, so you don't type it twice.",
+      importedProfile: "Filled in from your profile",
+      sourceJob: "Job",
+      sourceStudy: "Studied",
+      sourceSkills: "Skills",
+      sourceLanguages: "Languages",
+      sourceExtras: "Other",
+    },
     cvisor: {
       brand: "CVisor",
       tryButton: "Try CVisor",
@@ -1806,6 +2098,38 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       openBuilder: "Open in the builder",
       openBuilderHint: "This replaces the CV you currently have in CVsible.",
       cancel: "Cancel",
+      windowTitle: "CVfix",
+      windowIntro:
+        "It reads your CV against the same standards CVscan grades it by, and proposes specific corrections.",
+      scanning: "Reading your CV…",
+      reviewHint: "Nothing is applied unless you approve it. See what each change replaces and keep the ones you want.",
+      noChangesTitle: "Nothing worth proposing",
+      noChangesBody:
+        "Your CV clears the checks CVscan measures. If you target a different job ad, run CVfix again to tailor it to that one.",
+      before: "Before",
+      after: "After",
+      addition: "New line",
+      accept: "Apply",
+      accepted: "Will be applied",
+      skip: "Skip",
+      skipped: "Skipped",
+      acceptAll: "Select all",
+      applyCount: "Apply {0} changes",
+      applyOne: "Apply 1 change",
+      applyNone: "Pick at least one",
+      close: "Close",
+      metricVerbs: "open with a verb",
+      metricCoverage: "job ad coverage",
+      metricBullets: "bullets",
+      toolbarButton: "CVfix",
+      appliedToast: "Applied {0} changes",
+      targetLabel: "The job you're targeting",
+      targetPlaceholder: "Paste the ad here, so the wording is matched to it.",
+      targetNone: "No job ad — these suggestions are about the CV in general.",
+      targetSet: "Tailored to the job ad you gave.",
+      targetAdd: "Add a job ad",
+      targetChange: "Change",
+      rerun: "Run again",
     },
     emptyStates: {
       experience: "You haven't added any work experience yet.",

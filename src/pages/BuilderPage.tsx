@@ -21,9 +21,7 @@ import { SimpleNameListForm } from "../components/forms/SimpleNameListForm";
 import { SectionOrderList } from "../components/forms/SectionOrderList";
 import { createEmptyCvData } from "../data/defaultData";
 import { getTemplate } from "../templates/registry";
-import { CvisorPanel } from "../cvisor/CvisorPanel";
-import { applyDraft } from "../cvisor/agent";
-import type { CvDraft } from "../cvisor/agent";
+import { CvFixWindow } from "../cvfix/CvFixWindow";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { AtsScoreChip } from "../ats/AtsScoreChip";
 import { hasStructuralFailure } from "../ats/analyze";
@@ -75,7 +73,7 @@ export function BuilderPage({
   onOpenScan,
   onOpenMyCvs,
   onOpenProfile,
-  autoOpenCvisor = false,
+  onOpenCvisor,
 }: {
   dictionary: Dictionary;
   language: LanguageCode;
@@ -84,7 +82,7 @@ export function BuilderPage({
   onOpenScan: () => void;
   onOpenMyCvs: () => void;
   onOpenProfile: () => void;
-  autoOpenCvisor?: boolean;
+  onOpenCvisor: () => void;
 }) {
   const cv = useCvData();
   const { user } = useAuth();
@@ -93,7 +91,7 @@ export function BuilderPage({
   const { containerRef, scale } = usePreviewScale();
   const [openSection, setOpenSection] = useState<SectionId>("personalInfo");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isCvisorOpen, setIsCvisorOpen] = useState(autoOpenCvisor);
+  const [isCvFixOpen, setIsCvFixOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSavingToCloud, setIsSavingToCloud] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
@@ -237,11 +235,6 @@ export function BuilderPage({
     }
   };
 
-  const handleApplyCvisor = (draft: CvDraft) => {
-    cv.replaceAll(applyDraft(cv.data, draft));
-    setOpenSection("summary");
-  };
-
   const sectionLabels: Record<SectionKey, string> = {
     experience: dictionary.sections.experience,
     education: dictionary.sections.education,
@@ -315,9 +308,11 @@ export function BuilderPage({
               warnLabel={dictionary.ats.formatIssue}
               onClick={onOpenScan}
             />
-            <button type="button" className="builder-cvisor-button" onClick={() => setIsCvisorOpen(true)}>
-              <Icon name="sparkles" size={15} />
-              {dictionary.cvisor.brand}
+            {/* CVfix, not CVisor: the toolbar acts on the CV in front of you,
+                and CVisor now builds one from scratch at its own route. */}
+            <button type="button" className="builder-cvisor-button" onClick={() => setIsCvFixOpen(true)}>
+              <Icon name="zap" size={15} />
+              {dictionary.cvfix.toolbarButton}
             </button>
             <button
               type="button"
@@ -367,6 +362,17 @@ export function BuilderPage({
                       {dictionary.siteNav.myCvs}
                     </button>
                   )}
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      onOpenCvisor();
+                    }}
+                  >
+                    <Icon name="sparkles" size={15} />
+                    {dictionary.cvisor.openButton}
+                  </button>
                   <button type="button" role="menuitem" onClick={handleExportJson}>
                     <Icon name="download" size={15} />
                     {dictionary.nav.exportJson}
@@ -619,16 +625,22 @@ export function BuilderPage({
         </div>
       </div>
 
-      <CvisorPanel
-        open={isCvisorOpen}
-        onClose={() => setIsCvisorOpen(false)}
-        dictionary={dictionary}
-        language={language}
-        jobAd={jobAd}
-        onJobAdChange={setJobAd}
-        currentCv={cv.data}
-        onApply={handleApplyCvisor}
-      />
+      {isCvFixOpen && (
+        <CvFixWindow
+          onClose={() => setIsCvFixOpen(false)}
+          cv={cv.data}
+          jobAd={jobAd}
+          onJobAdChange={setJobAd}
+          language={language}
+          dictionary={dictionary}
+          onApply={(next) => {
+            // One history entry for the whole batch: undo should put the CV
+            // back the way it was before CVfix ran, not unpick it change by
+            // change.
+            cv.replaceAll(next);
+          }}
+        />
+      )}
 
       <SupportBadge dictionary={dictionary} />
       {showSupportModal && (

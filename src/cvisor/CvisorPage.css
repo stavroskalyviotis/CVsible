@@ -1,0 +1,414 @@
+.cvisor-page {
+  min-height: 100%;
+  background: var(--paper);
+}
+
+/* Conversation left, the CV it is producing right. Seeing an answer land in a
+   document is what makes the next question worth answering. */
+.cvisor-main {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 32px;
+  align-items: start;
+}
+
+.cvisor-talk {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.cvisor-talk-head h1 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.cvisor-talk-head p {
+  margin-top: 7px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 56ch;
+}
+
+/* ------------------------------------------------------------------- rail */
+
+.cvisor-rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+
+.cvisor-rail li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  opacity: 0.6;
+}
+
+.cvisor-rail-dot {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cvisor-rail li.active {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.cvisor-rail li.active .cvisor-rail-dot {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.cvisor-rail li.done {
+  opacity: 1;
+  color: #1d7a4b;
+}
+
+.cvisor-rail li.done .cvisor-rail-dot {
+  border-color: #1d7a4b;
+  background: #1d7a4b;
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------- step */
+
+.cvisor-step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.cvisor-step-prompt {
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.cvisor-step-hint {
+  font-size: 0.83rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin-top: -8px;
+  max-width: 58ch;
+}
+
+.cvisor-step-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cvisor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.cvisor-field em {
+  font-style: normal;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.cvisor-field input,
+.cvisor-field textarea {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  font-family: inherit;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  resize: vertical;
+}
+
+.cvisor-field input:focus,
+.cvisor-field textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Yes/no is a tap, not a sentence to type. */
+.cvisor-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cvisor-choice {
+  padding: 12px 26px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.cvisor-choice:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cvisor-step-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.cvisor-step-forward {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.cvisor-step-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  padding: 8px 2px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.cvisor-step-back:hover {
+  color: var(--ink);
+}
+
+.cvisor-step .cvisor-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ------------------------------------------------------------------ chrome */
+
+.cvisor-import {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+
+.cvisor-import strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.cvisor-import span {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+.cvisor-import button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.cvisor-imported,
+.cvisor-asking {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.cvisor-imported {
+  color: #1d7a4b;
+}
+
+.cvisor-spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.cvisor-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 26px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.cvisor-ready h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.cvisor-ready p {
+  font-size: 0.87rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 58ch;
+}
+
+.cvisor-not-enough {
+  color: #97372f;
+  font-weight: 600;
+}
+
+.cvisor-restart {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 4px 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: underline;
+}
+
+.cvisor-page .cvisor-error {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- preview */
+
+.cvisor-preview {
+  position: sticky;
+  top: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cvisor-preview-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.cvisor-preview-empty {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin-top: -4px;
+}
+
+/* The CV renders at a fixed A4 width and is zoomed down to fit, the same way
+   the builder does it — a preview that reflowed would not be a preview of the
+   page that gets printed. */
+.cvisor-preview-frame {
+  display: flex;
+  justify-content: center;
+  padding: 18px 12px;
+  border-radius: var(--radius-md);
+  background: #ece9e5;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+.cvisor-preview-scaled {
+  height: fit-content;
+}
+
+@media (max-width: 1000px) {
+  .cvisor-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+
+  /* Below the questions rather than beside them: on a phone the preview is
+     something you check, not something you watch. */
+  .cvisor-preview {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .cvisor-main {
+    padding: 20px 14px 48px;
+  }
+
+  .cvisor-step {
+    padding: 18px 16px;
+  }
+
+  .cvisor-step-prompt {
+    font-size: 1.06rem;
+  }
+
+  .cvisor-step-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cvisor-step-forward {
+    margin-left: 0;
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cvisor-step-forward .cvisor-primary,
+  .cvisor-step-forward .cvisor-ghost {
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .cvisor-choice {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .cvisor-import button {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}

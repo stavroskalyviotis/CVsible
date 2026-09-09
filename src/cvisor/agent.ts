@@ -54,7 +54,9 @@ export interface CvFixIssues {
   structure: string[];
 }
 
-export interface CvFixResult {
+/** Phase one for an uploaded CV: the candidate's own words moved into fields,
+ *  with nothing reworded. See api/cvfix-structure.ts. */
+export interface CvFixStructureResult {
   draft: CvDraft;
   verified: boolean;
   rounds: number;
@@ -104,14 +106,14 @@ export function runCvisorAgent(
   return driveLoop<AgentIssues>("/api/cvisor-step", params, onRound);
 }
 
-export function runCvFix(
+export function runCvFixStructure(
   params: { resumeText: string; language: LanguageCode },
   onRound?: (round: number, done: boolean) => void,
-): Promise<CvFixResult> {
-  return driveLoop<CvFixIssues>("/api/cvfix", params, onRound);
+): Promise<CvFixStructureResult> {
+  return driveLoop<CvFixIssues>("/api/cvfix-structure", params, onRound);
 }
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -119,7 +121,7 @@ function escapeHtml(value: string): string {
 }
 
 /** Bullets come back as plain strings; the editor stores rich text. */
-function bulletsToHtml(bullets: string[]): string {
+export function bulletsToHtml(bullets: string[]): string {
   const items = bullets.map((bullet) => bullet.trim()).filter(Boolean);
   if (items.length === 0) return "";
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
