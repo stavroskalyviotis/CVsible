@@ -2,7 +2,7 @@ import type { Dictionary } from "../i18n/translations";
 import type { CvData, SectionKey } from "../types";
 import { getTemplate, mainFlowSections, sidebarFlowSections, templateShowsPhoto } from "../templates/registry";
 import { formatMonth, formatRange } from "../pagination/format";
-import { inlineSectionText } from "../pagination/sectionText";
+import { inlineSectionText, skillGroups } from "../pagination/sectionText";
 import { sectionTitle } from "../pagination/blockMeta";
 import { buildPdfFilename } from "../utils/exportPdf";
 import { plainText } from "../utils/richText";
@@ -74,6 +74,16 @@ function sectionLines(section: SectionKey, data: CvData, dictionary: Dictionary)
       lines.push(item.title);
       const meta = [item.issuer, formatMonth(item.date, locale)].filter(Boolean).join(", ");
       if (meta) lines.push(meta);
+    });
+    return lines;
+  }
+
+  if (section === "skills") {
+    // Categorised skills print one line per category, so the analyser has to
+    // read them that way too — the category words are keywords in their own
+    // right ("Customer service", "Programming languages").
+    skillGroups(data, dictionary).forEach((group) => {
+      lines.push(group.category ? `${group.category}: ${group.text}` : group.text);
     });
     return lines;
   }

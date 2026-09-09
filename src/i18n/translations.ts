@@ -109,6 +109,7 @@ export interface Dictionary {
     degree: string;
     institution: string;
     skillName: string;
+    skillCategory: string;
     skillLevel: string;
     softSkillName: string;
     languageName: string;
@@ -149,6 +150,7 @@ export interface Dictionary {
     institution: string;
     educationDescription: string;
     skillName: string;
+    skillCategory: string;
     softSkillName: string;
     languageName: string;
     interestName: string;
@@ -240,6 +242,8 @@ export interface Dictionary {
   languageLevels: string[];
   /** Four buckets, lowest to highest, used to word a skill level as text. */
   skillLevels: [string, string, string, string];
+  /** Explains what filling in a category does to the printed section. */
+  skillCategoryHint: string;
   ats: {
     navLabel: string;
     title: string;
@@ -688,6 +692,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       degree: "Τίτλος σπουδών",
       institution: "Ίδρυμα",
       skillName: "Δεξιότητα",
+      skillCategory: "Κατηγορία",
       skillLevel: "Επίπεδο",
       softSkillName: "Ήπια δεξιότητα",
       languageName: "Γλώσσα",
@@ -729,6 +734,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Όνομα ιδρύματος",
       educationDescription: "Προαιρετικές λεπτομέρειες, βαθμός, διπλωματική.",
       skillName: "π.χ. Figma",
+      skillCategory: "π.χ. Σχεδιασμός",
       softSkillName: "π.χ. Ομαδικότητα",
       languageName: "π.χ. Αγγλικά",
       interestName: "π.χ. Φωτογραφία",
@@ -835,6 +841,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Μητρική γλώσσα",
     ],
     skillLevels: ["Βασικό", "Μέτριο", "Προχωρημένο", "Άριστο"],
+    skillCategoryHint:
+      "Η κατηγορία είναι προαιρετική. Όσες δεξιότητες έχουν κατηγορία μπαίνουν σε δική τους γραμμή με τον τίτλο μπροστά· όσες δεν έχουν, μένουν όλες μαζί σε μία σειρά.",
     ats: {
       navLabel: "CVscan",
       title: "CVscan — τεχνικός έλεγχος ATS",
@@ -1393,6 +1401,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       degree: "Degree",
       institution: "Institution",
       skillName: "Skill",
+      skillCategory: "Category",
       skillLevel: "Level",
       softSkillName: "Soft skill",
       languageName: "Language",
@@ -1433,6 +1442,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       institution: "Institution name",
       educationDescription: "Optional details, GPA, thesis.",
       skillName: "e.g. Figma",
+      skillCategory: "e.g. Design",
       softSkillName: "e.g. Teamwork",
       languageName: "e.g. English",
       interestName: "e.g. Photography",
@@ -1539,6 +1549,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       "Native",
     ],
     skillLevels: ["Basic", "Intermediate", "Advanced", "Expert"],
+    skillCategoryHint:
+      "The category is optional. Skills that have one get their own line with the category in front; skills without one stay together on a single line.",
     ats: {
       navLabel: "CVscan",
       title: "CVscan — technical ATS check",

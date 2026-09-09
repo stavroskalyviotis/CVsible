@@ -92,6 +92,18 @@
   color: #3a3640;
 }
 
+/* A category line reads as "label: keywords". Bold, same size, same colour as
+   the skills it introduces — a parser sees one run of text either way, and a
+   human sees where each group starts. */
+.cv-skill-category {
+  font-weight: 700;
+  color: var(--cv-ink);
+}
+
+.cv-inline-list + .cv-inline-list {
+  margin-top: 3px;
+}
+
 .cv-summary {
   line-height: 1.45;
   color: #3a3640;
@@ -267,6 +279,19 @@
 .cv-tpl-aurora .cv-lang-list li {
   font-size: calc(0.8rem * var(--cv-scale));
   line-height: 1.35;
+}
+
+/* Categories inside the sidebar: separated by space, not by another rule, so
+   the column keeps one visual weight per heading level. */
+.cv-tpl-aurora .cv-side-group + .cv-side-group {
+  margin-top: calc(10px * var(--cv-scale));
+}
+
+.cv-tpl-aurora .cv-side-subhead {
+  font-size: calc(0.74rem * var(--cv-scale));
+  font-weight: 700;
+  color: var(--cv-sidebar-text, #fff);
+  margin-bottom: calc(4px * var(--cv-scale));
 }
 
 .cv-tpl-aurora .cv-lang-list li {

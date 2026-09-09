@@ -7,7 +7,7 @@ import { upperCaseForDisplay } from "../utils/text";
 import { contactHref, formatDateOfBirth } from "./contactLinks";
 import { getTemplate, sidebarFlowSections, templateShowsPhoto } from "../templates/registry";
 import { BlockContent, SectionHeading } from "./blocks";
-import { inlineSectionText, skillText } from "./sectionText";
+import { inlineSectionText, skillItemGroups, skillText } from "./sectionText";
 import type { PageBlock } from "./usePagination";
 
 function initials(name: string): string {
@@ -48,14 +48,21 @@ function SidebarSection({
 }) {
   if (section === "skills") {
     if (data.skills.length === 0) return null;
+    // One list per category, each under its own subheading. With no categories
+    // this is a single unlabelled list — exactly the column it always was.
     return (
       <section className="cv-side-section">
         <h2>{dictionary.sections.skills}</h2>
-        <ul className="cv-skill-list">
-          {data.skills.map((item) => (
-            <li key={item.id}>{skillText(item.name, item.level, data.skillDisplay, dictionary)}</li>
-          ))}
-        </ul>
+        {skillItemGroups(data.skills).map((group) => (
+          <div key={group.category} className="cv-side-group">
+            {group.category && <h3 className="cv-side-subhead">{group.category}</h3>}
+            <ul className="cv-skill-list">
+              {group.items.map((item) => (
+                <li key={item.id}>{skillText(item.name, item.level, data.skillDisplay, dictionary)}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </section>
     );
   }

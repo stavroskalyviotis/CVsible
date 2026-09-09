@@ -4,7 +4,7 @@ import { createId } from "../../utils/id";
 import { Icon } from "../Icon";
 import { AddButton, EmptyHint } from "../ui/AccordionSection";
 import { EntryCard } from "../ui/EntryCard";
-import { RangeField, TextField } from "../ui/FormField";
+import { FieldRow, RangeField, SuggestField, TextField } from "../ui/FormField";
 import "./SkillsForm.css";
 
 type SkillActions = {
@@ -17,6 +17,18 @@ type SkillActions = {
 
 function capitalize(word: string): string {
   return word.charAt(0).toLocaleUpperCase("el") + word.slice(1);
+}
+
+/** The categories already in use, in the order they were introduced. Offered
+ *  back to the user so the second "Kitchen" is picked, not retyped — a typo
+ *  there silently splits one heading into two. */
+function usedCategories(items: SkillItem[]): string[] {
+  const seen: string[] = [];
+  items.forEach((item) => {
+    const category = item.category.trim();
+    if (category && !seen.includes(category)) seen.push(category);
+  });
+  return seen;
 }
 
 export function SkillsForm({
@@ -33,6 +45,10 @@ export function SkillsForm({
   suggestions?: string[];
 }) {
   const { fields, placeholders, actions: actionLabels } = dictionary;
+  const categories = usedCategories(items);
+  // Someone filling in "Kitchen: five things" types the category once, not five
+  // times, so a new row starts in the same category as the row above it.
+  const nextCategory = items.length > 0 ? items[items.length - 1].category : "";
 
   return (
     <>
@@ -72,12 +88,21 @@ export function SkillsForm({
           moveDownLabel={actionLabels.moveDown}
           dragLabel={actionLabels.dragReorder}
         >
-          <TextField
-            label={fields.skillName}
-            value={item.name}
-            placeholder={placeholders.skillName}
-            onChange={(name) => actions.update(item.id, { name })}
-          />
+          <FieldRow>
+            <TextField
+              label={fields.skillName}
+              value={item.name}
+              placeholder={placeholders.skillName}
+              onChange={(name) => actions.update(item.id, { name })}
+            />
+            <SuggestField
+              label={fields.skillCategory}
+              value={item.category}
+              placeholder={placeholders.skillCategory}
+              suggestions={categories}
+              onChange={(category) => actions.update(item.id, { category })}
+            />
+          </FieldRow>
           <RangeField
             label={fields.skillLevel}
             value={item.level}
@@ -86,9 +111,11 @@ export function SkillsForm({
         </EntryCard>
       ))}
 
+      {items.length > 0 && <p className="skill-category-hint">{dictionary.skillCategoryHint}</p>}
+
       <AddButton
         label={actionLabels.add}
-        onClick={() => actions.add({ id: createId(), name: "", level: 70, category: "" })}
+        onClick={() => actions.add({ id: createId(), name: "", level: 70, category: nextCategory })}
       />
     </>
   );

@@ -33,3 +33,12 @@
 .skill-suggestion-chip:hover {
   border-color: var(--accent);
 }
+
+/* The category field changes how the section is laid out, which is not
+   guessable from an empty box — so say it, once, where it will be read. */
+.skill-category-hint {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}

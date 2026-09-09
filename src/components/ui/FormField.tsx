@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import "./FormField.css";
 
 export function TextField({
@@ -39,6 +39,46 @@ export function TextAreaField({
     <label className="field">
       <span>{label}</span>
       <textarea rows={rows} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+    </label>
+  );
+}
+
+/** A text field that offers what has been typed before, without imposing it.
+ *  Used for the skill category, where the value has to repeat exactly to group
+ *  ("Kitchen" and "kitchen" are two headings) but must never be a fixed list —
+ *  the categories are whatever this particular CV needs. */
+export function SuggestField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  suggestions,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  suggestions: string[];
+}) {
+  const listId = useId();
+  const hasSuggestions = suggestions.length > 0;
+  return (
+    <label className="field">
+      <span>{label}</span>
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        list={hasSuggestions ? listId : undefined}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {hasSuggestions && (
+        <datalist id={listId}>
+          {suggestions.map((option) => (
+            <option key={option} value={option} />
+          ))}
+        </datalist>
+      )}
     </label>
   );
 }

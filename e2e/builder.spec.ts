@@ -126,6 +126,38 @@ test.describe("Builder", () => {
     expect(errors).toEqual([]);
   });
 
+  test("skills split into their categories, and uncategorised ones stay on one line", async ({ page }) => {
+    await page.locator(".accordion-header", { hasText: /^(skills|δεξιότητες)$/i }).click();
+
+    const rows: [string, string][] = [
+      ["HACCP", "Kitchen"],
+      ["Sauces", "Kitchen"],
+      ["Excel", "Office"],
+      ["Driving licence", ""],
+    ];
+    for (let i = 0; i < rows.length; i++) {
+      await page.locator(".add-button").last().click();
+      const card = page.locator(".entry-card").nth(i);
+      await card.getByLabel(/^(skill|δεξιότητα)$/i).fill(rows[i][0]);
+      await card.getByLabel(/^(category|κατηγορία)$/i).fill(rows[i][1]);
+    }
+
+    // One line per category, with the leftovers gathered on a line of their own.
+    const lines = page.locator(".builder-preview .cv-inline-list");
+    await expect(lines).toHaveCount(3);
+    await expect(lines.nth(0)).toContainText("Kitchen:");
+    await expect(lines.nth(0)).toContainText("HACCP");
+    await expect(lines.nth(0)).toContainText("Sauces");
+    await expect(lines.nth(1)).toContainText("Office:");
+    await expect(lines.nth(2)).toHaveText(/^Driving licence/);
+
+    // Typing a category once is enough: the next row opens in the same one, so
+    // filling in "Kitchen: five things" does not mean typing Kitchen five times.
+    await page.locator(".entry-card").nth(3).getByLabel(/^(category|κατηγορία)$/i).fill("Office");
+    await page.locator(".add-button").last().click();
+    await expect(page.locator(".entry-card").nth(4).getByLabel(/^(category|κατηγορία)$/i)).toHaveValue("Office");
+  });
+
   test("the toolbar flags a two-column template without moving the content score", async ({ page }) => {
     // Enough text to clear the analyser's "is there anything here yet" floor,
     // so the layout is actually evaluated.

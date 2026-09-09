@@ -1,5 +1,5 @@
 import type { Dictionary } from "../i18n/translations";
-import type { CvData, SkillDisplay } from "../types";
+import type { CvData, SkillDisplay, SkillItem } from "../types";
 
 /** Buckets the 0-100 slider into a word a human (and a parser) can read. */
 export function skillLevelLabel(level: number, dictionary: Dictionary): string {
@@ -26,29 +26,43 @@ export interface SkillGroup {
   text: string;
 }
 
-/** Skills split into their categories, in the order the categories first
- *  appear, with the unsorted ones last.
- *
- *  Returns a single empty-category group when nothing is categorised, so the
- *  caller renders exactly the one inline line it always did. "Kitchen: HACCP,
- *  Sauces" on its own line is also what a parser handles best — the category
- *  reads as a label, and the skills stay a comma-separated keyword list. */
-export function skillGroups(data: CvData, dictionary: Dictionary): SkillGroup[] {
-  if (data.skills.length === 0) return [];
+export interface SkillItemGroup {
+  category: string;
+  items: SkillItem[];
+}
 
-  const byCategory = new Map<string, string[]>();
-  data.skills.forEach((item) => {
+/** Skills bucketed by category, in the order the categories first appear, with
+ *  the uncategorised ones last.
+ *
+ *  Categories are compared trimmed but kept as typed, so "Kitchen " and
+ *  "Kitchen" are one group and the heading keeps the user's capitalisation.
+ *  When nothing is categorised this is a single group with an empty category,
+ *  which is what makes the plain one-line rendering fall out unchanged. */
+export function skillItemGroups(skills: SkillItem[]): SkillItemGroup[] {
+  if (skills.length === 0) return [];
+
+  const byCategory = new Map<string, SkillItem[]>();
+  skills.forEach((item) => {
     const category = item.category.trim();
-    const label = skillText(item.name, item.level, data.skillDisplay, dictionary);
     const existing = byCategory.get(category);
-    if (existing) existing.push(label);
-    else byCategory.set(category, [label]);
+    if (existing) existing.push(item);
+    else byCategory.set(category, [item]);
   });
 
   return [...byCategory.entries()]
     // The unsorted pile belongs after the named groups, wherever it was typed.
     .sort(([a], [b]) => (a === "" ? 1 : 0) - (b === "" ? 1 : 0))
-    .map(([category, labels]) => ({ category, text: labels.join(", ") }));
+    .map(([category, items]) => ({ category, items }));
+}
+
+/** The same grouping, flattened to text for the single-column templates.
+ *  "Kitchen: HACCP, Sauces" on its own line is what a parser handles best — the
+ *  category reads as a label, and the skills stay a comma-separated list. */
+export function skillGroups(data: CvData, dictionary: Dictionary): SkillGroup[] {
+  return skillItemGroups(data.skills).map(({ category, items }) => ({
+    category,
+    text: items.map((item) => skillText(item.name, item.level, data.skillDisplay, dictionary)).join(", "),
+  }));
 }
 
 /** Comma-separated rendering used by the single-column templates. A parser reads
