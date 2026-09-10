@@ -2,7 +2,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import type { Dictionary } from "../i18n/translations";
 import { Icon } from "../components/Icon";
-import type { Step, StepAnswer } from "./interview";
+import type { Step, StepAnswer, StepField } from "./interview";
+import { CharCounter } from "../components/ui/CharCounter";
 
 /** One question.
  *
@@ -33,11 +34,17 @@ export function StepCard({
     Object.fromEntries(step.fields.map((field) => [field.name, initial?.[field.name] ?? ""])),
   );
 
+  const isOverLength = (field: StepField) =>
+    field.maxLength !== undefined && (values[field.name] ?? "").length > field.maxLength;
+
   const hasAnything = Object.values(values).some((value) => value.trim().length > 0);
+  // Blocked rather than truncated: silently cutting someone's pasted ad in
+  // half is worse than telling them it is too long.
+  const isTooLong = step.fields.some(isOverLength);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (!hasAnything) return;
+    if (!hasAnything || isTooLong) return;
     onSubmit(values);
   };
 
@@ -70,6 +77,7 @@ export function StepCard({
                   value={values[field.name] ?? ""}
                   placeholder={field.placeholder}
                   autoFocus={field === step.fields[0]}
+                  aria-invalid={isOverLength(field) || undefined}
                   onChange={(event) =>
                     setValues((current) => ({ ...current, [field.name]: event.target.value }))
                   }
@@ -84,6 +92,9 @@ export function StepCard({
                     setValues((current) => ({ ...current, [field.name]: event.target.value }))
                   }
                 />
+              )}
+              {field.maxLength !== undefined && (
+                <CharCounter value={values[field.name] ?? ""} max={field.maxLength} dictionary={dictionary} />
               )}
             </label>
           ))}
@@ -104,7 +115,7 @@ export function StepCard({
             </button>
           )}
           {!step.quickChoices && (
-            <button type="submit" className="cvisor-primary" disabled={!hasAnything}>
+            <button type="submit" className="cvisor-primary" disabled={!hasAnything || isTooLong}>
               {copy.next}
               <Icon name="arrow-right" size={15} />
             </button>

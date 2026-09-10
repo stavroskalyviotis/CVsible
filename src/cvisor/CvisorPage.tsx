@@ -28,7 +28,9 @@ import {
 } from "./interview";
 import type { InterviewState, Step, StepAnswer, StepId } from "./interview";
 import { interviewToPreviewCv, isPreviewEmpty } from "./interviewPreview";
-import { profileToInterview } from "./profileToInterview";
+import { profileHasAnything, profileToInterview, removeImported } from "./profileToInterview";
+import type { ProfileSelection } from "./profileToInterview";
+import { ProfileFillDialog } from "./ProfileFillDialog";
 import { StepCard } from "./StepCard";
 import "./cvisorShared.css";
 import "./CvisorPage.css";
@@ -89,7 +91,10 @@ export function CvisorPage({
   const [isAsking, setIsAsking] = useState(false);
   const [result, setResult] = useState<AgentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [importedProfile, setImportedProfile] = useState(false);
+  const [isPicking, setIsPicking] = useState(false);
+  /** Exactly what the last import wrote, so switching it back off removes
+   *  that and leaves anything edited since. */
+  const [imported, setImported] = useState<Record<StepId, StepAnswer> | null>(null);
 
   /** Which earlier question is being looked at again. Page state, not
    *  interview state: the interview records what has been answered, and where
@@ -166,10 +171,21 @@ export function CvisorPage({
     if (previousAnswered) setRevisiting(previousAnswered.id);
   };
 
-  const importFromProfile = () => {
+  const fillFromProfile = (selection: ProfileSelection) => {
     if (!profile) return;
-    setState((current) => profileToInterview(profile, current, dictionary));
-    setImportedProfile(true);
+    const result = profileToInterview(profile, state, dictionary, selection);
+    setState(result.state);
+    setImported(result.imported);
+    setIsPicking(false);
+    // Whatever was being revisited may no longer be the question to show.
+    setRevisiting(null);
+  };
+
+  const undoFill = () => {
+    if (!imported) return;
+    setState((current) => removeImported(current, imported));
+    setImported(null);
+    setRevisiting(null);
   };
 
   const build = async () => {
@@ -215,7 +231,7 @@ export function CvisorPage({
     setRevisiting(null);
     setResult(null);
     setPhase("interview");
-    setImportedProfile(false);
+    setImported(null);
   };
 
   const canBuild = hasEnoughToBuild(state);
@@ -249,24 +265,34 @@ export function CvisorPage({
 
           <ProgressRail group={step?.group ?? null} dictionary={dictionary} />
 
-          {profile && !importedProfile && phase === "interview" && (
-            <div className="cvisor-import">
-              <div>
-                <strong>{copy.importProfile}</strong>
-                <span>{copy.importProfileHint}</span>
-              </div>
-              <button type="button" className="cvisor-ghost" onClick={importFromProfile}>
-                <Icon name="download" size={14} />
-                {copy.importProfile}
-              </button>
+          {profile && profileHasAnything(profile) && phase === "interview" && (
+            <div className={`cvisor-import ${imported ? "filled" : ""}`}>
+              {imported ? (
+                /* A switch rather than a button: it reads as a state you are
+                   in and can leave, which is what makes it safe to try. */
+                <label className="cvisor-switch">
+                  <input type="checkbox" checked onChange={undoFill} />
+                  <span className="cvisor-switch-track" aria-hidden="true" />
+                  <span className="cvisor-switch-body">
+                    <strong>
+                      {copy.importedProfile.replace("{0}", String(Object.keys(imported).length))}
+                    </strong>
+                    <span>{copy.importedProfileHint}</span>
+                  </span>
+                </label>
+              ) : (
+                <>
+                  <div>
+                    <strong>{copy.importProfile}</strong>
+                    <span>{copy.importProfileHint}</span>
+                  </div>
+                  <button type="button" className="cvisor-ghost" onClick={() => setIsPicking(true)}>
+                    <Icon name="download" size={14} />
+                    {copy.importChoose}
+                  </button>
+                </>
+              )}
             </div>
-          )}
-
-          {importedProfile && phase === "interview" && (
-            <p className="cvisor-imported">
-              <Icon name="check" size={13} strokeWidth={2.8} />
-              {copy.importedProfile}
-            </p>
           )}
 
           {error && <p className="cvisor-error">{error}</p>}
@@ -289,10 +315,22 @@ export function CvisorPage({
               <h2>{copy.readyTitle}</h2>
               <p>{copy.readyBody}</p>
               {!canBuild && <p className="cvisor-not-enough">{copy.notEnough}</p>}
-              <button type="button" className="cvisor-primary" onClick={() => void build()} disabled={!canBuild}>
-                <Icon name="sparkles" size={15} />
-                {copy.buildButton}
-              </button>
+              <div className="cvisor-ready-actions">
+                {/* Filling from the profile answers most of the interview at
+                    once, so it is possible to arrive here without having seen
+                    a single one of those answers as a question. This is the
+                    way back into them that is not "start over". */}
+                {previousAnswered && (
+                  <button type="button" className="cvisor-step-back" onClick={goBack}>
+                    <Icon name="arrow-left" size={14} />
+                    {copy.reviewAnswers}
+                  </button>
+                )}
+                <button type="button" className="cvisor-primary" onClick={() => void build()} disabled={!canBuild}>
+                  <Icon name="sparkles" size={15} />
+                  {copy.buildButton}
+                </button>
+              </div>
             </div>
           )}
 
@@ -384,6 +422,16 @@ export function CvisorPage({
           )}
         </section>
       </main>
+
+      {isPicking && profile && (
+        <ProfileFillDialog
+          profile={profile}
+          dictionary={dictionary}
+          locale={language}
+          onCancel={() => setIsPicking(false)}
+          onFill={fillFromProfile}
+        />
+      )}
     </div>
   );
 }

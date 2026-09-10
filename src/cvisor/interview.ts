@@ -1,4 +1,5 @@
 import type { Dictionary } from "../i18n/translations";
+import { MAX_JOB_AD_CHARS } from "./limits";
 
 /** The CVisor interview.
  *
@@ -28,6 +29,10 @@ export interface StepField {
   kind: FieldKind;
   placeholder?: string;
   optional?: boolean;
+  /** When set, the field shows a live count and refuses to go past it. The
+   *  API rejects an over-long job ad with a 400, which reads as a broken
+   *  feature rather than an ad that is too long. */
+  maxLength?: number;
 }
 
 export type StepId = string;
@@ -137,7 +142,15 @@ export function buildSteps(state: InterviewState, dictionary: Dictionary): Step[
     hint: copy.targetHint,
     group: "target",
     skippable: true,
-    fields: [{ name: "value", label: copy.targetLabel, kind: "longtext", placeholder: copy.targetPlaceholder }],
+    fields: [
+      {
+        name: "value",
+        label: copy.targetLabel,
+        kind: "longtext",
+        placeholder: copy.targetPlaceholder,
+        maxLength: MAX_JOB_AD_CHARS,
+      },
+    ],
   });
 
   // ------------------------------------------------------------- experience

@@ -18,6 +18,8 @@ import type { ResumeAnalysis } from "../ats/analyzeText";
 import { cvToExtractedResume } from "../ats/cvToResume";
 import { CvFixCard } from "../cvisor/CvFixCard";
 import { CvFixWindow } from "../cvfix/CvFixWindow";
+import { MAX_JOB_AD_CHARS } from "../cvisor/limits";
+import { CharCounter } from "../components/ui/CharCounter";
 import { useCvisorJobAd } from "../cvisor/useCvisorJobAd";
 import { ACCEPTED_RESUME_TYPES, extractResume, ResumeReadError } from "../ats/extractResume";
 import type { ExtractedResume } from "../ats/extractResume";
@@ -330,8 +332,13 @@ export function AtsScanPage({
                 rows={4}
                 value={jobAd}
                 placeholder={dictionary.ats.jobAdPlaceholder}
+                aria-invalid={jobAd.length > MAX_JOB_AD_CHARS || undefined}
                 onChange={(event) => setJobAd(event.target.value)}
               />
+              {/* The keyword match is computed in the browser, so a long ad is
+                  harmless here — but this box feeds CVfix, which sends it, so
+                  the ceiling is worth knowing about before that call fails. */}
+              <CharCounter value={jobAd} max={MAX_JOB_AD_CHARS} dictionary={dictionary} />
               <p className="scan-hint">{dictionary.ats.jobAdHint}</p>
             </section>
 

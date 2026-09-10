@@ -333,6 +333,25 @@ export interface Dictionary {
   };
   /** The conversational intake. Separate from `cvisor`, which is the wording
    *  shared with the inline "improve this text" buttons. */
+  /** The two-level picker that fills the CVisor interview from the profile. */
+  profileFill: {
+    title: string;
+    intro: string;
+    back: string;
+    cancel: string;
+    save: string;
+    selectAll: string;
+    selectNone: string;
+    /** "{0}" chosen, "{1}" available. */
+    chosenOf: string;
+    /** "{0}" is how many entries were chosen in total. */
+    fill: string;
+    fillNone: string;
+  };
+  charCounter: {
+    /** "{0}" is how many characters over the limit. */
+    tooLong: string;
+  };
   cvisorChat: {
     title: string;
     intro: string;
@@ -395,13 +414,17 @@ export interface Dictionary {
     readyTitle: string;
     readyBody: string;
     buildButton: string;
+    reviewAnswers: string;
     notEnough: string;
     restart: string;
     restartConfirm: string;
     replaceConfirm: string;
     importProfile: string;
     importProfileHint: string;
+    importChoose: string;
+    /** "{0}" is how many answers the import filled in. */
     importedProfile: string;
+    importedProfileHint: string;
     /** Labels prefixed onto the source material handed to the agent. */
     sourceJob: string;
     sourceStudy: string;
@@ -1104,6 +1127,19 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
       },
     },
+    profileFill: {
+      title: "Τι να πάρω από το προφίλ σου;",
+      intro: "Διάλεξε ενότητα για να δεις τι υπάρχει μέσα και να ξεδιαλέξεις.",
+      back: "Πίσω στις ενότητες",
+      cancel: "Άκυρο",
+      save: "Αποθήκευση",
+      selectAll: "Επιλογή όλων",
+      selectNone: "Κανένα",
+      chosenOf: "{0} από {1}",
+      fill: "Συμπλήρωσε {0}",
+      fillNone: "Διάλεξε τουλάχιστον ένα",
+    },
+    charCounter: { tooLong: "{0} χαρακτήρες πάνω από το όριο" },
     cvisorChat: {
       title: "CVisor",
       intro: "Λίγες ερωτήσεις, μία κάθε φορά. Το βιογραφικό χτίζεται δίπλα σου καθώς απαντάς.",
@@ -1167,14 +1203,17 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       readyBody:
         "Θα τα γράψω σε κανονικό βιογραφικό — με ρήματα δράσης, το λεξιλόγιο της αγγελίας και χωρίς να προσθέσω τίποτα που δεν μου είπες.",
       buildButton: "Φτιάξε το βιογραφικό",
+      reviewAnswers: "Δες τις απαντήσεις",
       notEnough: "Πες μου πρώτα για μία δουλειά ή για τις σπουδές σου.",
       restart: "Από την αρχή",
       restartConfirm: "Να σβηστούν όσα έχεις απαντήσει;",
       replaceConfirm:
         "Έχεις ήδη ένα βιογραφικό στον editor και θα αντικατασταθεί από αυτό. Να συνεχίσω;",
       importProfile: "Συμπλήρωση από το προφίλ μου",
-      importProfileHint: "Θα προσυμπληρώσω όσα έχεις ήδη αποθηκευμένα, για να μην τα ξαναγράφεις.",
-      importedProfile: "Συμπληρώθηκαν από το προφίλ σου",
+      importProfileHint: "Διάλεξε τι θέλεις να περάσει, για να μην τα ξαναγράφεις.",
+      importChoose: "Διάλεξε τι θα περάσει",
+      importedProfile: "Συμπληρώθηκαν {0} απαντήσεις από το προφίλ σου",
+      importedProfileHint: "Κλείσε τον διακόπτη για να τις αφαιρέσεις. Ό,τι έχεις αλλάξει από τότε μένει.",
       sourceJob: "Δουλειά",
       sourceStudy: "Σπουδές",
       sourceSkills: "Δεξιότητες",
@@ -1893,6 +1932,19 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
       },
     },
+    profileFill: {
+      title: "What should I take from your profile?",
+      intro: "Open a section to see what's in it and pick out what you want.",
+      back: "Back to the sections",
+      cancel: "Cancel",
+      save: "Save",
+      selectAll: "Select all",
+      selectNone: "None",
+      chosenOf: "{0} of {1}",
+      fill: "Fill in {0}",
+      fillNone: "Pick at least one",
+    },
+    charCounter: { tooLong: "{0} characters over the limit" },
     cvisorChat: {
       title: "CVisor",
       intro: "A few questions, one at a time. Your CV builds itself beside you as you answer.",
@@ -1956,14 +2008,17 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       readyBody:
         "I'll write it up as a proper CV — action verbs, the job ad's vocabulary, and nothing added that you didn't tell me.",
       buildButton: "Build my CV",
+      reviewAnswers: "Review the answers",
       notEnough: "Tell me about one job or your studies first.",
       restart: "Start over",
       restartConfirm: "Clear everything you've answered?",
       replaceConfirm:
         "You already have a CV in the editor and this will replace it. Continue?",
       importProfile: "Fill in from my profile",
-      importProfileHint: "I'll pre-fill what you've already saved, so you don't type it twice.",
-      importedProfile: "Filled in from your profile",
+      importProfileHint: "Pick what should come over, so you don't type it twice.",
+      importChoose: "Choose what comes over",
+      importedProfile: "Filled in {0} answers from your profile",
+      importedProfileHint: "Switch it off to take them back out. Anything you've changed since stays.",
       sourceJob: "Job",
       sourceStudy: "Studied",
       sourceSkills: "Skills",

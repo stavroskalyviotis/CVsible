@@ -495,3 +495,109 @@
   color: var(--ink);
   overflow-wrap: anywhere;
 }
+
+/* The import, once it has happened. A switch rather than an "undo" button:
+   it reads as a state you are in and can leave, which is what makes an import
+   safe to try in the first place. */
+.cvisor-import.filled {
+  border-color: #c6e3d1;
+  background: #f2faf5;
+}
+
+.cvisor-switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cvisor-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cvisor-switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 42px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: #1d7a4b;
+  transition: background 0.15s ease;
+}
+
+.cvisor-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 21px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.15s ease;
+}
+
+.cvisor-switch input:not(:checked) + .cvisor-switch-track {
+  background: var(--line-strong);
+}
+
+.cvisor-switch input:not(:checked) + .cvisor-switch-track::after {
+  left: 3px;
+}
+
+.cvisor-switch input:focus-visible + .cvisor-switch-track {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cvisor-switch-body strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #1c4f36;
+}
+
+.cvisor-switch-body span {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cvisor-switch-track,
+  .cvisor-switch-track::after {
+    transition: none;
+  }
+}
+
+.cvisor-ready-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.cvisor-ready-actions .cvisor-primary {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .cvisor-ready-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cvisor-ready-actions .cvisor-primary {
+    margin-left: 0;
+    justify-content: center;
+    min-height: 44px;
+  }
+}

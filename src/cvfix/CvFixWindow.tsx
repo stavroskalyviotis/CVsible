@@ -3,6 +3,8 @@ import type { Dictionary } from "../i18n/translations";
 import type { CvData, LanguageCode } from "../types";
 import { Icon } from "../components/Icon";
 import { mapCvisorErrorMessage } from "../cvisor/errors";
+import { MAX_JOB_AD_CHARS } from "../cvisor/limits";
+import { CharCounter } from "../components/ui/CharCounter";
 import { requestCvFix } from "./api";
 import { applyCvFixChanges } from "./applyChange";
 import type { ChangeDecision, CvFixChange, CvFixResult } from "./types";
@@ -179,6 +181,7 @@ export function CvFixWindow({
   }, [onClose]);
 
   const rerun = () => setRun((current) => ({ ...FRESH_RUN, attempt: current.attempt + 1 }));
+  const adTooLong = adDraft.length > MAX_JOB_AD_CHARS;
 
   const { stage, result, error } = run;
   const decisions = run.decisions;
@@ -264,8 +267,10 @@ export function CvFixWindow({
                   rows={5}
                   value={adDraft}
                   placeholder={copy.targetPlaceholder}
+                  aria-invalid={adTooLong || undefined}
                   onChange={(event) => setAdDraft(event.target.value)}
                 />
+                <CharCounter value={adDraft} max={MAX_JOB_AD_CHARS} dictionary={dictionary} />
                 <div className="cvfix-target-actions">
                   <button type="button" className="cvisor-ghost" onClick={() => setIsEditingAd(false)}>
                     {copy.cancel}
@@ -273,6 +278,7 @@ export function CvFixWindow({
                   <button
                     type="button"
                     className="cvisor-primary"
+                    disabled={adTooLong}
                     onClick={() => {
                       onJobAdChange?.(adDraft);
                       setIsEditingAd(false);

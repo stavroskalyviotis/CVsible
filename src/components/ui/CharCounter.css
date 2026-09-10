@@ -1,0 +1,39 @@
+.char-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The count sits at the end of the row, so the eye finds it in the same place
+   whether or not there is a warning beside it. */
+.char-counter-count {
+  margin-left: auto;
+}
+
+.char-counter-max {
+  opacity: 0.65;
+}
+
+.char-counter.near {
+  color: #8a5f14;
+}
+
+.char-counter.over {
+  color: #97372f;
+}
+
+.char-counter-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fdeeec;
+  border: 1px solid #f2cdc9;
+}
