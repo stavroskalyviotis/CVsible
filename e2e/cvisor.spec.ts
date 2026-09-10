@@ -1,4 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const SAMPLE = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "sample-resume.txt");
 
 /** The follow-up call is the one part of the interview the model drives, so it
  *  is stubbed rather than skipped — the questions have to arrive in the right
@@ -177,5 +181,91 @@ test.describe("CVisor", () => {
 
     // The CV is still usable — this is a warning, not a dead end.
     await expect(page.getByRole("button", { name: /apply|εφάρμοσ/i })).toBeEnabled();
+  });
+});
+
+test.describe("Finding CVisor", () => {
+  /** CVfix belongs on the report — it fixes the CV the report is about. But
+   *  "or start from scratch" used to open an empty builder, wasting the one
+   *  place on that page where starting over is what the reader wants. */
+  test("the report offers CVfix for this CV and CVisor for a fresh one", async ({ page }) => {
+    await page.goto("/#/ats");
+    await page.setInputFiles('input[type="file"]', SAMPLE);
+    await expect(page.locator(".scan-verdict")).toBeVisible({ timeout: 10_000 });
+
+    await expect(page.locator(".cvfix-card")).toBeVisible();
+    await page.getByRole("button", { name: /start with cvisor|ξεκίνα με τον cvisor/i }).click();
+    await expect(page).toHaveURL(/#\/cvisor/);
+  });
+
+  test("the builder keeps a way through to CVisor", async ({ page }) => {
+    await page.goto("/#/builder");
+    await page.waitForSelector(".cv-page");
+    await page.locator(".builder-icon-button[aria-haspopup='menu']").click();
+    await page.locator("[role='menuitem']", { hasText: /cvisor/i }).click();
+    await expect(page).toHaveURL(/#\/cvisor/);
+  });
+
+  /** From its own page CVisor writes straight to storage, so there is no undo
+   *  to fall back on the way there was when it lived inside the builder. */
+  test("asks before replacing a CV that already has something in it", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "cvsible:cv-data",
+        JSON.stringify({ personalInfo: { fullName: "Work In Progress" } }),
+      );
+    });
+    await page.route("**/api/cvisor-followup", (route) => route.fulfill({ json: { questions: [] } }));
+    await page.route("**/api/cvisor-step", (route) =>
+      route.fulfill({
+        json: {
+          draft: {
+            jobTitle: "Barista",
+            summary: "s",
+            experience: [],
+            education: [],
+            projects: [],
+            certifications: [],
+            skills: [],
+            softSkills: [],
+            languages: [],
+            interests: [],
+            notes: [],
+          },
+          done: true,
+          issues: { blocking: [], advice: [], missingKeywords: [], fabrication: [] },
+          metrics: { verbRatio: 1, bulletCount: 2, keywordRatio: null },
+          remaining: 4,
+        },
+      }),
+    );
+
+    await page.goto("/#/cvisor");
+    await page.locator(".cvisor-field textarea").fill("Barista");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    const inputs = page.locator(".cvisor-field input");
+    await inputs.nth(0).fill("Barista");
+    await inputs.nth(1).fill("Coffee Lab");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    await page.locator(".cvisor-field textarea").fill("Made coffee and ran the till every morning.");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    for (let guard = 0; guard < 12; guard++) {
+      const skip = page.getByRole("button", { name: /^(skip|προσπέραση)$/i });
+      const no = page.locator(".cvisor-choice").nth(1);
+      if (await skip.count()) await skip.click();
+      else if (await no.count()) await no.click();
+      else break;
+    }
+    await page.getByRole("button", { name: /build my cv|φτιάξε το βιογραφικό/i }).click();
+    await expect(page.locator(".cvisor-ready")).toContainText(/passed|πέρασε/i, { timeout: 20_000 });
+
+    // Declining leaves the work in place and goes nowhere.
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await page.getByRole("button", { name: /apply|εφάρμοσ/i }).click();
+    await expect(page).toHaveURL(/#\/cvisor/);
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: /apply|εφάρμοσ/i }).click();
+    await expect(page).toHaveURL(/#\/builder/);
   });
 });

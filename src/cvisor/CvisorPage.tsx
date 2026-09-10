@@ -9,7 +9,9 @@ import { buildSiteNav } from "../components/siteNav";
 import { AuthMenu } from "../auth/AuthMenu";
 import { usePreviewScale } from "../hooks/usePreviewScale";
 import { useProfile } from "../profile/useProfile";
-import { saveCvData, setCurrentCloudId } from "../utils/storage";
+import { loadCvData, saveCvData, setCurrentCloudId } from "../utils/storage";
+import { hasAnyContent } from "../data/defaultData";
+import { normalizeCvData } from "../data/normalize";
 import { applyDraft, runCvisorAgent } from "./agent";
 import type { AgentResult } from "./agent";
 import { requestFollowUps } from "./followUps";
@@ -180,8 +182,18 @@ export function CvisorPage({
     }
   };
 
+  /** Applying replaces whatever is in the editor. The old CVisor lived inside
+   *  the builder and applied through its undo history, so a mistake was one
+   *  Ctrl+Z away; from its own page it writes to storage directly and there is
+   *  nothing to undo. So it asks first — but only when there is genuinely
+   *  something to lose, since a confirmation nobody needs is one everybody
+   *  learns to dismiss. */
   const openInBuilder = () => {
     if (!result) return;
+
+    const stored = loadCvData<Partial<CvData>>();
+    if (stored && hasAnyContent(normalizeCvData(stored)) && !window.confirm(copy.replaceConfirm)) return;
+
     const base: CvData = profile
       ? { ...previewCv, personalInfo: { ...previewCv.personalInfo, ...profile.personalInfo } }
       : previewCv;

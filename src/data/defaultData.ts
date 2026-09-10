@@ -73,3 +73,17 @@ export function createEmptyProfile(): UserProfile {
     projects: [],
   };
 }
+
+/** Whether a document holds anything the user would mind losing.
+ *
+ *  A freshly-created CV is not empty — it carries default contacts, a
+ *  template and section order — so "is it the default one" cannot be answered
+ *  by comparing objects. These three fields are what someone actually types
+ *  first, and they are the test for whether replacing this CV needs asking. */
+export function hasAnyContent(data: CvData): boolean {
+  return (
+    data.personalInfo.fullName.trim() !== "" ||
+    data.experience.length > 0 ||
+    data.education.length > 0
+  );
+}

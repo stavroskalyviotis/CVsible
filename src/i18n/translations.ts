@@ -397,6 +397,7 @@ export interface Dictionary {
     notEnough: string;
     restart: string;
     restartConfirm: string;
+    replaceConfirm: string;
     importProfile: string;
     importProfileHint: string;
     importedProfile: string;
@@ -1007,10 +1008,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       fixCtaBody:
         "Ο CVfix διαβάζει το βιογραφικό σου με τα ίδια κριτήρια αυτής της αναφοράς και προτείνει συγκεκριμένες αλλαγές — βλέπεις τι αντικαθιστά η καθεμία και εγκρίνεις όποιες θέλεις.",
       fixCtaButton: "Άνοιγμα CVfix",
-      buildTitle: "Ή φτιάξ' το από την αρχή",
+      buildTitle: "Ή ξεκίνα από την αρχή",
       buildBody:
-        "Τρία από τα τέσσερα πρότυπα του builder είναι σχεδιασμένα να περνούν εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας — μονή στήλη, αναγνωρίσιμοι τίτλοι ενοτήτων. Οι υπόλοιποι έλεγχοι εξαρτώνται από τα στοιχεία που θα συμπληρώσεις.",
-      buildButton: "Άνοιγμα builder",
+        "Ο CVisor σε ρωτάει μία ερώτηση τη φορά και γράφει το βιογραφικό από τις απαντήσεις σου, σε πρότυπο που περνάει εξ ορισμού τους ελέγχους μορφοποίησης αυτής της σελίδας. Θα αντικαταστήσει ό,τι έχεις τώρα στον editor, οπότε είναι για όταν θες καθαρό ξεκίνημα.",
+      buildButton: "Ξεκίνα με τον CVisor",
       errorUnsupported: "Υποστηρίζονται μόνο αρχεία PDF, DOCX και TXT.",
       errorTooLarge: "Το αρχείο ξεπερνά τα 12 MB.",
       errorUnreadable: "Το αρχείο δεν μπόρεσε να διαβαστεί. Μπορεί να είναι κατεστραμμένο ή κλειδωμένο.",
@@ -1167,6 +1168,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       notEnough: "Πες μου πρώτα για μία δουλειά ή για τις σπουδές σου.",
       restart: "Από την αρχή",
       restartConfirm: "Να σβηστούν όσα έχεις απαντήσει;",
+      replaceConfirm:
+        "Έχεις ήδη ένα βιογραφικό στον editor και θα αντικατασταθεί από αυτό. Να συνεχίσω;",
       importProfile: "Συμπλήρωση από το προφίλ μου",
       importProfileHint: "Θα προσυμπληρώσω όσα έχεις ήδη αποθηκευμένα, για να μην τα ξαναγράφεις.",
       importedProfile: "Συμπληρώθηκαν από το προφίλ σου",
@@ -1793,10 +1796,10 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       fixCtaBody:
         "CVfix reads your CV against the same standards as this report and proposes specific changes — you see what each one replaces and approve the ones you want.",
       fixCtaButton: "Open CVfix",
-      buildTitle: "Or build it from scratch",
+      buildTitle: "Or start from scratch",
       buildBody:
-        "Three of the builder's four templates are designed to pass this page's formatting checks by default — single column, recognisable section headings. The rest of the checks depend on what you fill in.",
-      buildButton: "Open the builder",
+        "CVisor asks you one question at a time and writes the CV from your answers, in a template that passes this page's formatting checks by default. It replaces whatever is currently in the editor, so it's for when you want a clean start.",
+      buildButton: "Start with CVisor",
       errorUnsupported: "Only PDF, DOCX and TXT files are supported.",
       errorTooLarge: "That file is larger than 12 MB.",
       errorUnreadable: "The file could not be read. It may be damaged or password protected.",
@@ -1953,6 +1956,8 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       notEnough: "Tell me about one job or your studies first.",
       restart: "Start over",
       restartConfirm: "Clear everything you've answered?",
+      replaceConfirm:
+        "You already have a CV in the editor and this will replace it. Continue?",
       importProfile: "Fill in from my profile",
       importProfileHint: "I'll pre-fill what you've already saved, so you don't type it twice.",
       importedProfile: "Filled in from your profile",

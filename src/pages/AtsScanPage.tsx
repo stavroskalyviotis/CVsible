@@ -524,7 +524,13 @@ export function AtsScanPage({
                 <h2>{dictionary.ats.buildTitle}</h2>
                 <p>{dictionary.ats.buildBody}</p>
               </div>
-              <button type="button" className="scan-primary" onClick={() => navigate("builder")}>
+              {/* Both tools are on this page now, each for the situation it
+                  fits: CVfix above, for the CV the report is about; CVisor
+                  here, for someone who would rather start over. Sending this
+                  one to an empty builder wasted the only place where "from
+                  scratch" is what the reader is actually thinking. */}
+              <button type="button" className="scan-primary" onClick={() => navigate("cvisor")}>
+                <Icon name="sparkles" size={15} />
                 {dictionary.ats.buildButton}
               </button>
             </section>

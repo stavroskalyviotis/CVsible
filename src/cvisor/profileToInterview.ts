@@ -74,12 +74,21 @@ export function profileToInterview(
     });
   }
 
+  // Carry each entry's substance, not just its name. A project reduced to its
+  // title gives the agent nothing to write from, and it may not invent the
+  // rest — so it would land in the CV as a bare heading.
   const extras = [
-    ...profile.certifications.map((item) => [item.title, item.issuer].filter(Boolean).join(", ")),
-    ...profile.projects.map((item) => item.title),
+    ...profile.certifications.map((item) =>
+      [item.title, item.issuer, item.date ? formatMonth(item.date, dictionary.locale) : ""]
+        .filter(Boolean)
+        .join(", "),
+    ),
+    ...profile.projects.map((item) =>
+      [item.title, item.link, plainText(item.description)].filter(Boolean).join(" — "),
+    ),
     ...profile.interests.map((item) => item.name),
   ].filter(Boolean);
-  if (extras.length > 0) keep("extras", { value: extras.join("; ") });
+  if (extras.length > 0) keep("extras", { value: extras.join("\n") });
 
   return { ...current, answers };
 }
