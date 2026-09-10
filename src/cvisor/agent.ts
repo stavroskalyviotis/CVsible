@@ -73,7 +73,16 @@ export interface CvFixStructureResult {
  *  serverless duration limit and lets the UI report real progress. */
 const MAX_ROUNDS = 4;
 
-/** Feeds each round's draft back in until the server reports it clean. */
+/** Feeds each round's draft back in until the server reports it clean.
+ *
+ *  Two ways to stop early. The obvious one is success. The other is a stall:
+ *  if a round comes back with the critic's complaint list byte-identical to
+ *  the round before, the patch changed nothing the critic measures, and the
+ *  next round is very unlikely to differ either. Some blocking issues simply
+ *  cannot be fixed from the material the candidate gave — no amount of
+ *  rewriting invents a date they never mentioned — and spending the remaining
+ *  rounds re-reading the same complaint costs real money to arrive at the
+ *  same answer, more slowly. */
 async function driveLoop<TIssues>(
   endpoint: string,
   params: Record<string, unknown>,
@@ -81,6 +90,7 @@ async function driveLoop<TIssues>(
 ): Promise<{ draft: CvDraft; verified: boolean; rounds: number; issues: TIssues; remaining: number }> {
   let draft: CvDraft | undefined;
   let issues: TIssues | undefined;
+  let previousIssues: string | undefined;
   let remaining = 0;
   let done = false;
   let rounds = 0;
@@ -97,6 +107,10 @@ async function driveLoop<TIssues>(
     done = step.done;
     onRound?.(rounds, done);
     if (done) break;
+
+    const signature = JSON.stringify(step.issues);
+    if (signature === previousIssues) break;
+    previousIssues = signature;
   }
 
   if (!draft || !issues) throw new CvisorApiError("server_error");
