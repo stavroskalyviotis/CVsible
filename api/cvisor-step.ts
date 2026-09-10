@@ -175,7 +175,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         blocking: report.review.blocking,
         advice: report.review.advice,
         missingKeywords: report.review.missingKeywords,
-        fabrication: report.grounding.map((issue) => `${issue.field}: ${issue.value}`),
+        // Structured rather than pre-joined: the value ("Kubernetes") is what
+        // the candidate needs to see, the field path is for the logs.
+        fabrication: report.grounding.map((issue) => ({ field: issue.field, value: issue.value })),
       },
       metrics: report.review.metrics,
       remaining: rateLimit.remaining,

@@ -227,7 +227,8 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Το περιεχόμενό σου",
         body: [
           "Το βιογραφικό που φτιάχνεις είναι δικό σου — εσύ είσαι υπεύθυνος/η για την ακρίβεια των στοιχείων που καταχωρείς.",
-          "Ο CVisor και το CVfix αναδιατυπώνουν το κείμενό σου. Ελέγχονται αυτόματα ώστε να μην προσθέτουν γεγονός, εταιρεία, αριθμό ή δεξιότητα που δεν υπάρχει στα δικά σου λόγια, και ο CVfix σου δείχνει κάθε αλλαγή ξεχωριστά, με το πριν και το μετά, πριν εφαρμοστεί.",
+          "Ο CVisor και το CVfix αναδιατυπώνουν το κείμενό σου. Ένας αυτόματος έλεγχος εντοπίζει κάθε γεγονός, εταιρεία, αριθμό ή δεξιότητα που δεν υπάρχει στα δικά σου λόγια και το στέλνει πίσω για διόρθωση· ο CVfix απορρίπτει εντελώς όποια πρόταση δεν τον περνάει, και σου δείχνει κάθε αλλαγή ξεχωριστά, με το πριν και το μετά, πριν εφαρμοστεί.",
+          "Ο έλεγχος επισημαίνει, δεν σβήνει μόνος του. Ο CVisor δουλεύει σε περιορισμένο αριθμό γύρων, οπότε αν κάτι δεν προλάβει να διορθωθεί, σου εμφανίζεται πριν το εφαρμόσεις — και μένει δική σου ευθύνη να το αφαιρέσεις.",
           "Παρ' όλα αυτά, τα αποτελέσματα τεχνητής νοημοσύνης μπορεί περιστασιακά να μην είναι τέλεια. Ό,τι εγκρίνεις γίνεται δικό σου κείμενο: διάβασέ το πριν το στείλεις σε αίτηση εργασίας.",
         ],
       },
@@ -297,7 +298,8 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Your content",
         body: [
           "The CV you build is yours — you're responsible for the accuracy of what you enter.",
-          "CVisor and CVfix rewrite your wording. Both are checked automatically so they can't add a fact, company, number or skill that isn't in your own words, and CVfix shows you every change on its own, before and after, before it is applied.",
+          "CVisor and CVfix rewrite your wording. An automatic check finds any fact, company, number or skill that isn't in your own words and sends it back to be corrected; CVfix discards outright any proposal that fails it, and shows you every change on its own, before and after, before it is applied.",
+          "The check flags, it doesn't delete on its own. CVisor works in a limited number of rounds, so if something isn't fixed in time it is shown to you before you apply it — and removing it remains your responsibility.",
           "Even so, AI output can occasionally be imperfect. Whatever you accept becomes your text: read it before sending it with a job application.",
         ],
       },

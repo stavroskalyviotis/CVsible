@@ -109,4 +109,73 @@ test.describe("CVisor", () => {
     await expect(page.locator(".cvisor-ready")).toBeVisible();
     await expect(page.getByRole("button", { name: /build my cv|φτιάξε το βιογραφικό/i })).toBeDisabled();
   });
+
+  /** The loop is capped, so it can hand back a draft that never came clean.
+   *  Telling someone "review what's left" while showing them nothing is worse
+   *  than saying nothing at all — the grounding check reports rather than
+   *  strips, so a survivor is in the CV they are about to apply. */
+  test("names what it could not fix when it runs out of rounds", async ({ page }) => {
+    await page.route("**/api/cvisor-step", (route) =>
+      route.fulfill({
+        json: {
+          draft: {
+            jobTitle: "Barista",
+            summary: "A summary.",
+            experience: [],
+            education: [],
+            projects: [],
+            certifications: [],
+            skills: [],
+            softSkills: [],
+            languages: [],
+            interests: [],
+            notes: [],
+          },
+          done: false,
+          issues: {
+            blocking: ["experience[0].bullets[0] is too short.", "summary is too short."],
+            advice: [],
+            missingKeywords: [],
+            fabrication: [{ field: "skills[3]", value: "Kubernetes" }],
+          },
+          metrics: { verbRatio: 0.2, bulletCount: 3, keywordRatio: null },
+          remaining: 4,
+        },
+      }),
+    );
+
+    await page.locator(".cvisor-field textarea").fill("Barista");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    const inputs = page.locator(".cvisor-field input");
+    await inputs.nth(0).fill("Barista");
+    await inputs.nth(1).fill("Coffee Lab");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    await page.locator(".cvisor-field textarea").fill("Made coffee and ran the till every morning.");
+    await page.getByRole("button", { name: CONTINUE }).click();
+
+    for (let guard = 0; guard < 12; guard++) {
+      const skip = page.getByRole("button", { name: /^(skip|προσπέραση)$/i });
+      const no = page.locator(".cvisor-choice").nth(1);
+      if (await skip.count()) await skip.click();
+      else if (await no.count()) await no.click();
+      else break;
+    }
+
+    await page.getByRole("button", { name: /build my cv|φτιάξε το βιογραφικό/i }).click();
+
+    // It gives up rather than looping forever, and says so.
+    await expect(page.locator(".cvisor-ready")).toContainText(/some issues remain|έμειναν εκκρεμότητες/i, {
+      timeout: 20_000,
+    });
+
+    // The invented fact is named, by value — not by its internal field path.
+    await expect(page.locator(".cvisor-chips")).toContainText("Kubernetes");
+    await expect(page.locator(".cvisor-outstanding")).not.toContainText("skills[3]");
+
+    // And the rest is counted rather than dumped as raw checker output.
+    await expect(page.locator(".cvisor-outstanding-count")).toContainText("2");
+
+    // The CV is still usable — this is a warning, not a dead end.
+    await expect(page.getByRole("button", { name: /apply|εφάρμοσ/i })).toBeEnabled();
+  });
 });

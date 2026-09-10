@@ -294,6 +294,54 @@
   max-width: 58ch;
 }
 
+/* What the loop could not fix. Warm rather than alarming: the CV is usable,
+   these are the lines to look at before it goes anywhere. */
+.cvisor-outstanding {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: #fdf5e6;
+  border: 1px solid #efdcb8;
+}
+
+.cvisor-outstanding h3 {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a5f14;
+  margin-bottom: 9px;
+}
+
+.cvisor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 9px;
+}
+
+.cvisor-chips span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--paper-raised);
+  border: 1px solid #efdcb8;
+  color: #8a5f14;
+}
+
+.cvisor-outstanding p {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #8a5f14;
+}
+
+.cvisor-outstanding-count {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
 .cvisor-not-enough {
   color: #97372f;
   font-weight: 600;

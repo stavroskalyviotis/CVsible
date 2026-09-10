@@ -37,7 +37,11 @@ export interface AgentIssues {
   blocking: string[];
   advice: string[];
   missingKeywords: string[];
-  fabrication: string[];
+  /** Facts in the draft that the candidate's own words don't support. The
+   *  loop feeds these back for the model to remove, but the check reports
+   *  rather than strips — anything still here after the last round reached
+   *  the draft, and has to be shown. */
+  fabrication: { field: string; value: string }[];
 }
 
 export interface AgentResult {

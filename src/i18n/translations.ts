@@ -434,6 +434,10 @@ export interface Dictionary {
     verifiedHint: string;
     unverified: string;
     unverifiedHint: string;
+    fabricationTitle: string;
+    fabricationHint: string;
+    /** "{0}" is how many checks the draft still fails. */
+    blockingLeft: string;
     changesTitle: string;
     apply: string;
     back: string;
@@ -1204,7 +1208,12 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       verifiedHint:
         "Κάθε εταιρεία, δεξιότητα και αριθμός επαληθεύτηκε ότι υπάρχει στα δικά σου στοιχεία.",
       unverified: "Έμειναν εκκρεμότητες",
-      unverifiedHint: "Ο CVisor δεν πρόλαβε να τα διορθώσει όλα. Δες τι έμεινε πριν το εφαρμόσεις.",
+      unverifiedHint:
+        "Ο CVisor δεν πρόλαβε να τα διορθώσει όλα μέσα στους γύρους που έχει. Το βιογραφικό είναι έτοιμο, αλλά δες τα παρακάτω πριν το στείλεις κάπου.",
+      fabricationTitle: "Δεν τα βρήκα στα λόγια σου",
+      fabricationHint:
+        "Δεν μου τα ανέφερες πουθενά, οπότε μην τα αφήσεις όπως είναι: σβήσ' τα ή διόρθωσέ τα στον editor.",
+      blockingLeft: "Έμειναν {0} σημεία που δεν περνούν τους ελέγχους ποιότητας. Θα τα δεις αναλυτικά στο CVscan.",
       changesTitle: "Τι έκανε",
       apply: "Εφάρμοσέ το στο βιογραφικό",
       back: "Πίσω",
@@ -1984,7 +1993,12 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       verified: "Passed every check",
       verifiedHint: "Every employer, skill and figure was verified against your own text.",
       unverified: "Some issues remain",
-      unverifiedHint: "CVisor ran out of rounds before fixing everything. Review what is left before applying.",
+      unverifiedHint:
+        "CVisor ran out of rounds before fixing everything. The CV is ready, but look at the points below before you send it anywhere.",
+      fabricationTitle: "I couldn't find these in your own words",
+      fabricationHint:
+        "You never mentioned them, so don't leave them as they are: delete or correct them in the editor.",
+      blockingLeft: "{0} points still fail the quality checks. CVscan shows them in full.",
       changesTitle: "What it did",
       apply: "Apply to my CV",
       back: "Back",

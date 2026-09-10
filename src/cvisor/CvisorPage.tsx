@@ -296,6 +296,30 @@ export function CvisorPage({
             <div className="cvisor-ready">
               <h2>{result.verified ? dictionary.cvisor.verified : dictionary.cvisor.unverified}</h2>
               <p>{result.verified ? dictionary.cvisor.verifiedHint : dictionary.cvisor.unverifiedHint}</p>
+
+              {/* The loop gives up after a fixed number of rounds and hands back
+                  whatever it has. The grounding check reports rather than
+                  strips, so anything still listed here is in the draft the
+                  candidate is about to apply — saying "review it" without
+                  showing what would be worse than saying nothing. */}
+              {result.issues.fabrication.length > 0 && (
+                <div className="cvisor-outstanding">
+                  <h3>{dictionary.cvisor.fabricationTitle}</h3>
+                  <div className="cvisor-chips">
+                    {result.issues.fabrication.map((issue) => (
+                      <span key={`${issue.field}:${issue.value}`}>{issue.value}</span>
+                    ))}
+                  </div>
+                  <p>{dictionary.cvisor.fabricationHint}</p>
+                </div>
+              )}
+
+              {result.issues.blocking.length > 0 && (
+                <p className="cvisor-outstanding-count">
+                  {dictionary.cvisor.blockingLeft.replace("{0}", String(result.issues.blocking.length))}
+                </p>
+              )}
+
               <button type="button" className="cvisor-primary" onClick={openInBuilder}>
                 <Icon name="arrow-right" size={15} />
                 {dictionary.cvisor.apply}
