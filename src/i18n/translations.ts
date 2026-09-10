@@ -320,9 +320,6 @@ export interface Dictionary {
     keywordsCovered: string;
     keywordsMissing: string;
     noJobAd: string;
-    cvfixTitle: string;
-    cvfixBody: string;
-    cvfixButton: string;
     fixCtaTitle: string;
     fixCtaBody: string;
     fixCtaButton: string;
@@ -431,34 +428,17 @@ export interface Dictionary {
     errorUnavailable: string;
     errorGeneric: string;
     title: string;
-    intro: string;
-    goalLabel: string;
-    goalPlaceholder: string;
-    goalHint: string;
-    backgroundLabel: string;
-    backgroundPlaceholder: string;
-    backgroundHint: string;
-    includeExisting: string;
-    includeExistingHint: string;
     runningTitle: string;
     runningSteps: string[];
-    reviewTitle: string;
     verified: string;
     verifiedHint: string;
     unverified: string;
     unverifiedHint: string;
-    checkedTimes: string;
     changesTitle: string;
-    issuesTitle: string;
-    keywordsTitle: string;
-    keywordsHint: string;
     apply: string;
-    applyHint: string;
     back: string;
     close: string;
     retry: string;
-    emptyBackground: string;
-    privacyNote: string;
   };
   cvfix: {
     badge: string;
@@ -467,16 +447,6 @@ export interface Dictionary {
     button: string;
     running: string;
     runningRound: string;
-    doneTitle: string;
-    verified: string;
-    verifiedHint: string;
-    unverified: string;
-    unverifiedHint: string;
-    changesTitle: string;
-    rewordedTitle: string;
-    rewordedHint: string;
-    openBuilder: string;
-    openBuilderHint: string;
     cancel: string;
     /* --- the change-review window --- */
     windowTitle: string;
@@ -502,7 +472,6 @@ export interface Dictionary {
     metricCoverage: string;
     metricBullets: string;
     toolbarButton: string;
-    appliedToast: string;
     targetLabel: string;
     targetPlaceholder: string;
     targetNone: string;
@@ -684,13 +653,13 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
         {
           icon: "sparkles",
-          title: "CVisor — βοηθός συγγραφής",
-          body: "Δίνεις μια αγγελία και λίγες λέξεις-κλειδιά, και προτείνει διατυπώσεις. Δεν εφευρίσκει εμπειρία και εγκρίνεις τα πάντα.",
+          title: "CVisor — σε ρωτάει, το γράφει",
+          body: "Μία ερώτηση τη φορά, και το βιογραφικό χτίζεται μπροστά σου. Δεν εφευρίσκει εμπειρία που δεν του είπες.",
         },
         {
           icon: "zap",
-          title: "CVfix — ίδια λόγια, σωστή μορφή",
-          body: "Ανεβάζεις το βιογραφικό σου και ο CVfix το ξαναχτίζει σε ATS-friendly δομή χωρίς να αλλάξει ούτε μία λέξη. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό.",
+          title: "CVfix — διορθώσεις που εγκρίνεις",
+          body: "Διαβάζει το βιογραφικό σου και προτείνει συγκεκριμένες αλλαγές. Βλέπεις τι αντικαθιστά η καθεμία και κρατάς όσες θέλεις.",
         },
         {
           icon: "layout",
@@ -1030,10 +999,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       keywordsCovered: "Εμφανίζονται",
       keywordsMissing: "Δεν εμφανίζονται",
       noJobAd: "Επικόλλησε μια αγγελία παραπάνω για να δεις κάλυψη λέξεων-κλειδιών.",
-      cvfixTitle: "Θες να διορθωθεί η μορφή;",
-      cvfixBody:
-        "Ο CVfix κρατάει τα λόγια σου ακριβώς όπως τα έγραψες και αλλάζει μόνο τη δομή και τη μορφοποίηση, ώστε το αρχείο να περνάει καθαρά.",
-      cvfixButton: "Διόρθωση μορφής με τον CVfix",
       fixCtaTitle: "Θες να τα διορθώσει ο CVfix;",
       fixCtaBody:
         "Ο CVfix διαβάζει το βιογραφικό σου με τα ίδια κριτήρια αυτής της αναφοράς και προτείνει συγκεκριμένες αλλαγές — βλέπεις τι αντικαθιστά η καθεμία και εγκρίνεις όποιες θέλεις.",
@@ -1228,18 +1193,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       errorUnavailable: "Η υπηρεσία AI είναι προσωρινά μη διαθέσιμη. Δοκίμασε ξανά σε λίγο.",
       errorGeneric: "Κάτι πήγε στραβά. Δοκίμασε ξανά.",
       title: "CVisor",
-      intro:
-        "Δουλεύει σαν έμπειρος HR manager: γράφει προσχέδιο, το ελέγχει με αυστηρά κριτήρια και το ξαναγράφει μέχρι να σταθεί. Δεν εφευρίσκει ποτέ εμπειρία που δεν του έδωσες.",
-      goalLabel: "Στόχος",
-      goalPlaceholder: "Επικόλλησε την αγγελία, ή γράψε τι δουλειά ψάχνεις…",
-      goalHint: "Καθορίζει ποια στοιχεία σου θα μπουν μπροστά και με ποια ορολογία.",
-      backgroundLabel: "Τα στοιχεία σου",
-      backgroundPlaceholder:
-        "Γράψε ό,τι θυμάσαι, όπως σου βγαίνει:\n\nΕμπειρία: Σερβιτόρος στο Blue Cafe 2021-2023, ανέβασα τις πωλήσεις 15%\nΣπουδές: Λύκειο 2019\nΔεξιότητες: Excel, εξυπηρέτηση πελατών\nΓλώσσες: Αγγλικά καλά",
-      backgroundHint:
-        "Χωρίς μορφοποίηση, χωρίς σωστά ελληνικά. Όσα περισσότερα γράψεις, τόσο καλύτερο το αποτέλεσμα.",
-      includeExisting: "Λάβε υπόψη ό,τι έχω ήδη στο βιογραφικό",
-      includeExistingHint: "Θα χρησιμοποιήσει και τα στοιχεία που έχεις ήδη συμπληρώσει ως πηγή.",
       runningTitle: "Ο CVisor δουλεύει",
       runningSteps: [
         "Διαβάζει την αγγελία και τα στοιχεία σου",
@@ -1247,42 +1200,24 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "Ελέγχει για εφευρημένα στοιχεία και αδύναμες διατυπώσεις",
         "Ξαναγράφει ό,τι δεν πέρασε τον έλεγχο",
       ],
-      reviewTitle: "Το προσχέδιο",
       verified: "Πέρασε όλους τους ελέγχους",
       verifiedHint:
         "Κάθε εταιρεία, δεξιότητα και αριθμός επαληθεύτηκε ότι υπάρχει στα δικά σου στοιχεία.",
       unverified: "Έμειναν εκκρεμότητες",
       unverifiedHint: "Ο CVisor δεν πρόλαβε να τα διορθώσει όλα. Δες τι έμεινε πριν το εφαρμόσεις.",
-      checkedTimes: "Γύροι ελέγχου:",
       changesTitle: "Τι έκανε",
-      issuesTitle: "Τι έμεινε",
-      keywordsTitle: "Όροι της αγγελίας που δεν μπήκαν",
-      keywordsHint: "Υπάρχουν στα στοιχεία σου αλλά δεν χρησιμοποιήθηκαν. Δες αν αξίζει να τους προσθέσεις.",
       apply: "Εφάρμοσέ το στο βιογραφικό",
-      applyHint: "Αντικαθιστά τις ενότητες περιεχομένου. Όνομα, στοιχεία επικοινωνίας και εμφάνιση μένουν ως έχουν.",
       back: "Πίσω",
       close: "Κλείσιμο",
       retry: "Δοκίμασε ξανά",
-      emptyBackground: "Γράψε πρώτα λίγα στοιχεία για σένα.",
-      privacyNote: "Τα κείμενα στέλνονται για επεξεργασία και δεν αποθηκεύονται.",
     },
     cvfix: {
       badge: "CVfix",
-      title: "Ίδια λόγια, σωστή μορφή",
-      body: "Ο CVfix δεν αλλάζει ούτε μία λέξη από όσα έγραψες. Ξεμπλέκει τη δομή, βάζει το περιεχόμενο στα σωστά πεδία και το ξαναβγάζει σε δομή φιλική προς ATS συστήματα. Κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό σου αρχείο.",
-      button: "Διόρθωση μορφής με τον CVfix",
+      title: "Ας το φτιάξουμε",
+      body: "Πρώτα ο CVfix ξεμπλέκει τη δομή του αρχείου σου και βάζει το περιεχόμενο στα σωστά πεδία — σε αυτό το βήμα δεν αλλάζει ούτε μία λέξη, και κάθε πρόταση ελέγχεται αυτόματα ότι υπάρχει αυτολεξεί στο αρχικό. Μετά σου προτείνει βελτιώσεις στη διατύπωση, μία-μία, και εγκρίνεις όποιες θέλεις.",
+      button: "Διόρθωση με τον CVfix",
       running: "Ο CVfix δουλεύει…",
       runningRound: "Γύρος",
-      doneTitle: "Έτοιμο",
-      verified: "Καμία λέξη δεν άλλαξε",
-      verifiedHint: "Κάθε πρόταση επαληθεύτηκε αυτολεξεί ως προς το αρχικό αρχείο.",
-      unverified: "Κάποια σημεία διατυπώθηκαν αλλιώς",
-      unverifiedHint: "Δες τα παρακάτω πριν συνεχίσεις — μπορείς να τα διορθώσεις στον builder.",
-      changesTitle: "Τι αναδιαρθρώθηκε",
-      rewordedTitle: "Σημεία που άλλαξαν διατύπωση",
-      rewordedHint: "Δεν πέρασαν τον αυτόματο έλεγχο. Έλεγξέ τα στον builder.",
-      openBuilder: "Άνοιγμα στον builder",
-      openBuilderHint: "Θα αντικαταστήσει το βιογραφικό που έχεις τώρα στο CVsible.",
       cancel: "Άκυρο",
       windowTitle: "CVfix",
       windowIntro:
@@ -1309,7 +1244,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       metricCoverage: "κάλυψη αγγελίας",
       metricBullets: "σημεία",
       toolbarButton: "CVfix",
-      appliedToast: "Εφαρμόστηκαν {0} αλλαγές",
       targetLabel: "Η αγγελία που στοχεύεις",
       targetPlaceholder: "Κόλλα εδώ την αγγελία, για να προσαρμοστεί το λεξιλόγιο σε αυτήν.",
       targetNone: "Χωρίς αγγελία — οι προτάσεις αφορούν γενικά το βιογραφικό.",
@@ -1501,13 +1435,13 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         },
         {
           icon: "sparkles",
-          title: "CVisor — writing assistant",
-          body: "Give it a job ad and a few keywords and it drafts wording. It never invents experience, and you approve everything.",
+          title: "CVisor — it asks, it writes",
+          body: "One question at a time, with the CV building in front of you. It never invents experience you didn't tell it about.",
         },
         {
           icon: "zap",
-          title: "CVfix — same words, working format",
-          body: "Upload your CV and CVfix rebuilds it into an ATS-friendly structure without changing a single word. Every sentence is automatically verified against the original.",
+          title: "CVfix — changes you approve",
+          body: "It reads your CV and proposes specific edits. You see what each one replaces and keep the ones you want.",
         },
         {
           icon: "layout",
@@ -1846,10 +1780,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       keywordsCovered: "Present",
       keywordsMissing: "Absent",
       noJobAd: "Paste a job ad above to see keyword coverage.",
-      cvfixTitle: "Want the formatting fixed?",
-      cvfixBody:
-        "CVfix keeps your wording exactly as you wrote it and changes only the structure and formatting, so the file comes through cleanly.",
-      cvfixButton: "Fix formatting with CVfix",
       fixCtaTitle: "Want CVfix to sort these out?",
       fixCtaBody:
         "CVfix reads your CV against the same standards as this report and proposes specific changes — you see what each one replaces and approve the ones you want.",
@@ -2044,17 +1974,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       errorUnavailable: "The AI service is temporarily unavailable. Try again shortly.",
       errorGeneric: "Something went wrong. Try again.",
       title: "CVisor",
-      intro:
-        "It works like an experienced hiring manager: it drafts, checks itself against strict standards, and rewrites until the draft holds up. It never invents experience you did not give it.",
-      goalLabel: "Target",
-      goalPlaceholder: "Paste the job ad, or describe the role you want…",
-      goalHint: "This decides which of your facts lead and what vocabulary is used.",
-      backgroundLabel: "Your details",
-      backgroundPlaceholder:
-        "Write whatever you remember, however it comes out:\n\nExperience: Waiter at Blue Cafe 2021-2023, raised sales 15%\nEducation: High school 2019\nSkills: Excel, customer service\nLanguages: English, good",
-      backgroundHint: "No formatting needed, no polish needed. The more you write, the better the result.",
-      includeExisting: "Also use what is already in my CV",
-      includeExistingHint: "Treats the content you have already filled in as extra source material.",
       runningTitle: "CVisor is working",
       runningSteps: [
         "Reading the job ad and your details",
@@ -2062,41 +1981,23 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
         "Checking for invented facts and weak wording",
         "Rewriting whatever failed the check",
       ],
-      reviewTitle: "The draft",
       verified: "Passed every check",
       verifiedHint: "Every employer, skill and figure was verified against your own text.",
       unverified: "Some issues remain",
       unverifiedHint: "CVisor ran out of rounds before fixing everything. Review what is left before applying.",
-      checkedTimes: "Review rounds:",
       changesTitle: "What it did",
-      issuesTitle: "What is left",
-      keywordsTitle: "Job ad terms that did not make it in",
-      keywordsHint: "They appear in your own text but were not used. See whether they are worth adding.",
       apply: "Apply to my CV",
-      applyHint: "Replaces the content sections. Your name, contacts and styling stay as they are.",
       back: "Back",
       close: "Close",
       retry: "Try again",
-      emptyBackground: "Write a few details about yourself first.",
-      privacyNote: "Your text is sent for processing and is not stored.",
     },
     cvfix: {
       badge: "CVfix",
-      title: "Same words, working format",
-      body: "CVfix does not change a single word you wrote. It untangles the structure, puts your content into the right fields and rebuilds it in an ATS-friendly structure. Every sentence is automatically verified to appear verbatim in your original file.",
-      button: "Fix formatting with CVfix",
+      title: "Let's fix it",
+      body: "First CVfix untangles your file's structure and puts the content into the right fields — this step changes no wording at all, and every sentence is automatically verified to appear verbatim in your original. Then it proposes improvements to the wording, one at a time, for you to accept or skip.",
+      button: "Fix it with CVfix",
       running: "CVfix is working…",
       runningRound: "Round",
-      doneTitle: "Done",
-      verified: "Not a word changed",
-      verifiedHint: "Every sentence was verified verbatim against your original file.",
-      unverified: "Some lines were reworded",
-      unverifiedHint: "Check them below before continuing — you can fix them in the builder.",
-      changesTitle: "What was restructured",
-      rewordedTitle: "Lines that drifted",
-      rewordedHint: "These failed the automatic check. Review them in the builder.",
-      openBuilder: "Open in the builder",
-      openBuilderHint: "This replaces the CV you currently have in CVsible.",
       cancel: "Cancel",
       windowTitle: "CVfix",
       windowIntro:
@@ -2122,7 +2023,6 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       metricCoverage: "job ad coverage",
       metricBullets: "bullets",
       toolbarButton: "CVfix",
-      appliedToast: "Applied {0} changes",
       targetLabel: "The job you're targeting",
       targetPlaceholder: "Paste the ad here, so the wording is matched to it.",
       targetNone: "No job ad — these suggestions are about the CV in general.",

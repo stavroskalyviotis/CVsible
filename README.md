@@ -16,33 +16,40 @@
 
 ## About
 
-**CVsible** is a free resume builder with a live preview and three ATS-safe templates. It requires no account and adds no watermark — resume data lives in the browser's `localStorage` unless you choose to sign in.
+**CVsible** is a free resume builder with a live preview and four templates. It requires no account and adds no watermark — resume data lives in the browser's `localStorage` unless you choose to sign in.
 
 The PDF export is a real text layer, not a picture of the page: every word is selectable, searchable, and readable by an applicant tracking system, including correct Greek diacritics.
 
-Two AI-assisted tools sit on top of the manual builder, both built as small self-checking agents rather than a single prompt call — they draft, a deterministic checker reviews the draft against the source text, and only what fails gets patched, for up to a few rounds:
+Two AI-assisted tools sit on top of the manual builder. Both are small self-checking agents rather than a single prompt call: a deterministic server-side checker measures every draft against the source text and against the same rules CVscan reports, and nothing is accepted until it clears them.
 
-- **CVisor** drafts resume wording from a job posting and whatever you write about your background. It never invents a fact, company, number, or skill that isn't in your own text — a grounding check strips anything it can't trace back to what you wrote, and you approve every suggestion before it's applied.
-- **CVfix** takes a CV you already have (uploaded as PDF/DOCX/TXT) and rebuilds its *structure* into an ATS-safe layout — dates, sections, bullets — while changing **zero words** of your original wording. Every sentence in the output is verified to be a verbatim match of the source.
+- **CVisor** builds a CV from a conversation. It asks one question at a time — what you're aiming at, then each job, then studies and skills — with the CV assembling beside you as you answer. The backbone of the interview is fixed; what the model adds are the follow-up questions inside a job, which is where the numbers and the scope come from. It never invents a fact, company, number, or skill that isn't in your own answers: a grounding check strips anything it can't trace back to what you said.
+- **CVfix** revises a CV you already have — the one you're editing, or one you upload as PDF/DOCX/TXT. It proposes individual edits, each showing what it replaces and why, and **nothing is applied until you accept it**. The server verifies that every quoted "before" matches what your CV actually says and that the replacement invents nothing; a proposal failing either is discarded rather than shown to you.
 
-**CVscan** is a standalone ATS-compatibility checker: drag and drop any resume (yours or one built elsewhere) and see exactly what an ATS parser would extract — headings it recognizes, contact fields, date formats, whether it's actually two columns, whether it's an image instead of text — plus a score and the full text as the parser reads it. It runs as a purely deterministic, non-AI analysis, entirely in your browser; nothing is uploaded anywhere for the check itself.
+An uploaded file goes through a separate, strictly verbatim pass first: its content is moved into the right fields — dates, sections, bullets — without a single word changing, verified line by line. Only then are rewrites proposed, and only for your approval.
+
+**CVscan** is a standalone ATS-compatibility checker: drag and drop any resume (yours or one built elsewhere) and see exactly what an ATS parser would extract — headings it recognizes, contact fields, date formats, whether it's actually two columns, whether it's an image instead of text — plus the full text as the parser reads it. It reports **three separate scores** rather than one blended number, because "my CV is weak" and "I don't match this particular ad" are different problems with different fixes: **Format** (can a parser read the file at all), **Content** (is the writing what a recruiter expects), and **Match** (how much of a given job ad's vocabulary the CV actually covers). The analysis is purely deterministic, non-AI, and runs entirely in your browser; nothing is uploaded anywhere for the check itself.
 
 Optionally, sign in with Google to save CVs to your account, reopen them from any device, duplicate one per job application, share a read-only link, and keep a lightweight per-CV application tracker (company/role/status/date) that never appears in the exported PDF.
+
+Signing in also gives you a **master profile** — your personal details, photo, work history, education and skills kept once, then imported into any CV or into CVisor, so nothing is typed twice. It is private to your account with no share path of any kind.
 
 The interface is available in **Greek and English**.
 
 ## Features
 
 - Live preview while editing, with automatic multi-page A4 pagination
-- Three templates — Aurora (sidebar), Meridian, Atlas (single column) — all built to canonical, ATS-recognizable section headings; switch freely without losing content
+- Four templates — Meridian, Atlas and Compass (single column, ATS-safe) plus Aurora (sidebar) — all built to canonical, ATS-recognizable section headings; switch freely without losing content. Aurora's two columns are the one thing a parser can misread, so the builder flags it rather than letting you find out from a rejection
 - Real vector-text PDF export: selectable, searchable, correct Greek uppercase/diacritics, real clickable links, no watermark
-- **CVisor** — self-checking AI drafting agent (job posting + your background → resume content), with a grounding pass that removes anything not traceable to your own words
-- **CVfix** — reformats an uploaded CV into an ATS-safe structure without changing a single word, verified automatically
-- **CVscan** — standalone ATS checker: drag-and-drop PDF/DOCX/TXT, technical/factual report only (no opinions), keyword matching against a job ad, full extracted text view
+- **CVisor** — a self-checking AI agent that interviews you one question at a time and writes the CV from your answers, with a grounding pass that removes anything not traceable to your own words
+- **CVfix** — proposes specific edits to the CV you already have, one approval at a time, showing what each one replaces and why; nothing is applied unless you accept it
+- **CVscan** — standalone ATS checker: drag-and-drop PDF/DOCX/TXT, three separate scores (Format / Content / Match), technical/factual report only (no opinions), keyword matching against a job ad, full extracted text view
 - Undo/redo throughout the builder (Ctrl+Z / Ctrl+Shift+Z), with rapid edits collapsed into single steps
 - Download/upload the whole resume as a JSON file, to keep editing later or move between devices without an account
 - Optional **Google sign-in**: save multiple CVs to your account, reopen/duplicate/rename/delete them, a read-only public share link per CV, and a per-CV job-application tracker (company, role, status, date, notes — never exported to the PDF)
+- A **master profile** for signed-in users — fill your details, work history, education and skills in once, then import them into any CV or into CVisor; private to your account, never shareable
 - Personal details, customizable contact links, rich-text summary, work experience/education with date validation, skills, soft skills, languages, interests, certifications and projects
+- Optional categories for skills — grouped one line per category ("Kitchen: HACCP, Sauces"), or left as a single inline list if you don't use them
+- Expected graduation date for studies still in progress
 - Optional profile photo with drag-to-reposition
 - Drag-and-drop reordering of entries and whole sections
 - Preset/custom sidebar color with automatic contrast, adjustable density and font
@@ -58,16 +65,16 @@ Full details live on the in-app [Privacy Policy](https://cvsible.com/#/privacy) 
 - Without an account, everything stays in your browser's `localStorage`; nothing reaches a CVsible server except when you actively use CVisor, CVfix, or upload a file to CVscan.
 - CVisor/CVfix send the relevant text to a CVsible serverless function and from there to the Anthropic API to generate a result. That content isn't logged or permanently stored on our servers.
 - CVscan's analysis of an uploaded file runs entirely client-side; the file itself is never uploaded anywhere.
-- If you sign in, Supabase handles Google authentication and stores your saved CVs, protected by Postgres Row Level Security so only your account can read or write them.
+- If you sign in, Supabase handles Google authentication and stores your saved CVs and your master profile, protected by Postgres Row Level Security so only your account can read or write them. The profile has no public-share path at all, and both are deleted with your account.
 - [Vercel Web Analytics](https://vercel.com/docs/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights) provide anonymous, cookie-free aggregate usage data. Both are inactive during local development.
 - The "Support CVsible" link points to an external Buy Me a Coffee page; clicking it just opens that page in a new tab — no data is sent to it from CVsible.
 
 ## Tech stack
 
 - **React 19**, **TypeScript 6**, **Vite 8**
-- **Vercel** for hosting, Serverless Functions (CVisor/CVfix/CVscan backend), Web Analytics and Speed Insights
-- **Supabase** — Google OAuth and Postgres (saved CVs, Row Level Security, public-share links via a `security definer` function)
-- **Anthropic API** — Claude Sonnet 5 for CVisor's drafting/refine loop, Claude Haiku 4.5 for CVfix and single-section wording suggestions
+- **Vercel** for hosting, Serverless Functions (the CVisor/CVfix backend), Web Analytics and Speed Insights
+- **Supabase** — Google OAuth and Postgres (saved CVs, the master profile, Row Level Security, public-share links via a `security definer` function)
+- **Anthropic API** — Claude Sonnet 5 where the model writes the candidate's own words (CVisor's drafting/refine loop, CVfix's proposed rewrites), Claude Haiku 4.5 for the jobs that are comprehension rather than composition (the verbatim structuring pass, CVisor's follow-up questions, single-section wording suggestions)
 - **Upstash Redis** (via Vercel Storage) for per-account/per-IP rate limiting on the AI endpoints, fails open if not configured
 - `pdfjs-dist` + `fflate` for client-side PDF/DOCX parsing (CVscan, CVfix)
 - A from-scratch DOM-to-PDF renderer (no `html2canvas`) built on jsPDF primitives and the browser's Range API, for a pixel-accurate, fully selectable PDF text layer
@@ -130,10 +137,11 @@ npm run test:e2e       # Run end-to-end tests (Playwright, needs `npm run dev` o
 
 ## Testing
 
-- **Unit tests** (Vitest) cover the deterministic, correctness-critical logic: the CVscan ATS analyser, CVisor/CVfix's grounding/verbatim/structure checks (the anti-fabrication guarantees described above), CV data normalization, undo/redo, PDF/JSON filename building, and pagination formatting. Run with `npm test`.
-- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, PDF export, JSON export/import round-trip, rich text, photo upload, drag-reorder), CVscan (file upload, scoring, keyword matching), My CVs / the public share page (with Supabase mocked at the network boundary — no real Google login needed), and a WCAG 2.0/2.1 A/AA accessibility audit of the main pages via axe-core — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
+- **Unit tests** (Vitest) cover the deterministic, correctness-critical logic: the CVscan ATS analyser, the grounding/verbatim/structure checks behind the anti-fabrication guarantees described above, the CVfix change model (a proposal that quotes the wrong "before", points at a path that isn't there, or invents a fact must be discarded), the CVisor interview state machine, CV data normalization, undo/redo, PDF/JSON filename building, and pagination formatting. Run with `npm test`.
+- Two of those suites exist to catch a specific class of silent drift. `api/_lib/` holds copies of the action-verb list, the keyword matcher and the score thresholds, because the serverless build cannot import from `src/`. If those copies diverge, the agent starts declaring a CV finished by a different standard than the one the app applies to it a second later — which is exactly the "I fixed things and the score didn't move" failure. `actionVerbs.test.ts`, `keywords.test.ts` and `draftReview.test.ts` fail if they ever drift apart.
+- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, skill categories, PDF export, JSON export/import round-trip, rich text, photo upload, drag-reorder), CVscan (file upload, scoring, keyword matching), the CVisor interview and the CVfix change window (with the AI endpoints stubbed at the network boundary, so the flow around them is tested without calling a model), My CVs / the profile / the public share page (with Supabase mocked the same way — no real Google login needed), a set of narrow-viewport checks that fail if any page grows wider than a phone screen, and a WCAG 2.0/2.1 A/AA accessibility audit of the main pages via axe-core — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
 - Both suites are TypeScript-checked as part of `npm run build` (see `tsconfig.e2e.json`).
-- The AI-backed endpoints (CVisor/CVfix) are exercised indirectly: their deterministic server-side checks (`api/_lib/*`) are unit-tested directly, while the live model loop is best verified manually via `scripts/try-agent.mjs` against `vercel dev`, since it calls the real Anthropic API.
+- The AI-backed endpoints (CVisor/CVfix) are exercised indirectly: their deterministic server-side checks (`api/_lib/*`) are unit-tested directly, while the live model loop is best verified manually via `scripts/try-agent.mjs` against `vercel dev`, since it calls the real Anthropic API and costs money per run.
 - `npm run test:coverage`'s number only reflects the Vitest suite; it doesn't (and can't) credit code that's only exercised through the Playwright E2E suite, which runs in a separate real browser process outside Vitest's instrumentation. Most UI components read as 0% there despite being covered end-to-end — that's expected, not a gap.
 
 ## Project structure
@@ -141,10 +149,13 @@ npm run test:e2e       # Run end-to-end tests (Playwright, needs `npm run dev` o
 ```text
 CVsible/
 ├── api/                     # Vercel Serverless Functions
-│   ├── _lib/                # Anthropic client, agent prompts, grounding/verbatim/structure
-│   │                        #   checks, rate limiting, Supabase auth verification
+│   ├── _lib/                # Anthropic client, agent prompts, the deterministic critic,
+│   │                        #   grounding/verbatim/structure checks, the CVfix change model,
+│   │                        #   rate limiting, Supabase auth verification
 │   ├── cvisor-step.ts       # CVisor: one draft/refine turn per request
-│   ├── cvfix.ts             # CVfix: reformat without rewording
+│   ├── cvisor-followup.ts   # CVisor: the follow-up questions to ask about one job
+│   ├── cvfix.ts             # CVfix: propose edits for the candidate to approve
+│   ├── cvfix-structure.ts   # CVfix phase one: restructure an upload, changing no wording
 │   ├── cvisor-suggest.ts    # Improve the wording of a single section
 │   └── delete-account.ts    # Permanently deletes a signed-in user's account
 ├── e2e/                     # Playwright end-to-end tests (run against a live dev server)
@@ -154,17 +165,19 @@ CVsible/
 ├── src/
 │   ├── ats/                 # CVscan: PDF/DOCX extraction and the deterministic ATS analyzer
 │   ├── auth/                # Google sign-in context, hook, and account menu
-│   ├── cloud/                # Saved-CV storage (Supabase) and the per-CV application tracker
+│   ├── cloud/               # Saved-CV storage (Supabase) and the per-CV application tracker
 │   ├── components/          # Resume preview, forms, and reusable UI
-│   ├── cvisor/               # CVisor/CVfix UI and the client-side agent loop
-│   ├── data/                 # Default CV data, theme presets, density, and font options
-│   ├── hooks/                 # CV state (with undo/redo), routing, and preview scaling
-│   ├── i18n/                  # Greek and English translations
-│   ├── legal/                 # Privacy Policy / Terms of Use content and page
-│   ├── pages/                  # Landing, builder, CVscan, My CVs, public-CV pages
-│   ├── pagination/             # A4 page measurement and pagination
-│   ├── templates/               # Template (Aurora/Meridian/Atlas) definitions
-│   ├── utils/pdf/                # The DOM-to-PDF vector rendering pipeline
+│   ├── cvfix/               # The CVfix change window, and applying an approved change
+│   ├── cvisor/              # The CVisor interview, its page, and the client-side agent loop
+│   ├── data/                # Default CV data, theme presets, density, and font options
+│   ├── hooks/               # CV state (with undo/redo), routing, and preview scaling
+│   ├── i18n/                # Greek and English translations
+│   ├── legal/               # Privacy Policy / Terms of Use content and page
+│   ├── pages/               # Landing, builder, CVscan, My CVs, profile, public-CV pages
+│   ├── pagination/          # A4 page measurement and pagination
+│   ├── profile/             # The master profile: storage, completeness, import matching
+│   ├── templates/           # Template (Aurora/Meridian/Atlas/Compass) definitions
+│   ├── utils/pdf/           # The DOM-to-PDF vector rendering pipeline
 │   ├── App.tsx
 │   ├── main.tsx
 │   └── types.ts
@@ -183,7 +196,7 @@ This is why the exported PDF's text layer matches the on-screen render 1:1 and i
 
 - [ ] Custom free-text CV sections
 - [ ] Collapsible builder panel for a full-screen preview on tablets
-- [ ] Automated accessibility tests
+- [x] Automated accessibility tests
 - [x] Unit and end-to-end tests
 
 ## Author

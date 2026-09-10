@@ -28,7 +28,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
       {
         heading: "Λειτουργίες τεχνητής νοημοσύνης (CVisor, CVfix)",
         body: [
-          "Όταν χρησιμοποιείς τον CVisor ή το CVfix, το κείμενο που δίνεις (εμπειρία, αγγελία, ή το υπάρχον βιογραφικό σου) στέλνεται στους δικούς μας servers και από εκεί στο API της Anthropic (Claude) για να παραχθεί το αποτέλεσμα.",
+          "Όταν χρησιμοποιείς τον CVisor ή το CVfix, το κείμενο που δίνεις στέλνεται στους δικούς μας servers και από εκεί στο API της Anthropic (Claude) για να παραχθεί το αποτέλεσμα. Στον CVisor αυτό είναι οι απαντήσεις σου στις ερωτήσεις και η αγγελία που δίνεις· στο CVfix είναι το ίδιο το βιογραφικό που επεξεργάζεσαι — και, αν ανέβασες αρχείο, το κείμενο που εξήχθη από αυτό.",
           "Δεν αποθηκεύουμε αυτό το περιεχόμενο μόνιμα στους servers μας και δεν κρατάμε logs με το περιεχόμενο του βιογραφικού σου — μόνο τεχνικά σφάλματα, χωρίς το κείμενο.",
           "Για την προστασία από κατάχρηση, κρατάμε έναν απλό μετρητή χρήσεων (πόσες φορές χρησιμοποιήθηκε η λειτουργία σήμερα) συνδεδεμένο με τη διεύθυνση IP σου ή τον λογαριασμό σου — όχι το περιεχόμενο.",
         ],
@@ -39,6 +39,14 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
           "Παίρνουμε από τη Google το email, το όνομα και τη φωτογραφία προφίλ σου — όχι τον κωδικό σου. Η σύνδεση γίνεται μέσω του Supabase Auth.",
           "Αν αποθηκεύσεις ένα βιογραφικό στον λογαριασμό σου, το περιεχόμενό του αποθηκεύεται στη βάση δεδομένων μας (Supabase/Postgres), συνδεδεμένο μόνο με τον δικό σου λογαριασμό. Κανένας άλλος χρήστης δεν μπορεί να το δει.",
           "Αν ενεργοποιήσεις «Δημόσιο σύνδεσμο» για ένα βιογραφικό, όποιος έχει αυτόν τον συγκεκριμένο σύνδεσμο μπορεί να το δει — σαν σύνδεσμο κοινοποίησης του Google Docs. Δεν το δημοσιεύουμε ούτε το κάνουμε αναζητήσιμο εμείς.",
+        ],
+      },
+      {
+        heading: "Το προφίλ σου",
+        body: [
+          "Αν συνδεθείς, μπορείς να συμπληρώσεις ένα προφίλ: προσωπικά στοιχεία και στοιχεία επικοινωνίας, φωτογραφία, εργασιακή εμπειρία, σπουδές, δεξιότητες, γλώσσες, πιστοποιήσεις και ενδιαφέροντα. Αποθηκεύεται στη βάση μας (Supabase/Postgres) για να μπορείς να το εισάγεις σε οποιοδήποτε βιογραφικό ή στον CVisor χωρίς να το ξαναγράφεις.",
+          "Το προφίλ είναι αυστηρά ιδιωτικό: σε αντίθεση με ένα βιογραφικό, δεν έχει καμία δυνατότητα δημόσιου συνδέσμου ή κοινοποίησης. Οι κανόνες πρόσβασης της βάσης επιτρέπουν μόνο στον δικό σου λογαριασμό να το διαβάσει ή να το γράψει.",
+          "Το προφίλ φεύγει από τους servers μας όταν διαγράψεις τον λογαριασμό σου, μαζί με τα υπόλοιπα δεδομένα σου.",
         ],
       },
       {
@@ -63,6 +71,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         body: [
           "Βιογραφικό που φτιάχνεις χωρίς λογαριασμό: μένει στη συσκευή σου όσο δεν καθαρίζεις τα δεδομένα του browser — εμείς δεν έχουμε καν αντίγραφο.",
           "Αποθηκευμένο βιογραφικό σε λογαριασμό: παραμένει όσο δεν το διαγράφεις εσύ ή δεν διαγράψεις τον λογαριασμό σου.",
+          "Το προφίλ σου: παραμένει όσο δεν το αδειάσεις εσύ ή δεν διαγράψεις τον λογαριασμό σου.",
           "Κείμενο που στέλνεις στον CVisor/CVfix: χρησιμοποιείται μόνο για να παραχθεί η απάντηση εκείνη τη στιγμή, δεν αποθηκεύεται μόνιμα από εμάς.",
         ],
       },
@@ -70,7 +79,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Τα δικαιώματά σου",
         body: [
           "Μπορείς να κατεβάσεις το βιογραφικό σου ως αρχείο JSON ανά πάσα στιγμή (κουμπί λήψης στον editor) — αυτό είναι το δικαίωμα φορητότητας δεδομένων.",
-          "Μπορείς να διαγράψεις οποιοδήποτε αποθηκευμένο βιογραφικό από τη σελίδα «Τα βιογραφικά μου».",
+          "Μπορείς να διαγράψεις οποιοδήποτε αποθηκευμένο βιογραφικό από τη σελίδα «Τα βιογραφικά μου», και να αδειάσεις τα πεδία του προφίλ σου από τη σελίδα του προφίλ.",
           "Μπορείς να διαγράψεις ολόκληρο τον λογαριασμό σου (και ό,τι έχει αποθηκευτεί σε αυτόν) από την ίδια σελίδα — είναι μόνιμο και άμεσο.",
           `Για οτιδήποτε άλλο σχετικό με τα δεδομένα σου, γράψε μας στο ${CONTACT_EMAIL}.`,
         ],
@@ -113,7 +122,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
       {
         heading: "AI features (CVisor, CVfix)",
         body: [
-          "When you use CVisor or CVfix, the text you provide (your background, a job ad, or your existing CV) is sent to our servers and from there to Anthropic's API (Claude) to produce the result.",
+          "When you use CVisor or CVfix, the text you provide is sent to our servers and from there to Anthropic's API (Claude) to produce the result. For CVisor that is your answers to its questions and any job ad you paste in; for CVfix it is the CV you are working on — and, if you uploaded a file, the text extracted from it.",
           "We don't permanently store that content on our servers, and we don't log the content of your CV — only technical error events, without the text itself.",
           "To prevent abuse, we keep a simple usage counter (how many times a feature was used today) tied to your IP address or account — not the content.",
         ],
@@ -124,6 +133,14 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
           "We receive your email, name, and profile photo from Google — never your password. Sign-in is handled by Supabase Auth.",
           "If you save a CV to your account, its content is stored in our database (Supabase/Postgres), tied only to your account. No other user can see it.",
           "If you turn on a \"Public link\" for a CV, anyone with that specific link can view it — like a Google Docs share link. We don't publish it anywhere or make it searchable ourselves.",
+        ],
+      },
+      {
+        heading: "Your profile",
+        body: [
+          "If you sign in, you can fill in a profile: personal and contact details, a photo, work history, education, skills, languages, certifications and interests. It's stored in our database (Supabase/Postgres) so you can import it into any CV, or into CVisor, without typing it twice.",
+          "The profile is strictly private: unlike a CV, it has no public-link or sharing path of any kind. Database access rules allow only your own account to read or write it.",
+          "It leaves our servers when you delete your account, along with the rest of your data.",
         ],
       },
       {
@@ -148,6 +165,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         body: [
           "A CV built without an account: stays on your device for as long as you don't clear your browser data — we don't even have a copy.",
           "A CV saved to an account: stays until you delete it, or delete your account.",
+          "Your profile: stays until you clear it, or delete your account.",
           "Text sent to CVisor/CVfix: used only to produce that one response, we don't store it permanently.",
         ],
       },
@@ -155,7 +173,7 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Your rights",
         body: [
           "You can download your CV as a JSON file at any time (the download button in the editor) — that's your data-portability right, self-serve.",
-          "You can delete any saved CV from the \"My CVs\" page.",
+          "You can delete any saved CV from the \"My CVs\" page, and clear your profile's fields from the profile page.",
           "You can delete your entire account, and everything saved in it, from the same page — this is permanent and immediate.",
           `For anything else about your data, write to us at ${CONTACT_EMAIL}.`,
         ],
@@ -209,7 +227,8 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Το περιεχόμενό σου",
         body: [
           "Το βιογραφικό που φτιάχνεις είναι δικό σου — εσύ είσαι υπεύθυνος/η για την ακρίβεια των στοιχείων που καταχωρείς.",
-          "Ο CVisor και το CVfix προσπαθούν να μην εφευρίσκουν γεγονότα που δεν έχεις γράψει, αλλά τα αποτελέσματα τεχνητής νοημοσύνης μπορεί περιστασιακά να μην είναι τέλεια — έλεγξέ τα πριν τα χρησιμοποιήσεις σε αίτηση εργασίας.",
+          "Ο CVisor και το CVfix αναδιατυπώνουν το κείμενό σου. Ελέγχονται αυτόματα ώστε να μην προσθέτουν γεγονός, εταιρεία, αριθμό ή δεξιότητα που δεν υπάρχει στα δικά σου λόγια, και ο CVfix σου δείχνει κάθε αλλαγή ξεχωριστά, με το πριν και το μετά, πριν εφαρμοστεί.",
+          "Παρ' όλα αυτά, τα αποτελέσματα τεχνητής νοημοσύνης μπορεί περιστασιακά να μην είναι τέλεια. Ό,τι εγκρίνεις γίνεται δικό σου κείμενο: διάβασέ το πριν το στείλεις σε αίτηση εργασίας.",
         ],
       },
       {
@@ -278,7 +297,8 @@ export const TERMS_CONTENT: Record<LanguageCode, LegalDoc> = {
         heading: "Your content",
         body: [
           "The CV you build is yours — you're responsible for the accuracy of what you enter.",
-          "CVisor and CVfix try not to invent facts you didn't write, but AI output can occasionally be imperfect — review it before using it in a job application.",
+          "CVisor and CVfix rewrite your wording. Both are checked automatically so they can't add a fact, company, number or skill that isn't in your own words, and CVfix shows you every change on its own, before and after, before it is applied.",
+          "Even so, AI output can occasionally be imperfect. Whatever you accept becomes your text: read it before sending it with a job application.",
         ],
       },
       {
