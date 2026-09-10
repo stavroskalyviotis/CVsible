@@ -106,6 +106,13 @@ export function CvisorPage({
     .reverse()
     .find((item) => state.answers[item.id]);
 
+  /** Lines the candidate gave to the catch-all question, which the preview
+   *  cannot place but the final CV will carry. */
+  const pendingExtras = (state.answers.extras?.value ?? "")
+    .split(/[\n;]+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
   const previewCv = useMemo(
     () => interviewToPreviewCv(state, profile ? { fullName: profile.personalInfo.fullName } : undefined),
     [state, profile],
@@ -358,6 +365,23 @@ export function CvisorPage({
               <CvPreview data={previewCv} dictionary={dictionary} />
             </div>
           </div>
+
+          {/* The last question is a catch-all: certifications, projects and
+              interests arrive mixed in one box, and only the agent sorts them
+              into the right sections. Drawing a guess on the page would be
+              worse than not drawing it — a project shown as a certification is
+              a wrong preview. But leaving it invisible reads as lost, so it is
+              listed here as recorded-but-not-yet-placed. */}
+          {pendingExtras.length > 0 && (
+            <div className="cvisor-preview-pending">
+              <strong>{copy.pendingTitle}</strong>
+              <ul>
+                {pendingExtras.map((entry) => (
+                  <li key={entry}>{entry}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       </main>
     </div>

@@ -391,6 +391,7 @@ export interface Dictionary {
     groupExtras: string;
     previewTitle: string;
     previewEmpty: string;
+    pendingTitle: string;
     readyTitle: string;
     readyBody: string;
     buildButton: string;
@@ -1161,6 +1162,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       groupExtras: "Έξτρα",
       previewTitle: "Το βιογραφικό σου",
       previewEmpty: "Ό,τι απαντάς εμφανίζεται εδώ.",
+      pendingTitle: "Θα μπουν κι αυτά",
       readyTitle: "Τα έχω όλα",
       readyBody:
         "Θα τα γράψω σε κανονικό βιογραφικό — με ρήματα δράσης, το λεξιλόγιο της αγγελίας και χωρίς να προσθέσω τίποτα που δεν μου είπες.",
@@ -1949,6 +1951,7 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
       groupExtras: "Extras",
       previewTitle: "Your CV",
       previewEmpty: "Whatever you answer shows up here.",
+      pendingTitle: "These go in too",
       readyTitle: "That's everything",
       readyBody:
         "I'll write it up as a proper CV — action verbs, the job ad's vocabulary, and nothing added that you didn't tell me.",

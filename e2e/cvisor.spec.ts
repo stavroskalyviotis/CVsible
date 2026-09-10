@@ -47,6 +47,38 @@ test.describe("CVisor", () => {
     await expect(preview).toContainText("Barista");
   });
 
+  /** The catch-all question mixes certifications, projects and interests, and
+   *  only the agent sorts them into sections — so the preview cannot draw
+   *  them. Leaving them invisible reads as lost, which is exactly how it was
+   *  reported. */
+  test("confirms the catch-all answers it cannot draw on the page", async ({ page }) => {
+    await page.locator(".cvisor-field textarea").fill("Barista");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    const inputs = page.locator(".cvisor-field input");
+    await inputs.nth(0).fill("Barista");
+    await inputs.nth(1).fill("Coffee Lab");
+    await page.getByRole("button", { name: CONTINUE }).click();
+    await page.locator(".cvisor-field textarea").fill("Made coffee and ran the till every morning.");
+    await page.getByRole("button", { name: CONTINUE }).click();
+
+    for (let guard = 0; guard < 12; guard++) {
+      const prompt = (await page.locator(".cvisor-step-prompt").textContent()) ?? "";
+      if (/anything else|κάτι άλλο που αξίζει/i.test(prompt)) break;
+      const skip = page.getByRole("button", { name: /^(skip|προσπέραση)$/i });
+      const no = page.locator(".cvisor-choice").nth(1);
+      if (await no.count()) await no.click();
+      else if (await skip.count()) await skip.click();
+      else break;
+    }
+
+    await page.locator(".cvisor-field textarea").fill("Coffee Tracker — an app I built\nHACCP certification 2023");
+    await page.getByRole("button", { name: CONTINUE }).click();
+
+    const pending = page.locator(".cvisor-preview-pending");
+    await expect(pending).toContainText("Coffee Tracker");
+    await expect(pending).toContainText("HACCP certification 2023");
+  });
+
   test("goes back to a previous answer without losing it", async ({ page }) => {
     await page.locator(".cvisor-field textarea").fill("Barista at a specialty coffee shop");
     await page.getByRole("button", { name: CONTINUE }).click();
