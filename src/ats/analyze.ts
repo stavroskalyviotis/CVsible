@@ -17,6 +17,7 @@ export type AtsAxisId = "format" | "content" | "match";
 
 export type AtsCheckId =
   | "textLayer"
+  | "documentEmpty"
   | "singleColumn"
   | "headingsFound"
   | "email"

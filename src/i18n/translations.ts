@@ -1045,6 +1045,11 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           ok: "Το αρχείο περιέχει {v} λέξεις αναγνώσιμου κειμένου.",
           bad: "Δεν βρέθηκε κείμενο. Το αρχείο είναι εικόνα — το ATS διαβάζει μηδέν λέξεις.",
         },
+        documentEmpty: {
+          label: "Περιεχόμενο",
+          ok: "Υπάρχει αρκετό κείμενο για ανάλυση ({v} λέξεις).",
+          bad: "Βρέθηκαν μόνο {v} λέξεις. Δεν υπάρχει ακόμα αρκετό περιεχόμενο για να αναλυθεί — συμπλήρωσε τα στοιχεία σου και ξανακάνε τον έλεγχο.",
+        },
         singleColumn: {
           label: "Μία στήλη",
           ok: "Όλες οι σελίδες έχουν ενιαία ροή κειμένου.",
@@ -1849,6 +1854,11 @@ export const dictionaries: Record<LanguageCode, Dictionary> = {
           label: "Text layer",
           ok: "The file contains {v} words of readable text.",
           bad: "No text found. This file is an image — the ATS reads zero words.",
+        },
+        documentEmpty: {
+          label: "Content",
+          ok: "There is enough text here to analyse ({v} words).",
+          bad: "Only {v} words were found. There isn't enough here to analyse yet — fill your details in and run the check again.",
         },
         singleColumn: {
           label: "Single column",

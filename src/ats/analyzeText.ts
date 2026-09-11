@@ -75,8 +75,17 @@ export function analyzeResumeText(resume: ExtractedResume, jobAd: string): Resum
   const fields = parseResume(resume);
 
   // With no text layer every other check would report a misleading "missing".
+  //
+  // Two very different documents land here, and they need different words. A
+  // PDF carrying images but no text is a scan or a picture export: the words
+  // are there, but only as pixels, and the fix is to export a real text PDF.
+  // Everything else — a CV still being started in the builder, a nearly empty
+  // file — simply has nothing in it yet. Telling that person their CV "is an
+  // image" sends them hunting for a problem they do not have.
   if (!resume.hasTextLayer) {
-    const checks = [check("textLayer", "format", "fail", WEIGHT_CRITICAL, 0)];
+    const scanned = resume.kind === "pdf" && resume.imageCount > 0;
+    const id = scanned ? "textLayer" : "documentEmpty";
+    const checks = [check(id, "format", "fail", WEIGHT_CRITICAL, scanned ? 0 : fields.wordCount)];
     return {
       format: axisOf("format", checks),
       content: axisOf("content", []),

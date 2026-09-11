@@ -54,13 +54,33 @@ describe("analyzeResumeText", () => {
 
   it("short-circuits to score 0 / fail when there is no text layer (scanned PDF)", () => {
     const analysis = analyzeResumeText(
-      baseResume({ hasTextLayer: false, text: "", lines: [] }),
+      baseResume({ hasTextLayer: false, text: "", lines: [], imageCount: 3 }),
       "",
     );
     expect(analysis.format.score).toBe(0);
     expect(analysis.checks).toEqual([
       { id: "textLayer", axis: "format", status: "fail", weight: 3, value: 0 },
     ]);
+  });
+
+  /** A CV barely started is not a scanned image, and saying so sends the
+   *  person looking for a file problem they do not have. */
+  it("calls an all-but-empty document empty, not an image", () => {
+    const analysis = analyzeResumeText(
+      baseResume({ kind: "builder", hasTextLayer: false, text: "Jane", lines: ["Jane"], imageCount: 0 }),
+      "",
+    );
+    expect(analysis.checks).toEqual([
+      { id: "documentEmpty", axis: "format", status: "fail", weight: 3, value: 1 },
+    ]);
+  });
+
+  it("calls a text-free PDF with no images empty rather than scanned", () => {
+    const analysis = analyzeResumeText(
+      baseResume({ hasTextLayer: false, text: "", lines: [], imageCount: 0 }),
+      "",
+    );
+    expect(analysis.checks[0].id).toBe("documentEmpty");
   });
 
   it("never reports a score of 70+ ('good'/'excellent') when a check has failed", () => {
