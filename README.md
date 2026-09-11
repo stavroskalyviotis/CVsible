@@ -62,12 +62,13 @@ The interface is available in **Greek and English**.
 
 Full details live on the in-app [Privacy Policy](https://cvsible.com/#/privacy) and [Terms of Use](https://cvsible.com/#/terms) pages — the short version:
 
-- Without an account, everything stays in your browser's `localStorage`; nothing reaches a CVsible server except when you actively use CVisor, CVfix, or upload a file to CVscan.
+- Without an account, everything stays in your browser's `localStorage`; nothing reaches a CVsible server except when you actively use CVisor or CVfix.
 - CVisor/CVfix send the relevant text to a CVsible serverless function and from there to the Anthropic API to generate a result. That content isn't logged or permanently stored on our servers.
-- CVscan's analysis of an uploaded file runs entirely client-side; the file itself is never uploaded anywhere.
+- CVscan's analysis of an uploaded file runs entirely client-side; the file itself is never uploaded anywhere. Its text leaves the device only if you go on to run CVfix over it.
 - If you sign in, Supabase handles Google authentication and stores your saved CVs and your master profile, protected by Postgres Row Level Security so only your account can read or write them. The profile has no public-share path at all, and both are deleted with your account.
 - [Vercel Web Analytics](https://vercel.com/docs/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights) provide anonymous, cookie-free aggregate usage data. Both are inactive during local development.
 - The "Support CVsible" link points to an external Buy Me a Coffee page; clicking it just opens that page in a new tab — no data is sent to it from CVsible.
+- Every response carries a Content-Security-Policy (`vercel.json`) that allows scripts only from the site's own origin, forbids plugins and framing, and keeps the page out of anyone else's `<iframe>` — alongside `nosniff`, a strict referrer policy, HSTS, and a `Permissions-Policy` that turns off camera, microphone, location and payment access. Rich text that the AI writes is put through the same sanitizer as text you type before it is ever rendered as HTML, so a job ad carrying an injection payload cannot turn into a script in your browser.
 
 ## Tech stack
 
@@ -139,7 +140,7 @@ npm run test:e2e       # Run end-to-end tests (Playwright, needs `npm run dev` o
 
 - **Unit tests** (Vitest) cover the deterministic, correctness-critical logic: the CVscan ATS analyser, the grounding/verbatim/structure checks behind the anti-fabrication guarantees described above, the CVfix change model (a proposal that quotes the wrong "before", points at a path that isn't there, or invents a fact must be discarded), the CVisor interview state machine, CV data normalization, undo/redo, PDF/JSON filename building, and pagination formatting. Run with `npm test`.
 - Two of those suites exist to catch a specific class of silent drift. `api/_lib/` holds copies of the action-verb list, the keyword matcher and the score thresholds, because the serverless build cannot import from `src/`. If those copies diverge, the agent starts declaring a CV finished by a different standard than the one the app applies to it a second later — which is exactly the "I fixed things and the score didn't move" failure. `actionVerbs.test.ts`, `keywords.test.ts` and `draftReview.test.ts` fail if they ever drift apart.
-- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, skill categories, PDF export, JSON export/import round-trip, rich text, photo upload, drag-reorder), CVscan (file upload, scoring, keyword matching), the CVisor interview and the CVfix change window (with the AI endpoints stubbed at the network boundary, so the flow around them is tested without calling a model), My CVs / the profile / the public share page (with Supabase mocked the same way — no real Google login needed), a set of narrow-viewport checks that fail if any page grows wider than a phone screen, and a WCAG 2.0/2.1 A/AA accessibility audit of the main pages via axe-core — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173).
+- **End-to-end tests** (Playwright) drive a real Chrome browser against the app — landing page, the builder (editing, undo/redo, template switching, skill categories, PDF export, JSON export/import round-trip, rich text, photo upload, drag-reorder), CVscan (file upload, scoring, keyword matching), the CVisor interview and the CVfix change window (with the AI endpoints stubbed at the network boundary, so the flow around them is tested without calling a model), My CVs / the profile / the public share page (with Supabase mocked the same way — no real Google login needed), a set of narrow-viewport checks that fail if any page grows wider than a phone screen, and a WCAG 2.0/2.1 A/AA accessibility audit of the main pages via axe-core — asserting on real UI state and checking for console/page errors. Run with `npm run test:e2e` (starts its own dev server on port 5173). `E2E_PREVIEW=1 npm run test:e2e` runs the same suite against a production build served by `vite preview` on port 5174, with the real security headers from `vercel.json` — the only way a Content-Security-Policy mistake (a blocked script, a blocked pdf.js worker) surfaces as a failing flow before it reaches the deployed site.
 - Both suites are TypeScript-checked as part of `npm run build` (see `tsconfig.e2e.json`).
 - The AI-backed endpoints (CVisor/CVfix) are exercised indirectly: their deterministic server-side checks (`api/_lib/*`) are unit-tested directly, while the live model loop is best verified manually via `scripts/try-agent.mjs` against `vercel dev`, since it calls the real Anthropic API and costs money per run.
 - `npm run test:coverage`'s number only reflects the Vitest suite; it doesn't (and can't) credit code that's only exercised through the Playwright E2E suite, which runs in a separate real browser process outside Vitest's instrumentation. Most UI components read as 0% there despite being covered end-to-end — that's expected, not a gap.
@@ -183,6 +184,7 @@ CVsible/
 │   └── types.ts
 ├── index.html
 ├── package.json
+├── vercel.json             # Security headers (CSP et al.); vite preview reads them back
 └── vite.config.ts
 ```
 

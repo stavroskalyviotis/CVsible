@@ -117,14 +117,26 @@ function AppShell() {
   );
 }
 
+/** Vercel serves the analytics and speed-insights scripts from /_vercel/… on a
+ *  real deployment, and nowhere else. A production build opened locally — which
+ *  is how the e2e suite checks the deployed security headers — has no such
+ *  path, so mounting them there buys nothing and costs two 404s in the console.
+ *  The packages already stand down during `npm run dev`; this covers the build. */
+const isDeployed =
+  typeof window !== "undefined" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+
 function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
         <AppShell />
       </AuthProvider>
-      <Analytics />
-      <SpeedInsights />
+      {isDeployed && (
+        <>
+          <Analytics />
+          <SpeedInsights />
+        </>
+      )}
     </LanguageProvider>
   );
 }
