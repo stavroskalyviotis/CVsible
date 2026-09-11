@@ -1,5 +1,6 @@
 import type { LanguageCode } from "../types";
 import { supabase } from "../lib/supabaseClient";
+import { sanitizeRichText } from "../utils/richText";
 
 export type CvisorErrorCode =
   | "missing_fields"
@@ -77,5 +78,10 @@ export async function suggestSectionText(params: {
   context?: CvisorSuggestContext;
 }): Promise<string> {
   const response = await postJson<{ data: { suggestion: string } }>("/api/cvisor-suggest", params);
-  return response.data.suggestion;
+  // The suggestion is rich text the model wrote, and the model is writing from
+  // a job ad the user pasted in — text we do not control. Cleaning it here,
+  // where it crosses into the app, is what makes it safe to preview as HTML
+  // and safe to store: everything downstream receives markup that has already
+  // been through the same filter the editor applies to typed input.
+  return sanitizeRichText(response.data.suggestion);
 }

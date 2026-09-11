@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Dictionary } from "../i18n/translations";
 import type { LanguageCode } from "../types";
 import { Icon } from "../components/Icon";
+import { sanitizeRichText } from "../utils/richText";
 import { suggestSectionText } from "./api";
 import type { CvisorSuggestContext, CvisorSuggestSection } from "./api";
 import { mapCvisorErrorMessage } from "./errors";
@@ -77,7 +78,13 @@ export function CvisorImproveButton({
       {suggestion && (
         <div className="cvisor-suggestion">
           <span className="cvisor-suggestion-label">{dictionary.cvisor.suggestionTitle}</span>
-          <div className="cvisor-suggestion-preview" dangerouslySetInnerHTML={{ __html: suggestion }} />
+          {/* Sanitised again at the point of use. suggestSectionText already
+              cleans what it returns, but this is the line that can execute
+              markup, and it should be safe to read on its own. */}
+          <div
+            className="cvisor-suggestion-preview"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(suggestion) }}
+          />
           <div className="cvisor-suggestion-actions">
             <button type="button" className="cvisor-suggestion-accept" onClick={handleAccept}>
               {dictionary.cvisor.acceptSuggestion}
