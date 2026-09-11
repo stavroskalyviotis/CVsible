@@ -21,8 +21,9 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
       {
         heading: "Χωρίς λογαριασμό",
         body: [
-          "Αν δεν συνδεθείς, το βιογραφικό που φτιάχνεις μένει αποκλειστικά στη συσκευή σου (localStorage του browser). Δεν φτάνει σε κανέναν server μας παρά μόνο όταν εσύ ζητήσεις κάτι από τον CVisor/CVfix ή τον έλεγχο ATS με upload αρχείου.",
-          "Ο δεικτης/έλεγχος ATS πάνω στο βιογραφικό που φτιάχνεις (το ποσοστό στην κορυφή) τρέχει εξ ολοκλήρου στον browser σου — δεν στέλνεται πουθενά.",
+          "Αν δεν συνδεθείς, το βιογραφικό που φτιάχνεις μένει αποκλειστικά στη συσκευή σου (localStorage του browser). Δεν φτάνει σε κανέναν server μας παρά μόνο όταν εσύ ζητήσεις κάτι από τον CVisor ή το CVfix.",
+          "Ο δείκτης/έλεγχος ATS πάνω στο βιογραφικό που φτιάχνεις (το ποσοστό στην κορυφή) τρέχει εξ ολοκλήρου στον browser σου — δεν στέλνεται πουθενά.",
+          "Το ίδιο ισχύει και για το CVscan όταν ανεβάζεις αρχείο: το PDF, DOCX ή TXT διαβάζεται και αναλύεται μέσα στον browser σου και δεν ανεβαίνει σε κανέναν server. Το κείμενό του φεύγει από τη συσκευή σου μόνο αν πατήσεις μετά το CVfix.",
         ],
       },
       {
@@ -115,8 +116,9 @@ export const PRIVACY_CONTENT: Record<LanguageCode, LegalDoc> = {
       {
         heading: "Without an account",
         body: [
-          "If you don't sign in, the CV you build stays only on your device (your browser's localStorage). It never reaches our servers unless you actively use CVisor/CVfix or upload a file for the ATS check.",
+          "If you don't sign in, the CV you build stays only on your device (your browser's localStorage). It never reaches our servers unless you actively use CVisor or CVfix.",
           "The ATS score shown while you build (the number at the top) is computed entirely in your browser — nothing is sent anywhere for it.",
+          "The same is true of CVscan when you upload a file: the PDF, DOCX or TXT is read and analysed inside your browser, and is never uploaded to any server. Its text leaves your device only if you then press CVfix.",
         ],
       },
       {
